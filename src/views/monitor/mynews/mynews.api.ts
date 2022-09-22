@@ -3,9 +3,10 @@ import { Modal } from 'ant-design-vue';
 
 enum Api {
   list = '/sys/sysAnnouncementSend/getMyAnnouncementSend',
-  editCementSend = 'sys/sysAnnouncementSend/editByAnntIdAndUserId',
-  readAllMsg = 'sys/sysAnnouncementSend/readAll',
-  syncNotic = 'sys/annountCement/syncNotic',
+  editCementSend = '/sys/sysAnnouncementSend/editByAnntIdAndUserId',
+  readAllMsg = '/sys/sysAnnouncementSend/readAll',
+  syncNotic = '/sys/annountCement/syncNotic',
+  getOne = '/sys/sysAnnouncementSend/getOne',
 }
 
 /**
@@ -49,3 +50,12 @@ export const readAllMsg = (params, handleSuccess) => {
 export const syncNotic = (params) => {
   return defHttp.get({ url: Api.syncNotic, params });
 };
+
+/**
+ * 根据消息发送记录ID获取消息内容
+ * @param sendId
+ */
+export const getOne = (sendId) => {
+  return defHttp.get({ url: Api.getOne, params:{sendId} });
+};
+

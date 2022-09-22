@@ -1,4 +1,4 @@
-import { watch } from 'vue';
+import { Ref, watch } from 'vue';
 import XEUtils from 'xe-utils';
 import { simpleDebounce } from '/@/utils/common/compUtils';
 import { JVxeDataProps, JVxeRefs, JVxeTableProps, JVxeTypes } from '../types';
@@ -10,7 +10,7 @@ import { useLinkage } from './useLinkage';
 import { useWebSocket } from './useWebSocket';
 import { getPrefix, getJVxeAuths } from '../utils/authUtils';
 
-export function useMethods(props: JVxeTableProps, { emit }, data: JVxeDataProps, refs: JVxeRefs, instance) {
+export function useMethods(props: JVxeTableProps, { emit }, data: JVxeDataProps, refs: JVxeRefs, instanceRef: Ref) {
   let xTableTemp: VxeTableInstance & VxeTablePrivateMethods;
 
   function getXTable() {
@@ -37,6 +37,7 @@ export function useMethods(props: JVxeTableProps, { emit }, data: JVxeDataProps,
     getNewRowById,
     getDeleteData,
     getSelectionData,
+    getSelectedData,
     removeRows,
     removeRowsById,
     removeSelection,
@@ -159,13 +160,13 @@ export function useMethods(props: JVxeTableProps, { emit }, data: JVxeDataProps,
   // 单元格被激活编辑时会触发该事件
   function handleEditActived({ column }) {
     // 执行增强
-    getEnhanced(column.params.type).aopEvents.editActived!.apply(instance, arguments as any);
+    getEnhanced(column.params.type).aopEvents.editActived!.apply(instanceRef.value, arguments as any);
   }
 
   // 单元格编辑状态下被关闭时会触发该事件
   function handleEditClosed({ column }) {
     // 执行增强
-    getEnhanced(column.params.type).aopEvents.editClosed!.apply(instance, arguments as any);
+    getEnhanced(column.params.type).aopEvents.editClosed!.apply(instanceRef.value, arguments as any);
   }
 
   // 返回值决定行是否可选中
@@ -189,7 +190,7 @@ export function useMethods(props: JVxeTableProps, { emit }, data: JVxeDataProps,
         return false;
       }
       // 执行增强
-      return getEnhanced(column.params.type).aopEvents.activeMethod!.apply(instance, arguments as any) ?? true;
+      return getEnhanced(column.params.type).aopEvents.activeMethod!.apply(instanceRef.value, arguments as any) ?? true;
     })();
     if (!flag) {
       getXTable().clearActived();
@@ -351,7 +352,7 @@ export function useMethods(props: JVxeTableProps, { emit }, data: JVxeDataProps,
             rows: result.rows,
             insertIndex: index,
             $table: xTable,
-            target: instance,
+            target: instanceRef.value,
           });
         }
       }
@@ -365,6 +366,8 @@ export function useMethods(props: JVxeTableProps, { emit }, data: JVxeDataProps,
     isOnlineJS?: boolean;
     // 是否激活编辑状态
     setActive?: boolean;
+    //是否需要触发change事件
+    emitChange?:boolean
   }
 
   /**
@@ -375,7 +378,13 @@ export function useMethods(props: JVxeTableProps, { emit }, data: JVxeDataProps,
    * @return
    */
   async function addRows(rows: Recordable | Recordable[] = {}, options?: IAddRowsOptions) {
-    return addOrInsert(rows, -1, 'added', options);
+    //update-begin-author:taoyan date:2022-8-12 for: VUEN-1892【online子表弹框】有主从关联js时，子表弹框修改了数据，主表字段未修改
+    let result = await addOrInsert(rows, -1, 'added', options);
+    if(options && options!.emitChange==true){
+      trigger('valueChange', {column: 'all', row: result.row})
+    }
+    return result;
+    //update-end-author:taoyan date:2022-8-12 for: VUEN-1892【online子表弹框】有主从关联js时，子表弹框修改了数据，主表字段未修改
   }
 
   /**
@@ -562,6 +571,7 @@ export function useMethods(props: JVxeTableProps, { emit }, data: JVxeDataProps,
               col: column.params,
               column: column,
               isSetValues: true,
+              row: {...row}
             });
             count++;
           }
@@ -579,7 +589,7 @@ export function useMethods(props: JVxeTableProps, { emit }, data: JVxeDataProps,
   /** 清空选择行 */
   async function clearSelection() {
     const xTable = getXTable();
-    let event = { $table: xTable, target: instance };
+    let event = { $table: xTable, target: instanceRef.value };
     if (props.rowSelectionType === JVxeTypes.rowRadio) {
       await xTable.clearRadioRow();
       handleVxeRadioChange(event);
@@ -745,11 +755,37 @@ export function useMethods(props: JVxeTableProps, { emit }, data: JVxeDataProps,
 
   // 触发事件
   function trigger(name, event: any = {}) {
-    event.$target = instance;
+    event.$target = instanceRef.value;
     event.$table = getXTable();
     //online增强参数兼容
-    event.target = instance;
+    event.target = instanceRef.value;
     emit(name, event);
+  }
+
+
+  /**
+   * 获取选中的行-和 getSelectionData 区别在于对于新增的行也会返回ID
+   * 用于onlinePopForm
+   * @param isFull
+   */
+  function getSelectedData(isFull?: boolean) {
+    const xTable = getXTable();
+    let rows:any[] = []
+    if (props.rowSelectionType === JVxeTypes.rowRadio) {
+      let row = xTable.getRadioRecord(isFull);
+      if (isNull(row)) {
+        return [];
+      }
+      rows = [row]
+    } else {
+      rows = xTable.getCheckboxRecords(isFull)
+    }
+    let records: Recordable[] = [];
+    for (let row of rows) {
+      let item = cloneDeep(row);
+      records.push(item);
+    }
+    return records;
   }
 
   return {
