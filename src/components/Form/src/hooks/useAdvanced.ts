@@ -1,11 +1,11 @@
+import { computed, unref, watch } from 'vue';
+import { useDebounceFn } from '@vueuse/core';
 import type { ColEx } from '../types';
 import type { AdvanceState } from '../types/hooks';
 import type { ComputedRef, Ref } from 'vue';
 import type { FormProps, FormSchema } from '../types/form';
-import { computed, unref, watch } from 'vue';
 import { isBoolean, isFunction, isNumber, isObject } from '/@/utils/is';
 import { useBreakpoint } from '/@/hooks/event/useBreakpoint';
-import { useDebounceFn } from '@vueuse/core';
 
 const BASIC_COL_LEN = 24;
 
@@ -18,7 +18,14 @@ interface UseAdvancedContext {
   defaultValueRef: Ref<Recordable>;
 }
 
-export default function ({ advanceState, emit, getProps, getSchema, formModel, defaultValueRef }: UseAdvancedContext) {
+export default function ({
+  advanceState,
+  emit,
+  getProps,
+  getSchema,
+  formModel,
+  defaultValueRef,
+}: UseAdvancedContext) {
   const { realWidthRef, screenEnum, screenRef } = useBreakpoint();
 
   const getEmptySpan = computed((): number => {
@@ -44,7 +51,11 @@ export default function ({ advanceState, emit, getProps, getSchema, formModel, d
   const debounceUpdateAdvanced = useDebounceFn(updateAdvanced, 30);
 
   watch(
-    [() => unref(getSchema), () => advanceState.isAdvanced, () => unref(realWidthRef)],
+    [
+      () => unref(getSchema),
+      () => advanceState.isAdvanced,
+      () => unref(realWidthRef),
+    ],
     () => {
       const { showAdvancedButton } = unref(getProps);
       if (showAdvancedButton) {
@@ -54,15 +65,24 @@ export default function ({ advanceState, emit, getProps, getSchema, formModel, d
     { immediate: true }
   );
 
-  function getAdvanced(itemCol: Partial<ColEx>, itemColSum = 0, isLastAction = false, index = 0) {
+  function getAdvanced(
+    itemCol: Partial<ColEx>,
+    itemColSum = 0,
+    isLastAction = false,
+    index = 0
+  ) {
     const width = unref(realWidthRef);
 
     const mdWidth =
-      parseInt(itemCol.md as string) || parseInt(itemCol.xs as string) || parseInt(itemCol.sm as string) || (itemCol.span as number) || BASIC_COL_LEN;
+      Number.parseInt(itemCol.md as string) ||
+      Number.parseInt(itemCol.xs as string) ||
+      Number.parseInt(itemCol.sm as string) ||
+      (itemCol.span as number) ||
+      BASIC_COL_LEN;
 
-    const lgWidth = parseInt(itemCol.lg as string) || mdWidth;
-    const xlWidth = parseInt(itemCol.xl as string) || lgWidth;
-    const xxlWidth = parseInt(itemCol.xxl as string) || xlWidth;
+    const lgWidth = Number.parseInt(itemCol.lg as string) || mdWidth;
+    const xlWidth = Number.parseInt(itemCol.xl as string) || lgWidth;
+    const xxlWidth = Number.parseInt(itemCol.xxl as string) || xlWidth;
     if (width <= screenEnum.LG) {
       itemColSum += mdWidth;
     } else if (width < screenEnum.XL) {
@@ -73,7 +93,7 @@ export default function ({ advanceState, emit, getProps, getSchema, formModel, d
       itemColSum += xxlWidth;
     }
 
-    let autoAdvancedCol = unref(getProps).autoAdvancedCol ?? 3;
+    const autoAdvancedCol = unref(getProps).autoAdvancedCol ?? 3;
 
     if (isLastAction) {
       advanceState.hideAdvanceBtn = unref(getSchema).length <= autoAdvancedCol;
@@ -84,7 +104,10 @@ export default function ({ advanceState, emit, getProps, getSchema, formModel, d
         advanceState.isAdvanced = true;
       } else */
       // update-end--author:sunjianlei---date:20211108---for: 注释掉该逻辑，使小于等于2行时，也显示展开收起按钮
-      if (itemColSum > BASIC_COL_LEN * 2 && itemColSum <= BASIC_COL_LEN * (unref(getProps).autoAdvancedLine || 3)) {
+      if (
+        itemColSum > BASIC_COL_LEN * 2 &&
+        itemColSum <= BASIC_COL_LEN * (unref(getProps).autoAdvancedLine || 3)
+      ) {
         advanceState.hideAdvanceBtn = false;
 
         // 默认超过 3 行折叠
@@ -117,8 +140,7 @@ export default function ({ advanceState, emit, getProps, getSchema, formModel, d
     const { baseColProps = {} } = unref(getProps);
 
     const schemas = unref(getSchema);
-    for (let i = 0; i < schemas.length; i++) {
-      const schema = schemas[i];
+    for (const [i, schema] of schemas.entries()) {
       const { show, colProps } = schema;
       let isShow = true;
 
@@ -128,7 +150,7 @@ export default function ({ advanceState, emit, getProps, getSchema, formModel, d
 
       if (isFunction(show)) {
         isShow = show({
-          schema: schema,
+          schema,
           model: formModel,
           field: schema.field,
           values: {
@@ -139,7 +161,12 @@ export default function ({ advanceState, emit, getProps, getSchema, formModel, d
       }
 
       if (isShow && (colProps || baseColProps)) {
-        const { itemColSum: sum, isAdvanced } = getAdvanced({ ...baseColProps, ...colProps }, itemColSum, false, i);
+        const { itemColSum: sum, isAdvanced } = getAdvanced(
+          { ...baseColProps, ...colProps },
+          itemColSum,
+          false,
+          i
+        );
 
         itemColSum = sum || 0;
         if (isAdvanced) {
@@ -149,9 +176,14 @@ export default function ({ advanceState, emit, getProps, getSchema, formModel, d
       }
     }
 
-    advanceState.actionSpan = (realItemColSum % BASIC_COL_LEN) + unref(getEmptySpan);
+    advanceState.actionSpan =
+      (realItemColSum % BASIC_COL_LEN) + unref(getEmptySpan);
 
-    getAdvanced(unref(getProps).actionColOptions || { span: BASIC_COL_LEN }, itemColSum, true);
+    getAdvanced(
+      unref(getProps).actionColOptions || { span: BASIC_COL_LEN },
+      itemColSum,
+      true
+    );
 
     emit('advanced-change');
   }

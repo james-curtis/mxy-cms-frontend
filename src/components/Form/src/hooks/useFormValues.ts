@@ -1,8 +1,14 @@
-import { isArray, isFunction, isObject, isString, isNullOrUnDef } from '/@/utils/is';
+import {
+  isArray,
+  isFunction,
+  isNullOrUnDef,
+  isObject,
+  isString,
+} from '/@/utils/is';
 import { unref } from 'vue';
-import type { Ref, ComputedRef } from 'vue';
+import type { ComputedRef, Ref } from 'vue';
 import type { FormProps, FormSchema } from '../types/form';
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
 import { set } from 'lodash-es';
 import { handleRangeValue } from '/@/components/Form/src/utils/formUtils';
 
@@ -12,7 +18,12 @@ interface UseFormValuesContext {
   getProps: ComputedRef<FormProps>;
   formModel: Recordable;
 }
-export function useFormValues({ defaultValueRef, getSchema, formModel, getProps }: UseFormValuesContext) {
+export function useFormValues({
+  defaultValueRef,
+  getSchema,
+  formModel,
+  getProps,
+}: UseFormValuesContext) {
   // Processing form values
   function handleFormValues(values: Recordable) {
     if (!isObject(values)) {
@@ -30,7 +41,11 @@ export function useFormValues({ defaultValueRef, getSchema, formModel, getProps 
         value = transformDateFunc?.(value);
       }
       // 判断是否是dayjs实例
-      if (isArray(value) && dayjs.isDayjs(value[0]) && dayjs.isDayjs(value[1])) {
+      if (
+        isArray(value) &&
+        dayjs.isDayjs(value[0]) &&
+        dayjs.isDayjs(value[1])
+      ) {
         value = value.map((item) => transformDateFunc?.(item));
       }
       // Remove spaces

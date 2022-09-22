@@ -28,10 +28,18 @@ interface Options {
 }
 
 export function createAsyncComponent(loader: Fn, options: Options = {}) {
-  const { size = 'small', delay = 100, timeout = 30000, loading = false, retry = true } = options;
+  const {
+    size = 'small',
+    delay = 100,
+    timeout = 30000,
+    loading = false,
+    retry = true,
+  } = options;
   return defineAsyncComponent({
     loader,
-    loadingComponent: loading ? <Spin spinning={true} size={size} /> : undefined,
+    loadingComponent: loading ? (
+      <Spin spinning={true} size={size} />
+    ) : undefined,
     // The error component will be displayed if a timeout is
     // provided and exceeded. Default: Infinity.
     // TODO

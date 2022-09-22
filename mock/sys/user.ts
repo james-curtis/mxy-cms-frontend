@@ -1,5 +1,6 @@
-import { MockMethod } from 'vite-plugin-mock';
-import { resultError, resultSuccess, getRequestToken, requestParams, baseUrl } from '../_util';
+import { baseUrl, getRequestToken, resultError, resultSuccess } from '../_util';
+import type { MockMethod } from 'vite-plugin-mock';
+import type { requestParams } from '../_util';
 export function createFakeUserList() {
   return [
     {
@@ -57,7 +58,14 @@ export default [
       if (!checkUser) {
         return resultError('Incorrect account or password！');
       }
-      const { userId, username: _username, token, realname, desc, roles } = checkUser;
+      const {
+        userId,
+        username: _username,
+        token,
+        realname,
+        desc,
+        roles,
+      } = checkUser;
       return resultSuccess({
         roles,
         userId,
@@ -74,9 +82,13 @@ export default [
     response: (request: requestParams) => {
       const token = getRequestToken(request);
       if (!token) return resultError('Invalid token');
-      const checkUser = createFakeUserList().find((item) => item.token === token);
+      const checkUser = createFakeUserList().find(
+        (item) => item.token === token
+      );
       if (!checkUser) {
-        return resultError('The corresponding user information was not obtained!');
+        return resultError(
+          'The corresponding user information was not obtained!'
+        );
       }
       return resultSuccess(checkUser);
     },
@@ -88,7 +100,9 @@ export default [
     response: (request: requestParams) => {
       const token = getRequestToken(request);
       if (!token) return resultError('Invalid token');
-      const checkUser = createFakeUserList().find((item) => item.token === token);
+      const checkUser = createFakeUserList().find(
+        (item) => item.token === token
+      );
       if (!checkUser) {
         return resultError('Invalid token!');
       }
@@ -104,7 +118,9 @@ export default [
     response: (request: requestParams) => {
       const token = getRequestToken(request);
       if (!token) return resultError('Invalid token');
-      const checkUser = createFakeUserList().find((item) => item.token === token);
+      const checkUser = createFakeUserList().find(
+        (item) => item.token === token
+      );
       if (!checkUser) {
         return resultError('Invalid token!');
       }

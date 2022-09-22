@@ -1,6 +1,10 @@
 import { on } from '/@/utils/domUtils';
 import { isServer } from '/@/utils/is';
-import type { ComponentPublicInstance, DirectiveBinding, ObjectDirective } from 'vue';
+import type {
+  ComponentPublicInstance,
+  DirectiveBinding,
+  ObjectDirective,
+} from 'vue';
 
 type DocumentHandler = <T extends MouseEvent>(mouseup: T, mousedown: T) => void;
 
@@ -25,7 +29,10 @@ if (!isServer) {
   });
 }
 
-function createDocumentHandler(el: HTMLElement, binding: DirectiveBinding): DocumentHandler {
+function createDocumentHandler(
+  el: HTMLElement,
+  binding: DirectiveBinding
+): DocumentHandler {
   let excludes: HTMLElement[] = [];
   if (Array.isArray(binding.arg)) {
     excludes = binding.arg;
@@ -43,14 +50,26 @@ function createDocumentHandler(el: HTMLElement, binding: DirectiveBinding): Docu
     const mouseDownTarget = mousedown.target as Node;
     const isBound = !binding || !binding.instance;
     const isTargetExists = !mouseUpTarget || !mouseDownTarget;
-    const isContainedByEl = el.contains(mouseUpTarget) || el.contains(mouseDownTarget);
+    const isContainedByEl =
+      el.contains(mouseUpTarget) || el.contains(mouseDownTarget);
     const isSelf = el === mouseUpTarget;
 
     const isTargetExcluded =
-      (excludes.length && excludes.some((item) => item?.contains(mouseUpTarget))) ||
+      (excludes.length &&
+        excludes.some((item) => item?.contains(mouseUpTarget))) ||
       (excludes.length && excludes.includes(mouseDownTarget as HTMLElement));
-    const isContainedByPopper = popperRef && (popperRef.contains(mouseUpTarget) || popperRef.contains(mouseDownTarget));
-    if (isBound || isTargetExists || isContainedByEl || isSelf || isTargetExcluded || isContainedByPopper) {
+    const isContainedByPopper =
+      popperRef &&
+      (popperRef.contains(mouseUpTarget) ||
+        popperRef.contains(mouseDownTarget));
+    if (
+      isBound ||
+      isTargetExists ||
+      isContainedByEl ||
+      isSelf ||
+      isTargetExcluded ||
+      isContainedByPopper
+    ) {
       return;
     }
     binding.value();

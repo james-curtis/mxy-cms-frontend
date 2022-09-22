@@ -1,6 +1,6 @@
-import { MockMethod } from 'vite-plugin-mock';
-import { resultSuccess, resultError, baseUrl } from '../_util';
+import { baseUrl, resultError, resultSuccess } from '../_util';
 import { ResultEnum } from '../../src/enums/httpEnum';
+import type { MockMethod } from 'vite-plugin-mock';
 const userInfo = {
   name: 'Jeecg',
   userid: '00000001',
@@ -64,7 +64,9 @@ export default [
     method: 'post',
     statusCode: 200,
     response: () => {
-      return resultError('Token Expired!', { code: ResultEnum.TIMEOUT as number });
+      return resultError('Token Expired!', {
+        code: ResultEnum.TIMEOUT as number,
+      });
     },
   },
 ] as MockMethod[];

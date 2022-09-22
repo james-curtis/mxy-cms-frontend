@@ -1,10 +1,14 @@
-import { AppRouteModule } from '/@/router/types';
-import type { MenuModule, Menu, AppRouteRecordRaw } from '/@/router/types';
-import { findPath, treeMap } from '/@/utils/helper/treeHelper';
-import { cloneDeep } from 'lodash-es';
-import { isUrl } from '/@/utils/is';
-import { RouteParams } from 'vue-router';
 import { toRaw } from 'vue';
+import { cloneDeep } from 'lodash-es';
+import type {
+  AppRouteModule,
+  AppRouteRecordRaw,
+  Menu,
+  MenuModule,
+} from '/@/router/types';
+import { findPath, treeMap } from '/@/utils/helper/treeHelper';
+import { isUrl } from '/@/utils/is';
+import type { RouteParams } from 'vue-router';
 
 export function getAllParentPath<T = Recordable>(treeData: T[], path: string) {
   const menuList = findPath(treeData, (n) => n.path === path) as Menu[];
@@ -12,8 +16,7 @@ export function getAllParentPath<T = Recordable>(treeData: T[], path: string) {
 }
 
 function joinParentPath(menus: Menu[], parentPath = '') {
-  for (let index = 0; index < menus.length; index++) {
-    const menu = menus[index];
+  for (const menu of menus) {
     // https://next.router.vuejs.org/guide/essentials/nested-routes.html
     // Note that nested paths that start with / will be treated as a root path.
     // This allows you to leverage the component nesting without having to use a nested URL.
@@ -22,7 +25,10 @@ function joinParentPath(menus: Menu[], parentPath = '') {
       menu.path = `${parentPath}/${menu.path}`;
     }
     if (menu?.children?.length) {
-      joinParentPath(menu.children, menu.meta?.hidePathForChildren ? parentPath : menu.path);
+      joinParentPath(
+        menu.children,
+        menu.meta?.hidePathForChildren ? parentPath : menu.path
+      );
     }
   }
 }
@@ -37,12 +43,19 @@ export function transformMenuModule(menuModule: MenuModule): Menu {
   return menuList[0];
 }
 
-export function transformRouteToMenu(routeModList: AppRouteModule[], routerMapping = false) {
+export function transformRouteToMenu(
+  routeModList: AppRouteModule[],
+  routerMapping = false
+) {
   const cloneRouteModList = cloneDeep(routeModList);
   const routeList: AppRouteRecordRaw[] = [];
 
   cloneRouteModList.forEach((item) => {
-    if (routerMapping && item.meta.hideChildrenInMenu && typeof item.redirect === 'string') {
+    if (
+      routerMapping &&
+      item.meta.hideChildrenInMenu &&
+      typeof item.redirect === 'string'
+    ) {
       item.path = item.redirect;
     }
     if (item.meta?.single) {
@@ -80,7 +93,7 @@ export function configureDynamicParamsMenu(menu: Menu, params: RouteParams) {
   const matchArr = realPath.match(menuParamRegex);
 
   matchArr?.forEach((it) => {
-    const realIt = it.substr(1);
+    const realIt = it.slice(1);
     if (params[realIt]) {
       realPath = realPath.replace(`:${realIt}`, params[realIt] as string);
     }

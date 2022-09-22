@@ -1,6 +1,8 @@
-import { isRef, unref, watch, Ref, ComputedRef } from 'vue';
+import type { ComputedRef, Ref } from 'vue';
+import { isRef, unref, watch } from 'vue';
 import Clipboard from 'clipboard';
-import { ModalOptionsEx, useMessage } from '/@/hooks/web/useMessage';
+import type { ModalOptionsEx } from '/@/hooks/web/useMessage';
+import { useMessage } from '/@/hooks/web/useMessage';
 
 /** 带复制按钮的弹窗 */
 interface IOptions extends ModalOptionsEx {
@@ -19,7 +21,7 @@ const { createMessage, createConfirm } = useMessage();
 
 /** 创建复制弹窗 */
 function createCopyModal(options: Partial<IOptions>) {
-  let modal = createConfirm({
+  const modal = createConfirm({
     ...options,
     iconType: options.iconType ?? 'info',
     width: options.width ?? 500,
@@ -33,7 +35,7 @@ function createCopyModal(options: Partial<IOptions>) {
     } as any,
     onOk() {
       return new Promise((resolve: any) => {
-        const clipboard = new Clipboard('.' + COPY_CLASS);
+        const clipboard = new Clipboard(`.${COPY_CLASS}`);
         clipboard.on('success', () => {
           clipboard.destroy();
           createMessage.success('复制成功');

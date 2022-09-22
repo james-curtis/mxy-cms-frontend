@@ -56,7 +56,15 @@ export const useErrorLogStore = defineStore({
         type: ErrorTypeEnum.AJAX,
       };
       if (error.response) {
-        const { config: { url = '', data: params = '', method = 'get', headers = {} } = {}, data = {} } = error.response;
+        const {
+          config: {
+            url = '',
+            data: params = '',
+            method = 'get',
+            headers = {},
+          } = {},
+          data = {},
+        } = error.response;
         errInfo.url = url;
         errInfo.name = 'Ajax Error!';
         errInfo.file = '-';

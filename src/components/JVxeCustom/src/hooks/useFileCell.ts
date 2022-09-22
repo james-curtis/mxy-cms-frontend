@@ -1,28 +1,37 @@
 import { computed } from 'vue';
-import { fileGetValue, fileSetValue, useJVxeUploadCell } from '/@/components/jeecg/JVxeTable/src/hooks/cells/useJVxeUploadCell';
+import {
+  fileGetValue,
+  fileSetValue,
+  useJVxeUploadCell,
+} from '/@/components/jeecg/JVxeTable/src/hooks/cells/useJVxeUploadCell';
 import { uploadUrl } from '/@/api/common/api';
-import { JUploadModal, UploadTypeEnum } from '/@/components/Form/src/jeecg/components/JUpload';
-import { useModal } from '/@/components/Modal';
-import { JVxeComponent } from '/@/components/jeecg/JVxeTable/src/types/JVxeComponent';
-import { Icon } from '/@/components/Icon';
 import { Dropdown } from 'ant-design-vue';
 import { LoadingOutlined } from '@ant-design/icons-vue';
+import type { UploadTypeEnum } from '/@/components/Form/src/jeecg/components/JUpload';
+import { JUploadModal } from '/@/components/Form/src/jeecg/components/JUpload';
+import { useModal } from '/@/components/Modal';
+import type { JVxeComponent } from '/@/components/jeecg/JVxeTable/src/types/JVxeComponent';
+import { Icon } from '/@/components/Icon';
 
 export function useFileCell(props, fileType: UploadTypeEnum, options?) {
-  const setup = useJVxeUploadCell(props, { token: true, action: uploadUrl, ...options });
+  const setup = useJVxeUploadCell(props, {
+    token: true,
+    action: uploadUrl,
+    ...options,
+  });
 
   const { innerFile, handleChangeCommon, originColumn } = setup;
   const [registerModel, { openModal }] = useModal();
 
   // 截取文件名
   const ellipsisFileName = computed(() => {
-    let length = 5;
-    let file = innerFile.value;
+    const length = 5;
+    const file = innerFile.value;
     if (!file || !file.name) {
       return '';
     }
     if (file.name.length > length) {
-      return file.name.substr(0, length) + '…';
+      return `${file.name.slice(0, Math.max(0, length))}…`;
     }
     return file.name;
   });
@@ -42,7 +51,7 @@ export function useFileCell(props, fileType: UploadTypeEnum, options?) {
     let maxCount = originColumn.value.maxCount;
     // online 扩展JSON
     if (originColumn.value && originColumn.value.fieldExtendJson) {
-      let json = JSON.parse(originColumn.value.fieldExtendJson);
+      const json = JSON.parse(originColumn.value.fieldExtendJson);
       maxCount = json.uploadnum ? json.uploadnum : 0;
     }
     return maxCount ?? 0;
@@ -56,7 +65,7 @@ export function useFileCell(props, fileType: UploadTypeEnum, options?) {
       download: true,
       ...originColumn.value.props,
       maxCount: maxCount.value,
-      fileType: fileType,
+      fileType,
     });
   }
 

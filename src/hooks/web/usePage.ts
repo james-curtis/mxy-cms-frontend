@@ -7,7 +7,9 @@ import { unref } from 'vue';
 import { useRouter } from 'vue-router';
 import { REDIRECT_NAME } from '/@/router/constant';
 
-export type RouteLocationRawEx = Omit<RouteLocationRaw, 'path'> & { path: PageEnum };
+export type RouteLocationRawEx = Omit<RouteLocationRaw, 'path'> & {
+  path: PageEnum;
+};
 
 function handleError(e: Error) {
   console.error(e);
@@ -20,12 +22,17 @@ export function useGo(_router?: Router) {
     router = useRouter();
   }
   const { push, replace } = _router || router;
-  function go(opt: PageEnum | RouteLocationRawEx | string = PageEnum.BASE_HOME, isReplace = false) {
+  function go(
+    opt: PageEnum | RouteLocationRawEx | string = PageEnum.BASE_HOME,
+    isReplace = false
+  ) {
     if (!opt) {
       return;
     }
     if (isString(opt)) {
-      isReplace ? replace(opt).catch(handleError) : push(opt).catch(handleError);
+      isReplace
+        ? replace(opt).catch(handleError)
+        : push(opt).catch(handleError);
     } else {
       const o = opt as RouteLocationRaw;
       isReplace ? replace(o).catch(handleError) : push(o).catch(handleError);

@@ -1,5 +1,20 @@
-import type { UseDrawerReturnType, DrawerInstance, ReturnMethods, DrawerProps, UseDrawerInnerReturnType } from './typing';
-import { ref, getCurrentInstance, unref, reactive, watchEffect, nextTick, toRaw, computed } from 'vue';
+import type {
+  DrawerInstance,
+  DrawerProps,
+  ReturnMethods,
+  UseDrawerInnerReturnType,
+  UseDrawerReturnType,
+} from './typing';
+import {
+  computed,
+  getCurrentInstance,
+  nextTick,
+  reactive,
+  ref,
+  toRaw,
+  unref,
+  watchEffect,
+} from 'vue';
 import { isProdMode } from '/@/utils/env';
 import { isFunction } from '/@/utils/is';
 import { tryOnUnmounted } from '@vueuse/core';
@@ -15,7 +30,9 @@ const visibleData = reactive<{ [key: number]: boolean }>({});
  */
 export function useDrawer(): UseDrawerReturnType {
   if (!getCurrentInstance()) {
-    throw new Error('useDrawer() can only be used inside setup() or functional components!');
+    throw new Error(
+      'useDrawer() can only be used inside setup() or functional components!'
+    );
   }
   const drawer = ref<DrawerInstance | null>(null);
   const loaded = ref<Nullable<boolean>>(false);
@@ -55,12 +72,12 @@ export function useDrawer(): UseDrawerReturnType {
     },
 
     getVisible: computed((): boolean => {
-      return visibleData[~~unref(uid)];
+      return visibleData[Math.trunc(unref(uid))];
     }),
 
     openDrawer: <T = any>(visible = true, data?: T, openOnSet = true): void => {
       getInstance()?.setDrawerProps({
-        visible: visible,
+        visible,
       });
       if (!data) return;
 
@@ -88,7 +105,9 @@ export const useDrawerInner = (callbackFn?: Fn): UseDrawerInnerReturnType => {
   const uidRef = ref<string>('');
 
   if (!getCurrentInstance()) {
-    throw new Error('useDrawerInner() can only be used inside setup() or functional components!');
+    throw new Error(
+      'useDrawerInner() can only be used inside setup() or functional components!'
+    );
   }
 
   const getInstance = () => {
@@ -131,7 +150,7 @@ export const useDrawerInner = (callbackFn?: Fn): UseDrawerInnerReturnType => {
         getInstance()?.setDrawerProps({ confirmLoading: loading });
       },
       getVisible: computed((): boolean => {
-        return visibleData[~~unref(uidRef)];
+        return visibleData[Math.trunc(unref(uidRef))];
       }),
 
       closeDrawer: () => {

@@ -1,5 +1,4 @@
-import { BasicColumn } from '/@/components/Table';
-import { FormSchema } from '/@/components/Table';
+import type { BasicColumn, FormSchema } from '/@/components/Table';
 import { h } from 'vue';
 import { Icon } from '/@/components/Icon';
 import { duplicateCheck } from '../user/user.api';
@@ -96,7 +95,7 @@ export const formSchema: FormSchema[] = [
           updateSchema([
             {
               field: 'name',
-              label: label,
+              label,
             },
             {
               field: 'url',
@@ -104,7 +103,11 @@ export const formSchema: FormSchema[] = [
             },
           ]);
           //update-begin---author:wangshuai ---date:20220729  for：[VUEN-1834]只有一级菜单，才默认值，子菜单的时候，清空------------
-          if (isMenu(e) && !formModel.id && formModel.component=='layouts/RouteView') {
+          if (
+            isMenu(e) &&
+            !formModel.id &&
+            formModel.component == 'layouts/RouteView'
+          ) {
             formModel.component = '';
           }
           //update-end---author:wangshuai ---date:20220729  for：[VUEN-1834]只有一级菜单，才默认值，子菜单的时候，清空------------
@@ -141,9 +144,18 @@ export const formSchema: FormSchema[] = [
     label: '访问路径',
     component: 'Input',
     required: true,
-    ifShow: ({ values }) => !(values.component === ComponentTypes.IFrame && values.internalOrExternal) && values.menuType !== 2,
+    ifShow: ({ values }) =>
+      !(
+        values.component === ComponentTypes.IFrame && values.internalOrExternal
+      ) && values.menuType !== 2,
     dynamicRules: ({ model, schema }) => {
-      return rules.duplicateCheckRule('sys_permission', 'url', model, schema, true);
+      return rules.duplicateCheckRule(
+        'sys_permission',
+        'url',
+        model,
+        schema,
+        true
+      );
     },
   },
   {
@@ -153,7 +165,7 @@ export const formSchema: FormSchema[] = [
     componentProps: {
       placeholder: '请输入前端组件',
     },
-    defaultValue:'layouts/RouteView',
+    defaultValue: 'layouts/RouteView',
     required: true,
     ifShow: ({ values }) => !isButton(values.menuType),
   },
@@ -181,7 +193,8 @@ export const formSchema: FormSchema[] = [
       { required: true, message: '请输入Iframe地址' },
       { type: 'url', message: '请输入正确的url地址' },
     ],
-    ifShow: ({ values }) => !isButton(values.menuType) && values.component === ComponentTypes.IFrame,
+    ifShow: ({ values }) =>
+      !isButton(values.menuType) && values.component === ComponentTypes.IFrame,
   },
   {
     field: 'redirect',
@@ -200,7 +213,7 @@ export const formSchema: FormSchema[] = [
           required: false,
           validator: (_, value) => {
             return new Promise((resolve, reject) => {
-              let params = {
+              const params = {
                 tableName: 'sys_permission',
                 fieldName: 'perms',
                 fieldVal: value,

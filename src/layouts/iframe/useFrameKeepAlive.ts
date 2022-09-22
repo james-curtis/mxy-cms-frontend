@@ -1,5 +1,3 @@
-import type { AppRouteRecordRaw } from '/@/router/types';
-
 import { computed, toRaw, unref } from 'vue';
 
 import { useMultipleTabStore } from '/@/store/modules/multipleTab';
@@ -9,6 +7,7 @@ import { uniqBy } from 'lodash-es';
 import { useMultipleTabSetting } from '/@/hooks/setting/useMultipleTabSetting';
 
 import { useRouter } from 'vue-router';
+import type { AppRouteRecordRaw } from '/@/router/types';
 
 export function useFrameKeepAlive() {
   const router = useRouter();
@@ -16,7 +15,10 @@ export function useFrameKeepAlive() {
   const { getShowMultipleTab } = useMultipleTabSetting();
   const tabStore = useMultipleTabStore();
   const getFramePages = computed(() => {
-    const ret = getAllFramePages(toRaw(router.getRoutes()) as unknown as AppRouteRecordRaw[]) || [];
+    const ret =
+      getAllFramePages(
+        toRaw(router.getRoutes()) as unknown as AppRouteRecordRaw[]
+      ) || [];
     return ret;
   });
 

@@ -1,10 +1,10 @@
-import type { Ref, ComponentInternalInstance } from 'vue';
-import { unref, isRef } from 'vue';
+import { isRef, unref } from 'vue';
 import { useDefaultEnhanced } from '../hooks/useJVxeComponent';
 import { isFunction, isObject, isString } from '/@/utils/is';
-import { JVxeTypes } from '../types';
-import { JVxeComponent } from '../types/JVxeComponent';
 import { componentMap } from '../componentMap';
+import type { JVxeTypes } from '../types';
+import type { JVxeComponent } from '../types/JVxeComponent';
+import type { ComponentInternalInstance, Ref } from 'vue';
 
 // 已注册的组件增强
 const enhancedMap = new Map<JVxeTypes, JVxeComponent.Enhanced>();
@@ -14,14 +14,14 @@ const enhancedMap = new Map<JVxeTypes, JVxeComponent.Enhanced>();
  * @param type JVxeTypes
  */
 export function getEnhanced(type: JVxeTypes | string): JVxeComponent.Enhanced {
-  let $type: JVxeTypes = <JVxeTypes>type;
+  const $type: JVxeTypes = <JVxeTypes>type;
   if (!enhancedMap.has($type)) {
-    let defaultEnhanced = useDefaultEnhanced();
+    const defaultEnhanced = useDefaultEnhanced();
     if (componentMap.has($type)) {
-      let enhanced = componentMap.get($type)?.enhanced ?? {};
+      const enhanced = componentMap.get($type)?.enhanced ?? {};
       if (isObject(enhanced)) {
         Object.keys(defaultEnhanced).forEach((key) => {
-          let def = defaultEnhanced[key];
+          const def = defaultEnhanced[key];
           if (enhanced.hasOwnProperty(key)) {
             // 方法如果存在就不覆盖
             if (!isFunction(def) && !isString(def)) {
@@ -74,7 +74,8 @@ type dispatchEventOptions = {
 
 /** 模拟触发事件 */
 export function dispatchEvent(options: dispatchEventOptions) {
-  const { props, $event, row, column, instance, className, handler, isClick } = options;
+  const { props, $event, row, column, instance, className, handler, isClick } =
+    options;
   if ((!$event || !$event.path) && !instance) {
     return;
   }
@@ -82,12 +83,12 @@ export function dispatchEvent(options: dispatchEventOptions) {
   if (props && props.alwaysEdit) {
     return;
   }
-  let getCell = () => {
-    let paths: HTMLElement[] = [...($event?.path ?? [])];
+  const getCell = () => {
+    const paths: HTMLElement[] = [...($event?.path ?? [])];
     // 通过 instance 获取 cell dom对象
     if (row && column) {
-      let selector = `table.vxe-table--body tbody tr[rowid='${row.id}'] td[colid='${column.id}']`;
-      let cellDom = instance!.vnode?.el?.querySelector(selector);
+      const selector = `table.vxe-table--body tbody tr[rowid='${row.id}'] td[colid='${column.id}']`;
+      const cellDom = instance!.vnode?.el?.querySelector(selector);
       if (cellDom) {
         paths.unshift(cellDom);
       }
@@ -99,11 +100,11 @@ export function dispatchEvent(options: dispatchEventOptions) {
     }
     return null;
   };
-  let cell = getCell();
+  const cell = getCell();
   if (cell) {
     window.setTimeout(() => {
-      let getElement = () => {
-        let classList = className.split(' ');
+      const getElement = () => {
+        const classList = className.split(' ');
         if (classList.length > 0) {
           const getClassName = (cls: string) => {
             if (cls.startsWith('.')) {
@@ -111,8 +112,10 @@ export function dispatchEvent(options: dispatchEventOptions) {
             }
             return cls;
           };
-          let get = (target, className, idx = 0) => {
-            let elements = target.getElementsByClassName(getClassName(className));
+          const get = (target, className, idx = 0) => {
+            const elements = target.getElementsByClassName(
+              getClassName(className)
+            );
             if (elements && elements.length > 0) {
               return elements[idx];
             }
@@ -129,7 +132,7 @@ export function dispatchEvent(options: dispatchEventOptions) {
         }
         return null;
       };
-      let element = getElement();
+      const element = getElement();
       if (element) {
         if (isFunction(handler)) {
           handler(element);
@@ -150,6 +153,6 @@ export function dispatchEvent(options: dispatchEventOptions) {
 
 /** 绑定 VxeTable 数据 */
 export function vModel(value, row, column: Ref<any> | string) {
-  let property = isRef(column) ? column.value.property : column;
+  const property = isRef(column) ? column.value.property : column;
   unref(row)[property] = value;
 }

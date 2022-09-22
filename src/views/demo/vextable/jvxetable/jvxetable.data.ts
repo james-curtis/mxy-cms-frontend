@@ -1,4 +1,5 @@
-import { JVxeTypes, JVxeColumn } from '/@/components/jeecg/JVxeTable/types';
+import type { JVxeColumn } from '/@/components/jeecg/JVxeTable/types';
+import { JVxeTypes } from '/@/components/jeecg/JVxeTable/types';
 
 export const columns: JVxeColumn[] = [
   {
@@ -32,7 +33,8 @@ export const columns: JVxeColumn[] = [
     placeholder: '请输入${title}',
     validateRules: [
       {
-        pattern: '^\\d{6}(18|19|20)?\\d{2}(0[1-9]|1[012])(0[1-9]|[12]\\d|3[01])\\d{3}(\\d|[xX])$',
+        pattern:
+          '^\\d{6}(18|19|20)?\\d{2}(0[1-9]|1[012])(0[1-9]|[12]\\d|3[01])\\d{3}(\\d|[xX])$',
         message: '${title}格式不正确',
       },
     ],

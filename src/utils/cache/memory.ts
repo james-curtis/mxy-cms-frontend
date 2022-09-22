@@ -1,4 +1,12 @@
-import { TOKEN_KEY, ROLES_KEY, USER_INFO_KEY, DB_DICT_DATA_KEY, TENANT_ID, LOGIN_INFO_KEY, PROJ_CFG_KEY } from '/@/enums/cacheEnum';
+import {
+  DB_DICT_DATA_KEY,
+  LOGIN_INFO_KEY,
+  PROJ_CFG_KEY,
+  ROLES_KEY,
+  TENANT_ID,
+  TOKEN_KEY,
+  USER_INFO_KEY,
+} from '/@/enums/cacheEnum';
 import { omit } from 'lodash-es';
 
 export interface Cache<V = any> {
@@ -60,7 +68,7 @@ export class Memory<T = any, V = any> {
     if (!expires) {
       return value;
     }
-    const now = new Date().getTime();
+    const now = Date.now();
     item.time = now + this.alive;
     item.timeoutId = setTimeout(
       () => {
@@ -86,7 +94,7 @@ export class Memory<T = any, V = any> {
       const k = key as any as keyof T;
       const item = cache[k];
       if (item && item.time) {
-        const now = new Date().getTime();
+        const now = Date.now();
         const expire = item.time;
         if (expire > now) {
           this.set(k, item.value, expire);
@@ -103,7 +111,15 @@ export class Memory<T = any, V = any> {
     });
     //update-begin---author:liusq  Date:20220108  for：不删除登录用户的租户id，其他缓存信息都清除----
     this.cache = {
-      ...omit(this.cache, [TOKEN_KEY, USER_INFO_KEY, ROLES_KEY, DB_DICT_DATA_KEY, TENANT_ID, LOGIN_INFO_KEY, PROJ_CFG_KEY]),
+      ...omit(this.cache, [
+        TOKEN_KEY,
+        USER_INFO_KEY,
+        ROLES_KEY,
+        DB_DICT_DATA_KEY,
+        TENANT_ID,
+        LOGIN_INFO_KEY,
+        PROJ_CFG_KEY,
+      ]),
     };
     //update-end---author:liusq  Date:20220108  for：不删除登录用户的租户id，其他缓存信息都清除----
   }

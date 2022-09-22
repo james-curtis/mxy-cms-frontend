@@ -4,7 +4,13 @@
  */
 import type { PluginOption } from 'vite';
 import path from 'path';
-import { viteThemePlugin, antdDarkThemePlugin, mixLighten, mixDarken, tinycolor } from 'vite-plugin-theme';
+import {
+  viteThemePlugin,
+  antdDarkThemePlugin,
+  mixLighten,
+  mixDarken,
+  tinycolor,
+} from 'vite-plugin-theme';
 import { getThemeColors, generateColors } from '../../config/themeConfig';
 import { generateModifyVars } from '../../generate/generateModifyVars';
 
@@ -41,7 +47,10 @@ export function configThemePlugin(isBuild: boolean): PluginOption[] {
     }),
     antdDarkThemePlugin({
       preloadFiles: [
-        path.resolve(process.cwd(), 'node_modules/ant-design-vue/dist/antd.less'),
+        path.resolve(
+          process.cwd(),
+          'node_modules/ant-design-vue/dist/antd.less'
+        ),
         //path.resolve(process.cwd(), 'node_modules/ant-design-vue/dist/antd.dark.less'),
         path.resolve(process.cwd(), 'src/design/index.less'),
       ],

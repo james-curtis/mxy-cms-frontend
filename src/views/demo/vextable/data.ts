@@ -1,6 +1,7 @@
-import { BasicColumn, FormSchema } from '/@/components/Table';
+import type { BasicColumn, FormSchema } from '/@/components/Table';
 import { usePermission } from '/@/hooks/web/usePermission';
-import { JVxeColumn, JVxeTypes } from '/@/components/jeecg/JVxeTable/types';
+import type { JVxeColumn } from '/@/components/jeecg/JVxeTable/types';
+import { JVxeTypes } from '/@/components/jeecg/JVxeTable/types';
 
 export const columns: BasicColumn[] = [
   {

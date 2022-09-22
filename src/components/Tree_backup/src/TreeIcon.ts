@@ -1,4 +1,4 @@
-import type { VNode, FunctionalComponent } from 'vue';
+import type { FunctionalComponent, VNode } from 'vue';
 
 import { h } from 'vue';
 import { isString } from '/@/utils/is';

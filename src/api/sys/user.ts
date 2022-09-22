@@ -1,7 +1,11 @@
 import { defHttp } from '/@/utils/http/axios';
-import { LoginParams, LoginResultModel, GetUserInfoModel } from './model/userModel';
+import type {
+  GetUserInfoModel,
+  LoginParams,
+  LoginResultModel,
+} from './model/userModel';
 
-import { ErrorMessageMode } from '/#/axios';
+import type { ErrorMessageMode } from '/#/axios';
 import { useMessage } from '/@/hooks/web/useMessage';
 import { useUserStoreWithOut } from '/@/store/modules/user';
 import { setAuthCache } from '/@/utils/auth';
@@ -47,7 +51,10 @@ enum Api {
 /**
  * @description: user login api
  */
-export function loginApi(params: LoginParams, mode: ErrorMessageMode = 'modal') {
+export function loginApi(
+  params: LoginParams,
+  mode: ErrorMessageMode = 'modal'
+) {
   return defHttp.post<LoginResultModel>(
     {
       url: Api.Login,
@@ -62,7 +69,10 @@ export function loginApi(params: LoginParams, mode: ErrorMessageMode = 'modal') 
 /**
  * @description: user phoneLogin api
  */
-export function phoneLoginApi(params: LoginParams, mode: ErrorMessageMode = 'modal') {
+export function phoneLoginApi(
+  params: LoginParams,
+  mode: ErrorMessageMode = 'modal'
+) {
   return defHttp.post<LoginResultModel>(
     {
       url: Api.phoneLogin,
@@ -78,17 +88,22 @@ export function phoneLoginApi(params: LoginParams, mode: ErrorMessageMode = 'mod
  * @description: getUserInfo
  */
 export function getUserInfo() {
-  return defHttp.get<GetUserInfoModel>({ url: Api.GetUserInfo }, { errorMessageMode: 'none' }).catch((e) => {
-    // update-begin--author:zyf---date:20220425---for:【VUEN-76】捕获接口超时异常,跳转到登录界面
-    if (e && (e.message.includes('timeout') || e.message.includes('401'))) {
-      //接口不通时跳转到登录界面
-      const userStore = useUserStoreWithOut();
-      userStore.setToken('');
-      setAuthCache(TOKEN_KEY, null);
-      router.push(PageEnum.BASE_LOGIN);
-    }
-    // update-end--author:zyf---date:20220425---for:【VUEN-76】捕获接口超时异常,跳转到登录界面
-  });
+  return defHttp
+    .get<GetUserInfoModel>(
+      { url: Api.GetUserInfo },
+      { errorMessageMode: 'none' }
+    )
+    .catch((e) => {
+      // update-begin--author:zyf---date:20220425---for:【VUEN-76】捕获接口超时异常,跳转到登录界面
+      if (e && (e.message.includes('timeout') || e.message.includes('401'))) {
+        //接口不通时跳转到登录界面
+        const userStore = useUserStoreWithOut();
+        userStore.setToken('');
+        setAuthCache(TOKEN_KEY, null);
+        router.push(PageEnum.BASE_LOGIN);
+      }
+      // update-end--author:zyf---date:20220425---for:【VUEN-76】捕获接口超时异常,跳转到登录界面
+    });
 }
 
 export function getPermCode() {
@@ -100,23 +115,28 @@ export function doLogout() {
 }
 
 export function getCodeInfo(currdatetime) {
-  let url = Api.getInputCode + `/${currdatetime}`;
-  return defHttp.get({ url: url });
+  const url = `${Api.getInputCode}/${currdatetime}`;
+  return defHttp.get({ url });
 }
 /**
  * @description: 获取短信验证码
  */
 export function getCaptcha(params) {
   return new Promise((resolve, reject) => {
-    defHttp.post({ url: Api.getCaptcha, params }, { isTransformResponse: false }).then((res) => {
-      console.log(res);
-      if (res.success) {
-        resolve(true);
-      } else {
-        createErrorModal({ title: '错误提示', content: res.message || '未知问题' });
-        reject();
-      }
-    });
+    defHttp
+      .post({ url: Api.getCaptcha, params }, { isTransformResponse: false })
+      .then((res) => {
+        console.log(res);
+        if (res.success) {
+          resolve(true);
+        } else {
+          createErrorModal({
+            title: '错误提示',
+            content: res.message || '未知问题',
+          });
+          reject();
+        }
+      });
   });
 }
 
@@ -124,24 +144,39 @@ export function getCaptcha(params) {
  * @description: 注册接口
  */
 export function register(params) {
-  return defHttp.post({ url: Api.registerApi, params }, { isReturnNativeResponse: true });
+  return defHttp.post(
+    { url: Api.registerApi, params },
+    { isReturnNativeResponse: true }
+  );
 }
 
 /**
  *校验用户是否存在
  * @param params
  */
-export const checkOnlyUser = (params) => defHttp.get({ url: Api.checkOnlyUser, params }, { isTransformResponse: false });
+export const checkOnlyUser = (params) =>
+  defHttp.get(
+    { url: Api.checkOnlyUser, params },
+    { isTransformResponse: false }
+  );
 /**
  *校验手机号码
  * @param params
  */
-export const phoneVerify = (params) => defHttp.post({ url: Api.phoneVerify, params }, { isTransformResponse: false });
+export const phoneVerify = (params) =>
+  defHttp.post(
+    { url: Api.phoneVerify, params },
+    { isTransformResponse: false }
+  );
 /**
  *密码修改
  * @param params
  */
-export const passwordChange = (params) => defHttp.get({ url: Api.passwordChange, params }, { isTransformResponse: false });
+export const passwordChange = (params) =>
+  defHttp.get(
+    { url: Api.passwordChange, params },
+    { isTransformResponse: false }
+  );
 /**
  * @description: 第三方登录
  */
@@ -160,15 +195,23 @@ export function thirdLogin(params, mode: ErrorMessageMode = 'modal') {
  */
 export function setThirdCaptcha(params) {
   return new Promise((resolve, reject) => {
-    defHttp.post({ url: Api.getThirdCaptcha, params }, { isTransformResponse: false }).then((res) => {
-      console.log(res);
-      if (res.success) {
-        resolve(true);
-      } else {
-        createErrorModal({ title: '错误提示', content: res.message || '未知问题' });
-        reject();
-      }
-    });
+    defHttp
+      .post(
+        { url: Api.getThirdCaptcha, params },
+        { isTransformResponse: false }
+      )
+      .then((res) => {
+        console.log(res);
+        if (res.success) {
+          resolve(true);
+        } else {
+          createErrorModal({
+            title: '错误提示',
+            content: res.message || '未知问题',
+          });
+          reject();
+        }
+      });
   });
 }
 
@@ -176,22 +219,22 @@ export function setThirdCaptcha(params) {
  * 获取登录二维码信息
  */
 export function getLoginQrcode() {
-  let url = Api.getLoginQrcode;
-  return defHttp.get({ url: url });
+  const url = Api.getLoginQrcode;
+  return defHttp.get({ url });
 }
 
 /**
  * 监控扫码状态
  */
 export function getQrcodeToken(params) {
-  let url = Api.getQrcodeToken;
-  return defHttp.get({ url: url, params });
+  const url = Api.getQrcodeToken;
+  return defHttp.get({ url, params });
 }
 
 /**
  * SSO登录校验
  */
 export async function validateCasLogin(params) {
-  let url = Api.validateCasLogin;
-  return defHttp.get({ url: url, params });
+  const url = Api.validateCasLogin;
+  return defHttp.get({ url, params });
 }

@@ -1,4 +1,4 @@
-import JVxeTable from './src/JVxeTable';
+import type JVxeTable from './src/JVxeTable';
 
 export type { JVxeComponent } from './src/types/JVxeComponent';
 export type { JVxeColumn, JVxeLinkageConfig } from './src/types';

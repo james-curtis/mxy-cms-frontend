@@ -24,8 +24,8 @@ export const getTenantList = (params) => {
  * @param params
  */
 export const saveOrUpdateTenant = (params, isUpdate) => {
-  let url = isUpdate ? Api.edit : Api.save;
-  return defHttp.post({ url: url, params });
+  const url = isUpdate ? Api.edit : Api.save;
+  return defHttp.post({ url, params });
 };
 
 /**
@@ -41,9 +41,11 @@ export const getTenantById = (params) => {
  * @param params
  */
 export const deleteTenant = (params, handleSuccess) => {
-  return defHttp.delete({ url: Api.delete, data: params }, { joinParamsToUrl: true }).then(() => {
-    handleSuccess();
-  });
+  return defHttp
+    .delete({ url: Api.delete, data: params }, { joinParamsToUrl: true })
+    .then(() => {
+      handleSuccess();
+    });
 };
 
 /**
@@ -57,9 +59,14 @@ export const batchDeleteTenant = (params, handleSuccess) => {
     okText: '确认',
     cancelText: '取消',
     onOk: () => {
-      return defHttp.delete({ url: Api.deleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
-        handleSuccess();
-      });
+      return defHttp
+        .delete(
+          { url: Api.deleteBatch, data: params },
+          { joinParamsToUrl: true }
+        )
+        .then(() => {
+          handleSuccess();
+        });
     },
   });
 };
@@ -67,4 +74,5 @@ export const batchDeleteTenant = (params, handleSuccess) => {
 /**
  * 获取登录用户部门信息
  */
-export const getUserTenants = (params?) => defHttp.get({ url: Api.getCurrentUserTenants, params });
+export const getUserTenants = (params?) =>
+  defHttp.get({ url: Api.getCurrentUserTenants, params });

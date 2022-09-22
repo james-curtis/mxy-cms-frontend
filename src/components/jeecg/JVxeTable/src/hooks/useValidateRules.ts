@@ -1,15 +1,15 @@
-import { VxeTablePropTypes } from 'vxe-table';
 import { isArray } from '/@/utils/is';
-import { HandleArgs } from './useColumns';
 import { replaceProps } from '../utils/enhancedUtils';
+import type { HandleArgs } from './useColumns';
+import type { VxeTablePropTypes } from 'vxe-table';
 
 export function useValidateRules(args: HandleArgs) {
   const { data } = args;
   const col = args.col!;
-  let rules: VxeTablePropTypes.EditRules[] = [];
+  const rules: VxeTablePropTypes.EditRules[] = [];
   if (isArray(col.validateRules)) {
-    for (let rule of col.validateRules) {
-      let replace = {
+    for (const rule of col.validateRules) {
+      const replace = {
         message: replaceProps(col, rule.message),
       };
       if (rule.unique || rule.pattern === 'only') {
@@ -22,7 +22,7 @@ export function useValidateRules(args: HandleArgs) {
           delete rule.pattern;
         } else {
           // 兼容Online表单的特殊规则
-          for (let foo of fooPatterns) {
+          for (const foo of fooPatterns) {
             if (foo.value === rule.pattern) {
               rule.pattern = foo.pattern;
               break;
@@ -43,9 +43,9 @@ export function useValidateRules(args: HandleArgs) {
 function uniqueValidator({ methods }: HandleArgs) {
   return function (event) {
     const { cellValue, column, rule } = event;
-    let tableData = methods.getTableData();
+    const tableData = methods.getTableData();
     let findCount = 0;
-    for (let rowData of tableData) {
+    for (const rowData of tableData) {
       if (rowData[column.params.key] === cellValue) {
         if (++findCount >= 2) {
           return Promise.reject(new Error(rule.message));
@@ -67,7 +67,7 @@ function handlerConvertToValidator(event) {
       }
       if (flag == null) {
         resolve(message);
-      } else if (!!flag) {
+      } else if (flag) {
         resolve(message);
       } else {
         reject(new Error(message));
@@ -86,10 +86,15 @@ const fooPatterns = [
   {
     title: '网址',
     value: 'url',
-    pattern: /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/,
+    pattern:
+      /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/,
   },
   //update-end-author:taoyan date:2022-6-1 for: VUEN-1160 对多子表，网址校验不正确
-  { title: '电子邮件', value: 'e', pattern: /^([\w]+\.*)([\w]+)@[\w]+\.\w{3}(\.\w{2}|)$/ },
+  {
+    title: '电子邮件',
+    value: 'e',
+    pattern: /^([\w]+\.*)([\w]+)@[\w]+\.\w{3}(\.\w{2}|)$/,
+  },
   { title: '手机号码', value: 'm', pattern: /^1[3456789]\d{9}$/ },
   { title: '邮政编码', value: 'p', pattern: /^[1-9]\d{5}$/ },
   { title: '字母', value: 's', pattern: /^[A-Z|a-z]+$/ },

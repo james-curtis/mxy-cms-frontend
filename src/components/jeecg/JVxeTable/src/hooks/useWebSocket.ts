@@ -1,8 +1,8 @@
-import { watch, onUnmounted } from 'vue';
+import { onUnmounted, watch } from 'vue';
 import { buildUUID } from '/@/utils/uuid';
 import { useGlobSetting } from '/@/hooks/setting';
 import { useUserStore } from '/@/store/modules/user';
-import { JVxeDataProps, JVxeTableMethods, JVxeTableProps } from '../types';
+import type { JVxeDataProps, JVxeTableMethods, JVxeTableProps } from '../types';
 import { isArray } from '/@/utils/is';
 import { getToken } from '/@/utils/auth';
 
@@ -54,10 +54,12 @@ const vs = {
     if (this.ws === null) {
       const userId = useUserStore().getUserInfo?.id;
       const domainURL = useGlobSetting().uploadUrl!;
-      const domain = domainURL.replace('https://', 'wss://').replace('http://', 'ws://');
+      const domain = domainURL
+        .replace('https://', 'wss://')
+        .replace('http://', 'ws://');
       const url = `${domain}/vxeSocket/${userId}/${this.pageId}`;
       //update-begin-author:taoyan date:2022-4-24 for: v2.4.6 的 websocket 服务端，存在性能和安全问题。 #3278
-      let token = (getToken() || '') as string;
+      const token = (getToken() || '') as string;
       this.ws = new WebSocket(url, [token]);
       //update-end-author:taoyan date:2022-4-24 for: v2.4.6 的 websocket 服务端，存在性能和安全问题。 #3278
       this.ws.onopen = this.on.open.bind(this);
@@ -70,17 +72,17 @@ const vs = {
   // 发送消息
   sendMessage(type, message) {
     try {
-      let ws = this.ws;
+      const ws = this.ws;
       if (ws != null && ws.readyState === ws.OPEN) {
         ws.send(
           JSON.stringify({
-            type: type,
+            type,
             data: message,
           })
         );
       }
     } catch (err: any) {
-      console.warn('【JVxeWebSocket】发送消息失败：(' + err.code + ')');
+      console.warn(`【JVxeWebSocket】发送消息失败：(${err.code})`);
     }
   },
 
@@ -88,7 +90,7 @@ const vs = {
   tableMap: new Map(),
   /** 添加绑定 */
   addBind(map, key, value: VmArgs) {
-    let binds = map.get(key);
+    const binds = map.get(key);
     if (isArray(binds)) {
       binds.push(value);
     } else {
@@ -97,10 +99,10 @@ const vs = {
   },
   /** 移除绑定 */
   removeBind(map, key, value: VmArgs) {
-    let binds = map.get(key);
+    const binds = map.get(key);
     if (isArray(binds)) {
       for (let i = 0; i < binds.length; i++) {
-        let bind = binds[i];
+        const bind = binds[i];
         if (bind === value) {
           binds.splice(i, 1);
           break;
@@ -115,7 +117,7 @@ const vs = {
   },
   // 呼叫绑定的表单
   callBind(map, key, callback) {
-    let binds = map.get(key);
+    const binds = map.get(key);
     if (isArray(binds)) {
       binds.forEach(callback);
     }
@@ -155,8 +157,8 @@ const vs = {
         console.warn('【JVxeWebSocket】收到无法解析的消息:', e.data);
         return;
       }
-      let type = json[this.constants.TYPE];
-      let data = json[this.constants.DATA];
+      const type = json[this.constants.TYPE];
+      const data = json[this.constants.DATA];
       switch (type) {
         // 心跳检测
         case this.constants.TYPE_HB:
@@ -164,10 +166,12 @@ const vs = {
           break;
         // 更新form数据
         case this.constants.TYPE_UVT:
-          this.callBind(this.tableMap, data.socketKey, (args) => this.onVM.onUpdateTable(args, ...data.args));
+          this.callBind(this.tableMap, data.socketKey, (args) =>
+            this.onVM.onUpdateTable(args, ...data.args)
+          );
           break;
         default:
-          console.warn('【JVxeWebSocket】收到不识别的消息类型:' + type);
+          console.warn(`【JVxeWebSocket】收到不识别的消息类型:${type}`);
           break;
       }
     },
@@ -203,7 +207,11 @@ type VmArgs = {
   methods: JVxeTableMethods;
 };
 
-export function useWebSocket(props: JVxeTableProps, data: JVxeDataProps, methods) {
+export function useWebSocket(
+  props: JVxeTableProps,
+  data: JVxeDataProps,
+  methods
+) {
   const args: VmArgs = { props, data, methods };
   watch(
     () => props.socketReload,

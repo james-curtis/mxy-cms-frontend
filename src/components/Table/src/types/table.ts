@@ -4,9 +4,9 @@ import type { FormProps } from '/@/components/Form';
 import type { TableRowSelection as ITableRowSelection } from 'ant-design-vue/lib/table/interface';
 import type { ColumnProps } from 'ant-design-vue/lib/table';
 
-import { ComponentType } from './componentType';
-import { VueNode } from '/@/utils/propTypes';
-import { RoleEnum } from '/@/enums/roleEnum';
+import type { ComponentType } from './componentType';
+import type { VueNode } from '/@/utils/propTypes';
+import type { RoleEnum } from '/@/enums/roleEnum';
 
 export declare type SortOrder = 'ascend' | 'descend';
 
@@ -25,7 +25,12 @@ export interface TableRowSelection<T = any> extends ITableRowSelection {
    * Callback executed when select/deselect one row
    * @type Function
    */
-  onSelect?: (record: T, selected: boolean, selectedRows: Object[], nativeEvent: Event) => any;
+  onSelect?: (
+    record: T,
+    selected: boolean,
+    selectedRows: Object[],
+    nativeEvent: Event
+  ) => any;
 
   /**
    * Callback executed when select/deselect all rows
@@ -93,9 +98,17 @@ export interface TableActionType {
   deleteSelectRowByKey: (key: string) => void;
   setPagination: (info: Partial<PaginationProps>) => void;
   setTableData: <T = Recordable>(values: T[]) => void;
-  updateTableDataRecord: (rowKey: string | number, record: Recordable) => Recordable | void;
-  deleteTableDataRecord: (rowKey: string | number | string[] | number[]) => void;
-  insertTableDataRecord: (record: Recordable, index?: number) => Recordable | void;
+  updateTableDataRecord: (
+    rowKey: string | number,
+    record: Recordable
+  ) => Recordable | void;
+  deleteTableDataRecord: (
+    rowKey: string | number | string[] | number[]
+  ) => void;
+  insertTableDataRecord: (
+    record: Recordable,
+    index?: number
+  ) => Recordable | void;
   findTableDataRecord: (rowKey: string | number) => Recordable | void;
   getColumns: (opt?: GetColumnsParams) => BasicColumn[];
   setColumns: (columns: BasicColumn[] | string[]) => void;
@@ -113,7 +126,10 @@ export interface TableActionType {
   updateTableData: (index: number, key: string, value: any) => Recordable;
   setShowPagination: (show: boolean) => Promise<void>;
   getShowPagination: () => boolean;
-  setCacheColumnsByField?: (dataIndex: string | undefined, value: BasicColumn) => void;
+  setCacheColumnsByField?: (
+    dataIndex: string | undefined,
+    value: BasicColumn
+  ) => void;
 }
 
 export interface FetchSetting {
@@ -259,7 +275,9 @@ export interface BasicTableProps<T = any> {
    * Expanded container render for each row
    * @type Function
    */
-  expandedRowRender?: (record?: ExpandedRowRenderRecord<T>) => VNodeChild | JSX.Element;
+  expandedRowRender?: (
+    record?: ExpandedRowRenderRecord<T>
+  ) => VNodeChild | JSX.Element;
 
   /**
    * Customize row expand Icon.
@@ -381,7 +399,12 @@ export interface BasicTableProps<T = any> {
    *
    * The cell will not submit data while callback return false
    */
-  beforeEditSubmit?: (data: { record: Recordable; index: number; key: string | number; value: any }) => Promise<any>;
+  beforeEditSubmit?: (data: {
+    record: Recordable;
+    index: number;
+    key: string | number;
+    value: any;
+  }) => Promise<any>;
 
   /**
    * Callback executed when pagination, filters or sorter is changed
@@ -409,7 +432,10 @@ export interface BasicTableProps<T = any> {
   onColumnsChange?: (data: ColumnChangeParam[]) => void;
 }
 
-export type CellFormat = string | ((text: string, record: Recordable, index: number) => string | number) | Map<string | number, any>;
+export type CellFormat =
+  | string
+  | ((text: string, record: Recordable, index: number) => string | number)
+  | Map<string | number, any>;
 
 // @ts-ignore
 export interface BasicColumn extends ColumnProps {
@@ -417,7 +443,11 @@ export interface BasicColumn extends ColumnProps {
   filters?: {
     text: string;
     value: string;
-    children?: unknown[] | (((props: Record<string, unknown>) => unknown[]) & (() => unknown[]) & (() => unknown[]));
+    children?:
+      | unknown[]
+      | (((props: Record<string, unknown>) => unknown[]) &
+          (() => unknown[]) &
+          (() => unknown[]));
   }[];
 
   //

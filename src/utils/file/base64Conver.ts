@@ -20,7 +20,9 @@ export function dataURLtoBlob(base64Buf: string): Blob {
  */
 export function urlToBase64(url: string, mineType?: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    let canvas = document.createElement('CANVAS') as Nullable<HTMLCanvasElement>;
+    let canvas = document.createElement(
+      'CANVAS'
+    ) as Nullable<HTMLCanvasElement>;
     const ctx = canvas!.getContext('2d');
 
     const img = new Image();

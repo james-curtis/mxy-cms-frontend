@@ -5,7 +5,7 @@
  * @author sunjianlei
  */
 import { ref } from 'vue';
-import { useDebounceFn, tryOnUnmounted } from '@vueuse/core';
+import { tryOnUnmounted, useDebounceFn } from '@vueuse/core';
 import { useEventListener } from '/@/hooks/event/useEventListener';
 
 // key = js运算符+数字
@@ -26,8 +26,14 @@ type configType = Record<string, string | number>;
  * @param assign 是否合并默认配置
  * @param debounce 去抖毫秒数
  */
-export function useAdaptiveWidth(widthConfig = defWidthConfig, assign = true, debounce = 50) {
-  const widthConfigAssign = assign ? Object.assign({}, defWidthConfig, widthConfig) : widthConfig;
+export function useAdaptiveWidth(
+  widthConfig = defWidthConfig,
+  assign = true,
+  debounce = 50
+) {
+  const widthConfigAssign = assign
+    ? Object.assign({}, defWidthConfig, widthConfig)
+    : widthConfig;
   const configKeys = Object.keys(widthConfigAssign);
 
   const adaptiveWidth = ref<string | number>();
@@ -41,7 +47,7 @@ export function useAdaptiveWidth(widthConfig = defWidthConfig, assign = true, de
     for (const key of configKeys) {
       try {
         // 通过js运算
-        let flag = new Function(`return ${innerWidth} ${key}`)();
+        const flag = new Function(`return ${innerWidth} ${key}`)();
         if (flag) {
           width = widthConfigAssign[key];
           break;

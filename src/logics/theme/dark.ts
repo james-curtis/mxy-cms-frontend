@@ -2,7 +2,7 @@ import { darkCssIsReady, loadDarkThemeCss } from 'vite-plugin-theme/es/client';
 import { addClass, hasClass, removeClass } from '/@/utils/domUtils';
 
 export async function updateDarkTheme(mode: string | null = 'light') {
-  const htmlRoot = document.getElementById('htmlRoot');
+  const htmlRoot = document.querySelector('#htmlRoot');
   if (!htmlRoot) {
     return;
   }
@@ -11,12 +11,12 @@ export async function updateDarkTheme(mode: string | null = 'light') {
     if (import.meta.env.PROD && !darkCssIsReady) {
       await loadDarkThemeCss();
     }
-    htmlRoot.setAttribute('data-theme', 'dark');
+    htmlRoot.dataset.theme = 'dark';
     if (!hasDarkClass) {
       addClass(htmlRoot, 'dark');
     }
   } else {
-    htmlRoot.setAttribute('data-theme', 'light');
+    htmlRoot.dataset.theme = 'light';
     if (hasDarkClass) {
       removeClass(htmlRoot, 'dark');
     }

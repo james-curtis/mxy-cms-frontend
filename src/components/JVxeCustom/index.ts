@@ -1,6 +1,12 @@
-import { registerComponent, registerAsyncComponent } from '/@/components/jeecg/JVxeTable';
+import {
+  registerAsyncComponent,
+  registerComponent,
+} from '/@/components/jeecg/JVxeTable';
 import { JVxeTypes } from '/@/components/jeecg/JVxeTable/types';
-import { DictSearchSpanCell, DictSearchInputCell } from './src/components/JVxeSelectDictSearchCell';
+import {
+  DictSearchInputCell,
+  DictSearchSpanCell,
+} from './src/components/JVxeSelectDictSearchCell';
 
 export async function registerJVxeCustom() {
   // ----------------- ⚠ 注意事项 ⚠ -----------------
@@ -9,17 +15,36 @@ export async function registerJVxeCustom() {
   // ----------------- ⚠ 注意事项 ⚠ -----------------
 
   // 注册【Popup】（普通封装方式）
-  await registerAsyncComponent(JVxeTypes.popup, import('./src/components/JVxePopupCell.vue'));
+  await registerAsyncComponent(
+    JVxeTypes.popup,
+    import('./src/components/JVxePopupCell.vue')
+  );
 
   // 注册【字典搜索下拉】组件（高级封装方式）
-  registerComponent(JVxeTypes.selectDictSearch, DictSearchInputCell, DictSearchSpanCell);
+  registerComponent(
+    JVxeTypes.selectDictSearch,
+    DictSearchInputCell,
+    DictSearchSpanCell
+  );
 
   // 注册【文件上传】组件
-  await registerAsyncComponent(JVxeTypes.file, import('./src/components/JVxeFileCell.vue'));
+  await registerAsyncComponent(
+    JVxeTypes.file,
+    import('./src/components/JVxeFileCell.vue')
+  );
   // 注册【图片上传】组件
-  await registerAsyncComponent(JVxeTypes.image, import('./src/components/JVxeImageCell.vue'));
+  await registerAsyncComponent(
+    JVxeTypes.image,
+    import('./src/components/JVxeImageCell.vue')
+  );
   // 注册【用户选择】组件
-  await registerAsyncComponent(JVxeTypes.userSelect, import('./src/components/JVxeUserSelectCell.vue'));
+  await registerAsyncComponent(
+    JVxeTypes.userSelect,
+    import('./src/components/JVxeUserSelectCell.vue')
+  );
   // 注册【部门选择】组件
-  await registerAsyncComponent(JVxeTypes.departSelect, import('./src/components/JVxeDepartSelectCell.vue'));
+  await registerAsyncComponent(
+    JVxeTypes.departSelect,
+    import('./src/components/JVxeDepartSelectCell.vue')
+  );
 }

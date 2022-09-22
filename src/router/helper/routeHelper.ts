@@ -1,7 +1,11 @@
 import type { AppRouteModule, AppRouteRecordRaw } from '/@/router/types';
-import type { Router, RouteRecordNormalized } from 'vue-router';
+import type { RouteRecordNormalized, Router } from 'vue-router';
 
-import { getParentLayout, LAYOUT, EXCEPTION_COMPONENT } from '/@/router/constant';
+import {
+  EXCEPTION_COMPONENT,
+  LAYOUT,
+  getParentLayout,
+} from '/@/router/constant';
 import { cloneDeep, omit } from 'lodash-es';
 import { warn } from '/@/utils/log';
 import { createRouter, createWebHashHistory } from 'vue-router';
@@ -44,11 +48,14 @@ function asyncImportRoute(routes: AppRouteRecordRaw[] | undefined) {
     }
     // @ts-ignore 添加是否缓存路由配置
     item.meta.ignoreKeepAlive = !item?.meta.keepAlive;
-    let token = getToken();
-    let tenantId = getTenantId();
+    const token = getToken();
+    const tenantId = getTenantId();
     // URL支持{{ window.xxx }}占位符变量
     //update-begin---author:wangshuai ---date:20220711  for：[VUEN-1638]菜单tenantId需要动态生成------------
-    item.component = (item.component || '').replace(/{{([^}}]+)?}}/g, (s1, s2) => eval(s2)).replace('${token}', token).replace('${tenantId}', tenantId);
+    item.component = (item.component || '')
+      .replace(/{{([^}}]+)?}}/g, (s1, s2) => eval(s2))
+      .replace('${token}', token)
+      .replace('${tenantId}', tenantId);
     //update-end---author:wangshuai ---date:20220711  for：[VUEN-1638]菜单tenantId需要动态生成------------
     // 适配 iframe
     if (/^\/?http(s)?/.test(item.component as string)) {
@@ -79,14 +86,17 @@ function asyncImportRoute(routes: AppRouteRecordRaw[] | undefined) {
         item.component = layoutFound;
       } else {
         // update-end--author:zyf---date:20220307--for:VUEN-219兼容后台返回动态首页,目的适配跟v2版本配置一致 --------
-        if (component.indexOf('dashboard/') > -1) {
+        if (component.includes('dashboard/')) {
           //当数据标sys_permission中component没有拼接index时前端需要拼接
-          if (component.indexOf('/index') < 0) {
-            component = component + '/index';
+          if (!component.includes('/index')) {
+            component = `${component}/index`;
           }
         }
         // update-end--author:zyf---date:20220307---for:VUEN-219兼容后台返回动态首页,目的适配跟v2版本配置一致 --------
-        item.component = dynamicImport(dynamicViewsModules, component as string);
+        item.component = dynamicImport(
+          dynamicViewsModules,
+          component as string
+        );
       }
     } else if (name) {
       item.component = getParentLayout();
@@ -95,7 +105,10 @@ function asyncImportRoute(routes: AppRouteRecordRaw[] | undefined) {
   });
 }
 
-function dynamicImport(dynamicViewsModules: Record<string, () => Promise<Recordable>>, component: string) {
+function dynamicImport(
+  dynamicViewsModules: Record<string, () => Promise<Recordable>>,
+  component: string
+) {
   const keys = Object.keys(dynamicViewsModules);
   const matchKeys = keys.filter((key) => {
     const k = key.replace('../../views', '');
@@ -117,7 +130,9 @@ function dynamicImport(dynamicViewsModules: Record<string, () => Promise<Recorda
 }
 
 // Turn background objects into routing objects
-export function transformObjToRoute<T = AppRouteModule>(routeList: AppRouteModule[]): T[] {
+export function transformObjToRoute<T = AppRouteModule>(
+  routeList: AppRouteModule[]
+): T[] {
   routeList.forEach((route) => {
     const component = route.component as string;
     if (component) {
@@ -134,7 +149,7 @@ export function transformObjToRoute<T = AppRouteModule>(routeList: AppRouteModul
         route.meta = meta;
       }
     } else {
-      warn('请正确配置路由：' + route?.name + '的component属性');
+      warn(`请正确配置路由：${route?.name}的component属性`);
     }
     route.children && asyncImportRoute(route.children);
   });
@@ -146,8 +161,7 @@ export function transformObjToRoute<T = AppRouteModule>(routeList: AppRouteModul
  */
 export function flatMultiLevelRoutes(routeModules: AppRouteModule[]) {
   const modules: AppRouteModule[] = cloneDeep(routeModules);
-  for (let index = 0; index < modules.length; index++) {
-    const routeModule = modules[index];
+  for (const routeModule of modules) {
     if (!isMultipleRoute(routeModule)) {
       continue;
     }
@@ -168,13 +182,18 @@ function promoteRouteLevel(routeModule: AppRouteModule) {
   addToChildren(routes, routeModule.children || [], routeModule);
   router = null;
 
-  routeModule.children = routeModule.children?.map((item) => omit(item, 'children'));
+  routeModule.children = routeModule.children?.map((item) =>
+    omit(item, 'children')
+  );
 }
 
 // Add all sub-routes to the secondary route
-function addToChildren(routes: RouteRecordNormalized[], children: AppRouteRecordRaw[], routeModule: AppRouteModule) {
-  for (let index = 0; index < children.length; index++) {
-    const child = children[index];
+function addToChildren(
+  routes: RouteRecordNormalized[],
+  children: AppRouteRecordRaw[],
+  routeModule: AppRouteModule
+) {
+  for (const child of children) {
     const route = routes.find((item) => item.name === child.name);
     if (!route) {
       continue;
@@ -191,15 +210,18 @@ function addToChildren(routes: RouteRecordNormalized[], children: AppRouteRecord
 
 // Determine whether the level exceeds 2 levels
 function isMultipleRoute(routeModule: AppRouteModule) {
-  if (!routeModule || !Reflect.has(routeModule, 'children') || !routeModule.children?.length) {
+  if (
+    !routeModule ||
+    !Reflect.has(routeModule, 'children') ||
+    !routeModule.children?.length
+  ) {
     return false;
   }
 
   const children = routeModule.children;
 
   let flag = false;
-  for (let index = 0; index < children.length; index++) {
-    const child = children[index];
+  for (const child of children) {
     if (child.children?.length) {
       flag = true;
       break;
@@ -214,11 +236,13 @@ function isMultipleRoute(routeModule: AppRouteModule) {
  */
 export function addSlashToRouteComponent(routeList: AppRouteRecordRaw[]) {
   routeList.forEach((route) => {
-    let component = route.component as string;
+    const component = route.component as string;
     if (component) {
       const layoutFound = LayoutMap.get(component);
       if (!layoutFound) {
-        route.component = component.startsWith('/') ? component : `/${component}`;
+        route.component = component.startsWith('/')
+          ? component
+          : `/${component}`;
       }
     }
     route.children && addSlashToRouteComponent(route.children);

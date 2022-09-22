@@ -1,6 +1,7 @@
 import type { PaginationProps } from '../types/pagination';
 import type { BasicTableProps } from '../types/table';
-import { computed, unref, ref, ComputedRef, watch } from 'vue';
+import type { ComputedRef } from 'vue';
+import { computed, ref, unref, watch } from 'vue';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons-vue';
 import { isBoolean } from '/@/utils/is';
 import { PAGE_SIZE, PAGE_SIZE_OPTIONS } from '../const';
@@ -54,7 +55,7 @@ export function usePagination(refProps: ComputedRef<BasicTableProps>) {
       showTotal: (total) => t('component.table.total', { total }),
       showSizeChanger: true,
       pageSizeOptions: PAGE_SIZE_OPTIONS,
-      itemRender: itemRender,
+      itemRender,
       showQuickJumper: true,
       ...(isBoolean(pagination) ? {} : pagination),
       ...unref(configRef),
@@ -81,5 +82,11 @@ export function usePagination(refProps: ComputedRef<BasicTableProps>) {
     show.value = flag;
   }
 
-  return { getPagination, getPaginationInfo, setShowPagination, getShowPagination, setPagination };
+  return {
+    getPagination,
+    getPaginationInfo,
+    setShowPagination,
+    getShowPagination,
+    setPagination,
+  };
 }

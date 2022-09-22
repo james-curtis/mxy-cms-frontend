@@ -1,7 +1,7 @@
+import { createVNode, render } from 'vue';
 import contextMenuVue from './ContextMenu.vue';
 import { isClient } from '/@/utils/is';
-import { CreateContextOptions, ContextMenuProps } from './typing';
-import { createVNode, render } from 'vue';
+import type { ContextMenuProps, CreateContextOptions } from './typing';
 
 const menuManager: {
   domList: Element[];
@@ -50,7 +50,7 @@ export const createContextMenu = function (options: CreateContextOptions) {
       menuManager.domList.forEach((dom: Element) => {
         try {
           dom && body.removeChild(dom);
-        } catch (error) {}
+        } catch {}
       });
       body.removeEventListener('click', handleClick);
       body.removeEventListener('scroll', handleClick);

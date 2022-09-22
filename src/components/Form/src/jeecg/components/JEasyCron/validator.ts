@@ -17,7 +17,7 @@ const cronRule: ValidatorRule = {
       const year = values[6];
       if (year !== '*' && year !== '?') {
         let yearValues: string[] = [];
-        if (year.indexOf('-') >= 0) {
+        if (year.includes('-')) {
           yearValues = year.split('-');
         } else if (year.indexOf('/')) {
           yearValues = year.split('/');
@@ -27,7 +27,7 @@ const cronRule: ValidatorRule = {
         // 判断是否都是数字
         const checkYear = yearValues.some((item) => isNaN(Number(item)));
         if (checkYear) {
-          return Promise.reject('Cron表达式参数[年]错误：' + year);
+          return Promise.reject(`Cron表达式参数[年]错误：${year}`);
         }
       }
       // 取其中的前六项
@@ -40,7 +40,7 @@ const cronRule: ValidatorRule = {
       iter.next();
       return Promise.resolve();
     } catch (e) {
-      return Promise.reject('Cron表达式错误：' + e);
+      return Promise.reject(`Cron表达式错误：${e}`);
     }
   },
 };

@@ -35,7 +35,7 @@ export const rules = {
   phone(required) {
     return [
       {
-        required: required,
+        required,
         validator: async (_, value) => {
           if (required && !value) {
             return Promise.reject('请输入手机号码1!');
@@ -134,13 +134,18 @@ export const rules = {
  * @param fieldVal 字段值
  * @param dataId 数据ID
  */
-export async function duplicateValidate(tableName, fieldName, fieldVal, dataId) {
+export async function duplicateValidate(
+  tableName,
+  fieldName,
+  fieldVal,
+  dataId
+) {
   try {
-    let params = {
+    const params = {
       tableName,
       fieldName,
       fieldVal,
-      dataId: dataId,
+      dataId,
     };
     const res = await duplicateCheck(params);
     if (res.success) {
@@ -148,7 +153,7 @@ export async function duplicateValidate(tableName, fieldName, fieldVal, dataId) 
     } else {
       return Promise.reject(res.message || '校验失败');
     }
-  } catch (e) {
+  } catch {
     return Promise.reject('校验失败,可能是断网等问题导致的校验失败');
   }
 }

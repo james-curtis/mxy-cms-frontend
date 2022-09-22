@@ -7,11 +7,17 @@ const DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm';
 const DATE_FORMAT = 'YYYY-MM-DD ';
 
 //TODO dayjs.ConfigType不知是否用对
-export function formatToDateTime(date: dayjs.ConfigType = undefined, format = DATE_TIME_FORMAT): string {
+export function formatToDateTime(
+  date: dayjs.ConfigType = undefined,
+  format = DATE_TIME_FORMAT
+): string {
   return dayjs(date).format(format);
 }
 
-export function formatToDate(date:  dayjs.ConfigType = undefined, format = DATE_FORMAT): string {
+export function formatToDate(
+  date: dayjs.ConfigType = undefined,
+  format = DATE_FORMAT
+): string {
   return dayjs(date).format(format);
 }
 

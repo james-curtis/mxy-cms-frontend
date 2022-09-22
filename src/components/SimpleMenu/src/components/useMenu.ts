@@ -1,5 +1,5 @@
-import { computed, ComponentInternalInstance, unref } from 'vue';
-import type { CSSProperties } from 'vue';
+import { computed, unref } from 'vue';
+import type { CSSProperties, ComponentInternalInstance } from 'vue';
 
 export function useMenuItem(instance: ComponentInternalInstance | null) {
   const getParentMenu = computed(() => {
@@ -17,7 +17,8 @@ export function useMenuItem(instance: ComponentInternalInstance | null) {
   const getItemStyle = computed((): CSSProperties => {
     let parent = instance?.parent;
     if (!parent) return {};
-    const indentSize = (unref(getParentRootMenu)?.props.indentSize as number) ?? 20;
+    const indentSize =
+      (unref(getParentRootMenu)?.props.indentSize as number) ?? 20;
     let padding = indentSize;
 
     if (unref(getParentRootMenu)?.props.collapse) {
@@ -30,13 +31,13 @@ export function useMenuItem(instance: ComponentInternalInstance | null) {
         parent = parent.parent;
       }
     }
-    return { paddingLeft: padding + 'px' };
+    return { paddingLeft: `${padding}px` };
   });
 
   function findParentMenu(name: string[]) {
     let parent = instance?.parent;
     if (!parent) return null;
-    while (parent && name.indexOf(parent.type.name!) === -1) {
+    while (parent && !name.includes(parent.type.name!)) {
       parent = parent.parent;
     }
     return parent;
@@ -62,7 +63,10 @@ export function useMenuItem(instance: ComponentInternalInstance | null) {
     };
   }
 
-  function getParentInstance(instance: ComponentInternalInstance, name = 'SubMenu') {
+  function getParentInstance(
+    instance: ComponentInternalInstance,
+    name = 'SubMenu'
+  ) {
     let parent = instance.parent;
     while (parent) {
       if (parent.type.name !== name) {

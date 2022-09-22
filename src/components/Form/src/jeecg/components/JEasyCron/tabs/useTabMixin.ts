@@ -45,7 +45,7 @@ export function useTabSetup(props, context, options) {
 
   // 根据不同的类型计算出的value
   const computeValue = computed(() => {
-    let valueArray: any[] = [];
+    const valueArray: any[] = [];
     switch (type.value) {
       case TypeEnum.unset:
         valueArray.push('?');
@@ -79,7 +79,7 @@ export function useTabSetup(props, context, options) {
   });
   // 指定值范围区间，介于最小值和最大值之间
   const specifyRange = computed(() => {
-    let range: number[] = [];
+    const range: number[] = [];
     if (maxValue.value != null) {
       for (let i = minValue.value; i <= maxValue.value; i++) {
         range.push(i);
@@ -116,37 +116,37 @@ export function useTabSetup(props, context, options) {
     try {
       if (!value || value === defaultValue.value) {
         type.value = TypeEnum.every;
-      } else if (value.indexOf('?') >= 0) {
+      } else if (value.includes('?')) {
         type.value = TypeEnum.unset;
-      } else if (value.indexOf('-') >= 0) {
+      } else if (value.includes('-')) {
         type.value = TypeEnum.range;
         const values = value.split('-');
         if (values.length >= 2) {
-          valueRange.start = parseInt(values[0]);
-          valueRange.end = parseInt(values[1]);
+          valueRange.start = Number.parseInt(values[0]);
+          valueRange.end = Number.parseInt(values[1]);
         }
-      } else if (value.indexOf('/') >= 0) {
+      } else if (value.includes('/')) {
         type.value = TypeEnum.loop;
         const values = value.split('/');
         if (values.length >= 2) {
-          valueLoop.start = value[0] === '*' ? 0 : parseInt(values[0]);
-          valueLoop.interval = parseInt(values[1]);
+          valueLoop.start = value[0] === '*' ? 0 : Number.parseInt(values[0]);
+          valueLoop.interval = Number.parseInt(values[1]);
         }
-      } else if (value.indexOf('W') >= 0) {
+      } else if (value.includes('W')) {
         type.value = TypeEnum.work;
         const values = value.split('W');
         if (!values[0] && !isNaN(values[0])) {
-          valueWork.value = parseInt(values[0]);
+          valueWork.value = Number.parseInt(values[0]);
         }
-      } else if (value.indexOf('L') >= 0) {
+      } else if (value.includes('L')) {
         type.value = TypeEnum.last;
-      } else if (value.indexOf(',') >= 0 || !isNaN(value)) {
+      } else if (value.includes(',') || !isNaN(value)) {
         type.value = TypeEnum.specify;
-        valueList.value = value.split(',').map((item) => parseInt(item));
+        valueList.value = value.split(',').map((item) => Number.parseInt(item));
       } else {
         type.value = TypeEnum.every;
       }
-    } catch (e) {
+    } catch {
       type.value = TypeEnum.every;
     }
   }
@@ -162,15 +162,22 @@ export function useTabSetup(props, context, options) {
     precision: 0,
   }));
   const typeRangeAttrs = computed(() => ({
-    disabled: type.value !== TypeEnum.range || props.disabled || unref(options.disabled),
+    disabled:
+      type.value !== TypeEnum.range ||
+      props.disabled ||
+      unref(options.disabled),
     ...inputNumberAttrs.value,
   }));
   const typeLoopAttrs = computed(() => ({
-    disabled: type.value !== TypeEnum.loop || props.disabled || unref(options.disabled),
+    disabled:
+      type.value !== TypeEnum.loop || props.disabled || unref(options.disabled),
     ...inputNumberAttrs.value,
   }));
   const typeSpecifyAttrs = computed(() => ({
-    disabled: type.value !== TypeEnum.specify || props.disabled || unref(options.disabled),
+    disabled:
+      type.value !== TypeEnum.specify ||
+      props.disabled ||
+      unref(options.disabled),
     class: ['list-check-item'],
   }));
 

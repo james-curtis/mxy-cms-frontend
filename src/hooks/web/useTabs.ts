@@ -22,7 +22,9 @@ export function useTabs(_router?: Router) {
   function canIUseTabs(): boolean {
     const { show } = appStore.getMultiTabsSetting;
     if (!show) {
-      throw new Error('The multi-tab page is currently not open, please open it in the settings！');
+      throw new Error(
+        'The multi-tab page is currently not open, please open it in the settings！'
+      );
     }
     return !!show;
   }
@@ -55,7 +57,10 @@ export function useTabs(_router?: Router) {
     await tabStore.updateTabPath(path, targetTab);
   }
 
-  async function handleTabAction(action: TableActionEnum, tab?: RouteLocationNormalized) {
+  async function handleTabAction(
+    action: TableActionEnum,
+    tab?: RouteLocationNormalized
+  ) {
     const canIUse = canIUseTabs;
     if (!canIUse) {
       return;
@@ -94,11 +99,11 @@ export function useTabs(_router?: Router) {
    * @param path
    */
   function closeSameRoute(path) {
-    if(path.indexOf('?')>0){
+    if (path.indexOf('?') > 0) {
       path = path.split('?')[0];
     }
-    let tab = tabStore.getTabList.find((item) => item.path.indexOf(path)>=0)!;
-    if(tab){
+    const tab = tabStore.getTabList.find((item) => item.path.includes(path))!;
+    if (tab) {
       tabStore.closeTab(tab, router);
     }
   }
@@ -110,9 +115,12 @@ export function useTabs(_router?: Router) {
     closeRight: () => handleTabAction(TableActionEnum.CLOSE_RIGHT),
     closeOther: () => handleTabAction(TableActionEnum.CLOSE_OTHER),
     closeCurrent: () => handleTabAction(TableActionEnum.CLOSE_CURRENT),
-    close: (tab?: RouteLocationNormalized) => handleTabAction(TableActionEnum.CLOSE, tab),
-    setTitle: (title: string, tab?: RouteLocationNormalized) => updateTabTitle(title, tab),
-    updatePath: (fullPath: string, tab?: RouteLocationNormalized) => updateTabPath(fullPath, tab),
-    closeSameRoute
+    close: (tab?: RouteLocationNormalized) =>
+      handleTabAction(TableActionEnum.CLOSE, tab),
+    setTitle: (title: string, tab?: RouteLocationNormalized) =>
+      updateTabTitle(title, tab),
+    updatePath: (fullPath: string, tab?: RouteLocationNormalized) =>
+      updateTabPath(fullPath, tab),
+    closeSameRoute,
   };
 }

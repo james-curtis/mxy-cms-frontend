@@ -1,5 +1,5 @@
-import { ModalOptionsPartial } from '/@/hooks/web/useMessage';
-import { RenderCallbackParams, Rule } from '/@/components/Form';
+import type { ModalOptionsPartial } from '/@/hooks/web/useMessage';
+import type { RenderCallbackParams, Rule } from '/@/components/Form';
 
 export interface JPromptProps extends ModalOptionsPartial {
   // 输入框是否必填

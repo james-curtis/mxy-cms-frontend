@@ -139,7 +139,7 @@ for (const prop in provinceObject) {
  * @returns []
  */
 function getDataByCode(code) {
-  let data = [];
+  const data = [];
   for (const prop in REGION_DATA[code]) {
     data.push({
       value: prop, // 省份code值
@@ -155,7 +155,12 @@ function getDataByCode(code) {
  */
 const pca = [];
 Object.keys(provinceObject).map((province) => {
-  pca.push({ id: province, text: provinceObject[province], pid: '86', index: 1 });
+  pca.push({
+    id: province,
+    text: provinceObject[province],
+    pid: '86',
+    index: 1,
+  });
   const cityObject = REGION_DATA[province];
   Object.keys(cityObject).map((city) => {
     pca.push({ id: city, text: cityObject[city], pid: province, index: 2 });
@@ -175,12 +180,12 @@ Object.keys(provinceObject).map((province) => {
  * @returns {Array}
  */
 function getRealCode(code, level) {
-  let arr = [];
+  const arr = [];
   getPcode(code, arr, level);
   return arr;
 }
 function getPcode(id, arr, index) {
-  for (let item of pca) {
+  for (const item of pca) {
     if (item.id === id && item.index == index) {
       arr.unshift(id);
       if (item.pid != '86') {
@@ -190,4 +195,12 @@ function getPcode(id, arr, index) {
   }
 }
 //--end--@updateBy:liusq----date:20210922---for:省市区三级联动需求方法-----
-export { provinceAndCityData, regionData, provinceAndCityDataPlus, regionDataPlus, getDataByCode, provinceOptions, getRealCode };
+export {
+  provinceAndCityData,
+  regionData,
+  provinceAndCityDataPlus,
+  regionDataPlus,
+  getDataByCode,
+  provinceOptions,
+  getRealCode,
+};

@@ -1,13 +1,15 @@
-import type { Component, Ref, ComputedRef, ExtractPropTypes } from 'vue';
+import { JVxeTypes } from './JVxeTypes';
+import type { Component, ComputedRef, ExtractPropTypes, Ref } from 'vue';
 import type { VxeColumnProps } from 'vxe-table/types/column';
 import type { JVxeComponent } from './JVxeComponent';
 import type { VxeGridInstance, VxeTablePropTypes } from 'vxe-table';
-import { JVxeTypes } from './JVxeTypes';
-import { vxeProps } from '../vxe.data';
-import { useMethods } from '../hooks/useMethods';
-import { getJVxeAuths } from '../utils/authUtils';
+import type { vxeProps } from '../vxe.data';
+import type { useMethods } from '../hooks/useMethods';
+import type { getJVxeAuths } from '../utils/authUtils';
 
-export type JVxeTableProps = Partial<ExtractPropTypes<ReturnType<typeof vxeProps>>>;
+export type JVxeTableProps = Partial<
+  ExtractPropTypes<ReturnType<typeof vxeProps>>
+>;
 export type JVxeTableMethods = ReturnType<typeof useMethods>['methods'];
 
 export type JVxeVueComponent = {
@@ -42,7 +44,13 @@ export interface IJVxeColumn extends VxeColumnProps {
   statistics?: boolean | [statisticsTypes, statisticsTypes?];
   // 【select】
   dictCode?: string; // 字典 code
-  options?: { title?: string; label?: string; text?: string; value: any; disabled?: boolean }[]; // 下拉选项列表
+  options?: {
+    title?: string;
+    label?: string;
+    text?: string;
+    value: any;
+    disabled?: boolean;
+  }[]; // 下拉选项列表
   allowInput?: boolean; // 允许输入
   allowSearch?: boolean; // 允许搜索
   // 【slot】

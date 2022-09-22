@@ -6,7 +6,10 @@ import type { ProjectConfig } from '/#/config';
 import { PROJ_CFG_KEY } from '/@/enums/cacheEnum';
 import projectSetting from '/@/settings/projectSetting';
 
-import { updateHeaderBgColor, updateSidebarBgColor } from '/@/logics/theme/updateBackground';
+import {
+  updateHeaderBgColor,
+  updateSidebarBgColor,
+} from '/@/logics/theme/updateBackground';
 import { updateColorWeak } from '/@/logics/theme/updateColorWeak';
 import { updateGrayMode } from '/@/logics/theme/updateGrayMode';
 import { updateDarkTheme } from '/@/logics/theme/dark';
@@ -26,7 +29,9 @@ import { ThemeEnum } from '/@/enums/appEnum';
 export function initAppConfigStore() {
   const localeStore = useLocaleStore();
   const appStore = useAppStore();
-  let projCfg: ProjectConfig = Persistent.getLocal(PROJ_CFG_KEY) as ProjectConfig;
+  let projCfg: ProjectConfig = Persistent.getLocal(
+    PROJ_CFG_KEY
+  ) as ProjectConfig;
   projCfg = deepMerge(projectSetting, projCfg || {});
   const darkMode = appStore.getDarkMode;
   const {

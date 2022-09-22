@@ -9,14 +9,19 @@ import { checkStatus } from './checkStatus';
 import { router } from '/@/router';
 import { useGlobSetting } from '/@/hooks/setting';
 import { useMessage } from '/@/hooks/web/useMessage';
-import { RequestEnum, ResultEnum, ContentTypeEnum, ConfigEnum } from '/@/enums/httpEnum';
+import {
+  ConfigEnum,
+  ContentTypeEnum,
+  RequestEnum,
+  ResultEnum,
+} from '/@/enums/httpEnum';
 import { isString } from '/@/utils/is';
-import { getToken, getTenantId } from '/@/utils/auth';
-import { setObjToUrlParams, deepMerge } from '/@/utils';
+import { getTenantId, getToken } from '/@/utils/auth';
+import { deepMerge, setObjToUrlParams } from '/@/utils';
 import signMd5Utils from '/@/utils/encryption/signMd5Utils';
 import { useErrorLogStoreWithOut } from '/@/store/modules/errorLog';
 import { useI18n } from '/@/hooks/web/useI18n';
-import { joinTimestamp, formatRequestDate } from './helper';
+import { formatRequestDate, joinTimestamp } from './helper';
 import { useUserStoreWithOut } from '/@/store/modules/user';
 const globSetting = useGlobSetting();
 const urlPrefix = globSetting.urlPrefix;
@@ -29,7 +34,10 @@ const transform: AxiosTransform = {
   /**
    * @description: 处理请求数据。如果数据不是预期格式，可直接抛出错误
    */
-  transformRequestHook: (res: AxiosResponse<Result>, options: RequestOptions) => {
+  transformRequestHook: (
+    res: AxiosResponse<Result>,
+    options: RequestOptions
+  ) => {
     const { t } = useI18n();
     const { isTransformResponse, isReturnNativeResponse } = options;
     // 是否返回原生响应头 比如：需要获取响应头时使用该属性
@@ -51,7 +59,10 @@ const transform: AxiosTransform = {
     //  这里 code，result，message为 后台统一的字段，需要在 types.ts内修改为项目自己的接口返回格式
     const { code, result, message, success } = data;
     // 这里逻辑可以根据项目进行修改
-    const hasSuccess = data && Reflect.has(data, 'code') && (code === ResultEnum.SUCCESS || code === 200);
+    const hasSuccess =
+      data &&
+      Reflect.has(data, 'code') &&
+      (code === ResultEnum.SUCCESS || code === 200);
     if (hasSuccess) {
       if (success && message && options.successMessageMode === 'success') {
         //信息成功提示
@@ -89,7 +100,14 @@ const transform: AxiosTransform = {
 
   // 请求之前处理config
   beforeRequestHook: (config, options) => {
-    const { apiUrl, joinPrefix, joinParamsToUrl, formatDate, joinTime = true, urlPrefix } = options;
+    const {
+      apiUrl,
+      joinPrefix,
+      joinParamsToUrl,
+      formatDate,
+      joinTime = true,
+      urlPrefix,
+    } = options;
 
     if (joinPrefix) {
       config.url = `${urlPrefix}${config.url}`;
@@ -104,16 +122,23 @@ const transform: AxiosTransform = {
     if (config.method?.toUpperCase() === RequestEnum.GET) {
       if (!isString(params)) {
         // 给 get 请求加上时间戳参数，避免从缓存中拿数据。
-        config.params = Object.assign(params || {}, joinTimestamp(joinTime, false));
+        config.params = Object.assign(
+          params || {},
+          joinTimestamp(joinTime, false)
+        );
       } else {
         // 兼容restful风格
-        config.url = config.url + params + `${joinTimestamp(joinTime, true)}`;
+        config.url = `${config.url + params}${joinTimestamp(joinTime, true)}`;
         config.params = undefined;
       }
     } else {
       if (!isString(params)) {
         formatDate && formatRequestDate(params);
-        if (Reflect.has(config, 'data') && config.data && Object.keys(config.data).length > 0) {
+        if (
+          Reflect.has(config, 'data') &&
+          config.data &&
+          Object.keys(config.data).length > 0
+        ) {
           config.data = data;
           config.params = params;
         } else {
@@ -122,7 +147,10 @@ const transform: AxiosTransform = {
           config.params = undefined;
         }
         if (joinParamsToUrl) {
-          config.url = setObjToUrlParams(config.url as string, Object.assign({}, config.params, config.data));
+          config.url = setObjToUrlParams(
+            config.url as string,
+            Object.assign({}, config.params, config.data)
+          );
         }
       } else {
         // 兼容restful风格
@@ -142,7 +170,9 @@ const transform: AxiosTransform = {
     let tenantid = getTenantId();
     if (token && (config as Recordable)?.requestOptions?.withToken !== false) {
       // jwt token
-      config.headers.Authorization = options.authenticationScheme ? `${options.authenticationScheme} ${token}` : token;
+      config.headers.Authorization = options.authenticationScheme
+        ? `${options.authenticationScheme} ${token}`
+        : token;
       config.headers[ConfigEnum.TOKEN] = token;
       //--update-begin--author:liusq---date:20210831---for:将签名和时间戳，添加在请求接口 Header
 
@@ -150,7 +180,10 @@ const transform: AxiosTransform = {
       config.headers[ConfigEnum.TIMESTAMP] = signMd5Utils.getTimestamp();
       // update-end--author:taoyan---date:20220421--for: VUEN-410【签名改造】 X-TIMESTAMP牵扯
 
-      config.headers[ConfigEnum.Sign] = signMd5Utils.getSign(config.url, config.params);
+      config.headers[ConfigEnum.Sign] = signMd5Utils.getSign(
+        config.url,
+        config.params
+      );
       //--update-end--author:liusq---date:20210831---for:将签名和时间戳，添加在请求接口 Header
       //--update-begin--author:liusq---date:20211105---for: for:将多租户id，添加在请求接口 Header
       if (!tenantid) {
@@ -164,18 +197,20 @@ const transform: AxiosTransform = {
 
       // ========================================================================================
       // update-begin--author:sunjianlei---date:20220624--for: 添加低代码应用ID
-      let routeParams = router.currentRoute.value.params;
+      const routeParams = router.currentRoute.value.params;
       if (routeParams.appId) {
         config.headers[ConfigEnum.X_LOW_APP_ID] = routeParams.appId;
         // lowApp自定义筛选条件
         if (routeParams.lowAppFilter) {
-          config.params = { ...config.params, ...JSON.parse(routeParams.lowAppFilter as string) };
+          config.params = {
+            ...config.params,
+            ...JSON.parse(routeParams.lowAppFilter as string),
+          };
           delete routeParams.lowAppFilter;
         }
       }
       // update-end--author:sunjianlei---date:20220624--for: 添加低代码应用ID
       // ========================================================================================
-
     }
     return config;
   },
@@ -203,7 +238,7 @@ const transform: AxiosTransform = {
     let errMessage = '';
 
     try {
-      if (code === 'ECONNABORTED' && message.indexOf('timeout') !== -1) {
+      if (code === 'ECONNABORTED' && message.includes('timeout')) {
         errMessage = t('sys.api.apiTimeoutMessage');
       }
       if (err?.includes('Network Error')) {
@@ -212,7 +247,10 @@ const transform: AxiosTransform = {
 
       if (errMessage) {
         if (errorMessageMode === 'modal') {
-          createErrorModal({ title: t('sys.api.errorTip'), content: errMessage });
+          createErrorModal({
+            title: t('sys.api.errorTip'),
+            content: errMessage,
+          });
         } else if (errorMessageMode === 'message') {
           createMessage.error(errMessage);
         }
@@ -262,7 +300,7 @@ function createAxios(opt?: Partial<CreateAxiosOptions>) {
           // 接口地址
           apiUrl: globSetting.apiUrl,
           // 接口拼接地址
-          urlPrefix: urlPrefix,
+          urlPrefix,
           //  是否加入时间戳
           joinTime: true,
           // 忽略重复请求

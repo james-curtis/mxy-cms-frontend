@@ -1,8 +1,8 @@
+import PACKAGE_TEST_JEECG_ONLINE from '@jeecg/online';
 import type { App } from 'vue';
 import { warn } from '/@/utils/log';
 import { registerDynamicRouter } from '/@/utils/monorepo/dynamicRouter';
 // 引入模块
-import PACKAGE_TEST_JEECG_ONLINE from '@jeecg/online';
 
 export function registerPackages(app: App) {
   use(app, PACKAGE_TEST_JEECG_ONLINE);
@@ -20,7 +20,10 @@ function use(app: App, pkg) {
 }
 
 // 模块里可使用的import
-const importGlobs = [import.meta.glob('../../utils/**/*.{ts,js,tsx}'), import.meta.glob('../../hooks/**/*.{ts,js,tsx}')];
+const importGlobs = [
+  import.meta.glob('../../utils/**/*.{ts,js,tsx}'),
+  import.meta.glob('../../hooks/**/*.{ts,js,tsx}'),
+];
 
 /**
  * 基础项目导包

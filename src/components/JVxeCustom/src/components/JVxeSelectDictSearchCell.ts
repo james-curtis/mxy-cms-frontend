@@ -1,12 +1,15 @@
-import { computed, ref, watch, defineComponent, h } from 'vue';
+import { computed, defineComponent, h, ref, watch } from 'vue';
 import { cloneDeep, debounce } from 'lodash-es';
 import { defHttp } from '/@/utils/http/axios';
 import { filterDictText } from '/@/utils/dict/JDictSelectUtil';
 import { ajaxGetDictItems, getDictItemsByCode } from '/@/utils/dict';
-import { JVxeComponent } from '/@/components/jeecg/JVxeTable/types';
+import type { JVxeComponent } from '/@/components/jeecg/JVxeTable/types';
 import { dispatchEvent } from '/@/components/jeecg/JVxeTable/utils';
-import { useResolveComponent as rc } from '/@/components/jeecg/JVxeTable/hooks';
-import { useJVxeComponent, useJVxeCompProps } from '/@/components/jeecg/JVxeTable/hooks';
+import {
+  useResolveComponent as rc,
+  useJVxeCompProps,
+  useJVxeComponent,
+} from '/@/components/jeecg/JVxeTable/hooks';
 import { useMessage } from '/@/hooks/web/useMessage';
 
 /** value - label map，防止重复查询（刷新清空缓存） */
@@ -19,9 +22,15 @@ export const DictSearchSpanCell = defineComponent({
   name: 'JVxeSelectSearchSpanCell',
   props: useJVxeCompProps(),
   setup(props: JVxeComponent.Props) {
-    const { innerOptions, innerSelectValue, innerValue } = useSelectDictSearch(props);
+    const { innerOptions, innerSelectValue, innerValue } =
+      useSelectDictSearch(props);
     return () => {
-      return h('span', {}, [filterDictText(innerOptions.value, innerSelectValue.value || innerValue.value)]);
+      return h('span', {}, [
+        filterDictText(
+          innerOptions.value,
+          innerSelectValue.value || innerValue.value
+        ),
+      ]);
     };
   },
 });
@@ -32,8 +41,17 @@ export const DictSearchInputCell = defineComponent({
   props: useJVxeCompProps(),
   setup(props: JVxeComponent.Props) {
     const { createMessage } = useMessage();
-    const { dict, loading, isAsync, options, innerOptions, originColumn, cellProps, innerSelectValue, handleChangeCommon } =
-      useSelectDictSearch(props);
+    const {
+      dict,
+      loading,
+      isAsync,
+      options,
+      innerOptions,
+      originColumn,
+      cellProps,
+      innerSelectValue,
+      handleChangeCommon,
+    } = useSelectDictSearch(props);
     const hasRequest = ref(false);
     // 提示信息
     const tipsContent = computed(() => {
@@ -44,7 +62,10 @@ export const DictSearchInputCell = defineComponent({
       if (isAsync.value) {
         return null;
       }
-      return (input, option) => option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+      return (input, option) =>
+        option.componentOptions.children[0].text
+          .toLowerCase()
+          .includes(input.toLowerCase());
     });
 
     /** 加载数据 */
@@ -64,7 +85,7 @@ export const DictSearchInputCell = defineComponent({
           if (currentRequestId !== requestId) {
             return;
           }
-          let { success, result, message } = res;
+          const { success, result, message } = res;
           if (success) {
             innerOptions.value = result;
             result.forEach((item) => {
@@ -96,15 +117,15 @@ export const DictSearchInputCell = defineComponent({
     }
 
     function renderOptionItem() {
-      let optionItems: any[] = [];
+      const optionItems: any[] = [];
       options.value.forEach(({ value, text, label, title, disabled }) => {
         optionItems.push(
           h(
             rc('a-select-option'),
             {
               key: value,
-              value: value,
-              disabled: disabled,
+              value,
+              disabled,
             },
             {
               default: () => text || label || title,
@@ -175,7 +196,7 @@ function useSelectDictSearch(props) {
   const dict = computed(() => originColumn.value.dict);
   // 是否是异步模式
   const isAsync = computed(() => {
-    let isAsync = originColumn.value.async;
+    const isAsync = originColumn.value.async;
     return isAsync != null && isAsync !== '' ? !!isAsync : true;
   });
   const options = computed(() => {
@@ -207,9 +228,9 @@ function useSelectDictSearch(props) {
         if (LabelMap.has(value)) {
           innerOptions.value = cloneDeep(LabelMap.get(value));
         } else {
-          let result = await loadDictItem(dict.value, value);
+          const result = await loadDictItem(dict.value, value);
           if (result && result.length > 0) {
-            innerOptions.value = [{ value: value, text: result[0] }];
+            innerOptions.value = [{ value, text: result[0] }];
             LabelMap.set(value, cloneDeep(innerOptions.value));
           }
         }
@@ -222,26 +243,31 @@ function useSelectDictSearch(props) {
   async function loadDataByDict() {
     if (!isAsync.value) {
       // 如果字典项集合有数据
-      if (!originColumn.value.options || originColumn.value.options.length === 0) {
+      if (
+        !originColumn.value.options ||
+        originColumn.value.options.length === 0
+      ) {
         // 根据字典Code, 初始化字典数组
         let dictStr = '';
         if (dict.value) {
-          let arr = dict.value.split(',');
+          const arr = dict.value.split(',');
           if (arr[0].indexOf('where') > 0) {
-            let tbInfo = arr[0].split('where');
-            dictStr = tbInfo[0].trim() + ',' + arr[1] + ',' + arr[2] + ',' + encodeURIComponent(tbInfo[1]);
+            const tbInfo = arr[0].split('where');
+            dictStr = `${tbInfo[0].trim()},${arr[1]},${
+              arr[2]
+            },${encodeURIComponent(tbInfo[1])}`;
           } else {
             dictStr = dict.value;
           }
-          if (dict.value.indexOf(',') === -1) {
+          if (!dict.value.includes(',')) {
             //优先从缓存中读取字典配置
-            let cache = getDictItemsByCode(dict.value);
+            const cache = getDictItemsByCode(dict.value);
             if (cache) {
               innerOptions.value = cache;
               return;
             }
           }
-          let { success, result } = await ajaxGetDictItems(dictStr, null);
+          const { success, result } = await ajaxGetDictItems(dictStr, null);
           if (success) {
             innerOptions.value = result;
           }
@@ -266,7 +292,7 @@ function loadDictItem(dict: string, key: string) {
   return defHttp.get({
     url: `/sys/dict/loadDictItem/${dict}`,
     params: {
-      key: key,
+      key,
     },
   });
 }
@@ -277,7 +303,7 @@ function loadDictByKeyword(dict: string, keyword: string) {
     {
       url: `/sys/dict/loadDict/${dict}`,
       params: {
-        keyword: keyword,
+        keyword,
       },
     },
     {

@@ -2,7 +2,7 @@ import type { ComputedRef } from 'vue';
 import type { BasicTableProps } from '../types/table';
 import { unref } from 'vue';
 import { ROW_KEY } from '../const';
-import { isString, isFunction } from '/@/utils/is';
+import { isFunction, isString } from '/@/utils/is';
 
 interface Options {
   setSelectedRowKeys: (keys: string[]) => void;
@@ -12,7 +12,11 @@ interface Options {
   getAutoCreateKey: ComputedRef<boolean | undefined>;
 }
 
-function getKey(record: Recordable, rowKey: string | ((record: Record<string, any>) => string) | undefined, autoCreateKey?: boolean) {
+function getKey(
+  record: Recordable,
+  rowKey: string | ((record: Record<string, any>) => string) | undefined,
+  autoCreateKey?: boolean
+) {
   if (!rowKey || autoCreateKey) {
     return record[ROW_KEY];
   }
@@ -27,7 +31,13 @@ function getKey(record: Recordable, rowKey: string | ((record: Record<string, an
 
 export function useCustomRow(
   propsRef: ComputedRef<BasicTableProps>,
-  { setSelectedRowKeys, getSelectRowKeys, getAutoCreateKey, clearSelectedRowKeys, emit }: Options
+  {
+    setSelectedRowKeys,
+    getSelectRowKeys,
+    getAutoCreateKey,
+    clearSelectedRowKeys,
+    emit,
+  }: Options
 ) {
   const customRow = (record: Recordable, index: number) => {
     return {
@@ -43,7 +53,9 @@ export function useCustomRow(
           const isCheckbox = rowSelection.type === 'checkbox';
           if (isCheckbox) {
             // 找到tr
-            const tr: HTMLElement = (e as MouseEvent).composedPath?.().find((dom: HTMLElement) => dom.tagName === 'TR') as HTMLElement;
+            const tr: HTMLElement = (e as MouseEvent)
+              .composedPath?.()
+              .find((dom: HTMLElement) => dom.tagName === 'TR') as HTMLElement;
             if (!tr) return;
             // 找到Checkbox，检查是否为disabled
             const checkBox = tr.querySelector('input[type=checkbox]');
@@ -52,7 +64,7 @@ export function useCustomRow(
               setSelectedRowKeys([...keys, key]);
               return;
             }
-            const keyIndex = keys.findIndex((item) => item === key);
+            const keyIndex = keys.indexOf(key);
             keys.splice(keyIndex, 1);
             setSelectedRowKeys(keys);
             return;

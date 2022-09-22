@@ -1,5 +1,5 @@
-import { FormSchema } from '/@/components/Table';
 import { isRoleExist } from './role.api';
+import type { FormSchema } from '/@/components/Table';
 export const columns = [
   {
     title: '角色名称',
@@ -156,7 +156,7 @@ export const roleIndexFormSchema: FormSchema[] = [
     field: 'route',
     label: '是否路由菜单',
     component: 'Switch',
-    defaultValue: true
+    defaultValue: true,
   },
   {
     label: '优先级',

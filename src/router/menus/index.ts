@@ -1,14 +1,17 @@
+import { pathToRegexp } from 'path-to-regexp';
 import type { Menu, MenuModule } from '/@/router/types';
 import type { RouteRecordNormalized } from 'vue-router';
 
 import { useAppStoreWithOut } from '/@/store/modules/app';
 import { usePermissionStore } from '/@/store/modules/permission';
-import { transformMenuModule, getAllParentPath } from '/@/router/helper/menuHelper';
+import {
+  getAllParentPath,
+  transformMenuModule,
+} from '/@/router/helper/menuHelper';
 import { filter } from '/@/utils/helper/treeHelper';
 import { isUrl } from '/@/utils/is';
 import { router } from '/@/router';
 import { PermissionModeEnum } from '/@/enums/appEnum';
-import { pathToRegexp } from 'path-to-regexp';
 
 const modules = import.meta.globEager('./modules/**/*.ts');
 
@@ -54,7 +57,9 @@ const staticMenus: Menu[] = [];
 async function getAsyncMenus() {
   const permissionStore = usePermissionStore();
   if (isBackMode()) {
-    return permissionStore.getBackMenuList.filter((item) => !item.meta?.hideMenu && !item.hideMenu);
+    return permissionStore.getBackMenuList.filter(
+      (item) => !item.meta?.hideMenu && !item.hideMenu
+    );
   }
   if (isRouteMappingMode()) {
     return permissionStore.getFrontMenuList.filter((item) => !item.hideMenu);
@@ -80,7 +85,10 @@ export async function getCurrentParentPath(currentPath: string) {
 // Get the level 1 menu, delete children
 export async function getShallowMenus(): Promise<Menu[]> {
   const menus = await getAsyncMenus();
-  const shallowMenuList = menus.map((item) => ({ ...item, children: undefined }));
+  const shallowMenuList = menus.map((item) => ({
+    ...item,
+    children: undefined,
+  }));
   if (isRoleMode()) {
     const routes = router.getRoutes();
     return shallowMenuList.filter(basicFilter(routes));

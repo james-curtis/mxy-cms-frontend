@@ -1,8 +1,8 @@
-import { BasicColumn, FormSchema } from '/@/components/Table';
+import { array } from 'vue-types';
+import type { BasicColumn, FormSchema } from '/@/components/Table';
 import { render } from '/@/utils/common/renderUtils';
 import { duplicateCheck } from '/@/views/system/user/user.api';
 import { validateCheckRule } from '/@/views/system/checkRule/check.rule.api';
-import { array } from 'vue-types';
 
 export const columns: BasicColumn[] = [
   {
@@ -22,7 +22,7 @@ export const columns: BasicColumn[] = [
     dataIndex: 'ruleDescription',
     width: 300,
     align: 'center',
-    customRender: function ({ text }) {
+    customRender({ text }) {
       return render.renderTip(text, 30);
     },
   },
@@ -74,7 +74,7 @@ export const formSchema: FormSchema[] = [
               if (!value) {
                 return reject('请输入规则编码！');
               }
-              let params = {
+              const params = {
                 tableName: 'sys_check_rule',
                 fieldName: 'rule_code',
                 fieldVal: value,

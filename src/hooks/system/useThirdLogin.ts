@@ -3,7 +3,7 @@ import { defHttp } from '/@/utils/http/axios';
 import { useGlobSetting } from '/@/hooks/setting';
 import { useMessage } from '/@/hooks/web/useMessage';
 import { useUserStore } from '/@/store/modules/user';
-import { setThirdCaptcha, getCaptcha } from '/@/api/sys/user';
+import { getCaptcha, setThirdCaptcha } from '/@/api/sys/user';
 import { useI18n } from '/@/hooks/web/useI18n';
 
 export function useThirdLogin() {
@@ -37,7 +37,7 @@ export function useThirdLogin() {
   const thirdCaptcha = ref('');
   //第三方登录
   function onThirdLogin(source) {
-    let url = `${glob.uploadUrl}/sys/thirdLogin/render/${source}`;
+    const url = `${glob.uploadUrl}/sys/thirdLogin/render/${source}`;
     window.open(
       url,
       `login ${source}`,
@@ -46,15 +46,15 @@ export function useThirdLogin() {
     thirdType.value = source;
     thirdLoginInfo.value = {};
     thirdLoginState.value = false;
-    let receiveMessage = function (event) {
-      let token = event.data;
+    const receiveMessage = function (event) {
+      const token = event.data;
       if (typeof token === 'string') {
         //如果是字符串类型 说明是token信息
         if (token === '登录失败') {
           createMessage.warning(token);
         } else if (token.includes('绑定手机号')) {
           bindingPhoneModal.value = true;
-          let strings = token.split(',');
+          const strings = token.split(',');
           thirdUserUuid.value = strings[1];
         } else {
           doThirdLogin(token);
@@ -75,25 +75,32 @@ export function useThirdLogin() {
   function doThirdLogin(token) {
     if (unref(thirdLoginState) === false) {
       thirdLoginState.value = true;
-      userStore.ThirdLogin({ token, thirdType: unref(thirdType) }).then((res) => {
-        console.log('res====>doThirdLogin', res);
-        if (res && res.userInfo) {
-          notification.success({
-            message: t('sys.login.loginSuccessTitle'),
-            description: `${t('sys.login.loginSuccessDesc')}: ${res.userInfo.realname}`,
-            duration: 3,
-          });
-        } else {
-          requestFailed(res);
-        }
-      });
+      userStore
+        .ThirdLogin({ token, thirdType: unref(thirdType) })
+        .then((res) => {
+          console.log('res====>doThirdLogin', res);
+          if (res && res.userInfo) {
+            notification.success({
+              message: t('sys.login.loginSuccessTitle'),
+              description: `${t('sys.login.loginSuccessDesc')}: ${
+                res.userInfo.realname
+              }`,
+              duration: 3,
+            });
+          } else {
+            requestFailed(res);
+          }
+        });
     }
   }
 
   function requestFailed(err) {
     notification.error({
       message: '登录失败',
-      description: ((err.response || {}).data || {}).message || err.message || '请求出现错误，请稍后再试',
+      description:
+        ((err.response || {}).data || {}).message ||
+        err.message ||
+        '请求出现错误，请稍后再试',
       duration: 4,
     });
   }
@@ -108,12 +115,18 @@ export function useThirdLogin() {
   function thirdLoginUserCreate() {
     thirdCreateUserLoding.value = true;
     // 账号名后面添加两位随机数
-    thirdLoginInfo.value.suffix = parseInt(Math.random() * 98 + 1);
+    thirdLoginInfo.value.suffix = Number.parseInt(Math.random() * 98 + 1);
     defHttp
-      .post({ url: '/sys/third/user/create', params: { thirdLoginInfo: unref(thirdLoginInfo) } }, { isTransformResponse: false })
+      .post(
+        {
+          url: '/sys/third/user/create',
+          params: { thirdLoginInfo: unref(thirdLoginInfo) },
+        },
+        { isTransformResponse: false }
+      )
       .then((res) => {
         if (res.success) {
-          let token = res.result;
+          const token = res.result;
           doThirdLogin(token);
           thirdConfirmShow.value = false;
         } else {
@@ -126,15 +139,22 @@ export function useThirdLogin() {
   }
   // 核实密码
   function thirdLoginCheckPassword() {
-    let params = Object.assign({}, unref(thirdLoginInfo), { password: unref(thirdLoginPassword) });
-    defHttp.post({ url: '/sys/third/user/checkPassword', params }, { isTransformResponse: false }).then((res) => {
-      if (res.success) {
-        thirdLoginNoPassword();
-        doThirdLogin(res.result);
-      } else {
-        createMessage.warning(res.message);
-      }
+    const params = Object.assign({}, unref(thirdLoginInfo), {
+      password: unref(thirdLoginPassword),
     });
+    defHttp
+      .post(
+        { url: '/sys/third/user/checkPassword', params },
+        { isTransformResponse: false }
+      )
+      .then((res) => {
+        if (res.success) {
+          thirdLoginNoPassword();
+          doThirdLogin(res.result);
+        } else {
+          createMessage.warning(res.message);
+        }
+      });
   }
   // 没有密码 取消操作
   function thirdLoginNoPassword() {
@@ -156,19 +176,24 @@ export function useThirdLogin() {
     if (!unref(thirdCaptcha)) {
       cmsFailed('请输入验证码');
     }
-    let params = {
+    const params = {
       mobile: unref(thirdPhone),
       captcha: unref(thirdCaptcha),
       thirdUserUuid: unref(thirdUserUuid),
     };
-    defHttp.post({ url: '/sys/thirdLogin/bindingThirdPhone', params }, { isTransformResponse: false }).then((res) => {
-      if (res.success) {
-        bindingPhoneModal.value = false;
-        doThirdLogin(res.result);
-      } else {
-        createMessage.warning(res.message);
-      }
-    });
+    defHttp
+      .post(
+        { url: '/sys/thirdLogin/bindingThirdPhone', params },
+        { isTransformResponse: false }
+      )
+      .then((res) => {
+        if (res.success) {
+          bindingPhoneModal.value = false;
+          doThirdLogin(res.result);
+        } else {
+          createMessage.warning(res.message);
+        }
+      });
   }
   function cmsFailed(err) {
     notification.error({

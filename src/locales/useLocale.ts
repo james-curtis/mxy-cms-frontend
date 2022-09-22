@@ -1,12 +1,12 @@
 /**
  * Multi-language related operations
  */
-import type { LocaleType } from '/#/config';
 
+import { computed, unref } from 'vue';
 import { i18n } from './setupI18n';
 import { useLocaleStoreWithOut } from '/@/store/modules/locale';
-import { unref, computed } from 'vue';
 import { loadLocalePool, setHtmlPageLang } from './helper';
+import type { LocaleType } from '/#/config';
 
 interface LangModule {
   message: Recordable;
@@ -48,7 +48,8 @@ export function useLocale() {
       setI18nLanguage(locale);
       return locale;
     }
-    const langModule = ((await import(`./lang/${locale}.ts`)) as any).default as LangModule;
+    const langModule = ((await import(`./lang/${locale}.ts`)) as any)
+      .default as LangModule;
     if (!langModule) return;
 
     const { message } = langModule;

@@ -1,11 +1,26 @@
-import type { UseModalReturnType, ModalMethods, ModalProps, ReturnMethods, UseModalInnerReturnType } from '../typing';
-import { ref, onUnmounted, unref, getCurrentInstance, reactive, watchEffect, nextTick, toRaw } from 'vue';
+import {
+  computed,
+  getCurrentInstance,
+  nextTick,
+  onUnmounted,
+  reactive,
+  ref,
+  toRaw,
+  unref,
+  watchEffect,
+} from 'vue';
 import { isProdMode } from '/@/utils/env';
 import { isFunction } from '/@/utils/is';
 import { isEqual } from 'lodash-es';
 import { tryOnUnmounted } from '@vueuse/core';
 import { error } from '/@/utils/log';
-import { computed } from 'vue';
+import type {
+  ModalMethods,
+  ModalProps,
+  ReturnMethods,
+  UseModalInnerReturnType,
+  UseModalReturnType,
+} from '../typing';
 
 const dataTransfer = reactive<any>({});
 
@@ -21,7 +36,9 @@ export function useModal(): UseModalReturnType {
 
   function register(modalMethod: ModalMethods, uuid: string) {
     if (!getCurrentInstance()) {
-      throw new Error('useModal() can only be used inside setup() or functional components!');
+      throw new Error(
+        'useModal() can only be used inside setup() or functional components!'
+      );
     }
     uid.value = uuid;
     isProdMode() &&
@@ -53,7 +70,7 @@ export function useModal(): UseModalReturnType {
     },
 
     getVisible: computed((): boolean => {
-      return visibleData[~~unref(uid)];
+      return visibleData[Math.trunc(unref(uid))];
     }),
 
     redoModalHeight: () => {
@@ -62,7 +79,7 @@ export function useModal(): UseModalReturnType {
 
     openModal: <T = any>(visible = true, data?: T, openOnSet = true): void => {
       getInstance()?.setModalProps({
-        visible: visible,
+        visible,
       });
 
       if (!data) return;
@@ -124,7 +141,7 @@ export const useModalInner = (callbackFn?: Fn): UseModalInnerReturnType => {
         getInstance()?.setModalProps({ loading });
       },
       getVisible: computed((): boolean => {
-        return visibleData[~~unref(uidRef)];
+        return visibleData[Math.trunc(unref(uidRef))];
       }),
 
       changeOkLoading: (loading = true) => {

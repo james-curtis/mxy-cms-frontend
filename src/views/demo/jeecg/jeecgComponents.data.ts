@@ -1,4 +1,5 @@
-import { FormSchema, JCronValidator } from '/@/components/Form';
+import type { FormSchema } from '/@/components/Form';
+import { JCronValidator } from '/@/components/Form';
 import { usePermission } from '/@/hooks/web/usePermission';
 
 const { isDisabledAuth } = usePermission();
@@ -177,7 +178,11 @@ export const schemas: FormSchema[] = [
     component: 'JSelectDept',
     label: '选择部门—自定义值',
     helpMessage: ['component模式'],
-    componentProps: { showButton: false, rowKey: 'orgCode', primaryKey: 'orgCode' },
+    componentProps: {
+      showButton: false,
+      rowKey: 'orgCode',
+      primaryKey: 'orgCode',
+    },
     colProps: {
       span: 12,
     },

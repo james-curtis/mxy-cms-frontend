@@ -23,7 +23,12 @@ const move = (el: HTMLElement, amount: number) => {
 const position = (el: HTMLElement) => {
   return el.scrollTop;
 };
-export function useScrollTo({ el, to, duration = 500, callback }: ScrollToParams) {
+export function useScrollTo({
+  el,
+  to,
+  duration = 500,
+  callback,
+}: ScrollToParams) {
   const isActiveRef = ref(false);
   const start = position(el);
   const change = to - start;

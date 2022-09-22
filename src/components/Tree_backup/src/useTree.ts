@@ -1,20 +1,22 @@
 import type { InsertNodeParams, Keys, ReplaceFields } from './typing';
-import type { Ref, ComputedRef } from 'vue';
+import type { ComputedRef, Ref } from 'vue';
 import type { TreeDataItem } from 'ant-design-vue/es/tree/Tree';
 
 import { cloneDeep } from 'lodash-es';
 import { unref } from 'vue';
 import { forEach } from '/@/utils/helper/treeHelper';
 
-export function useTree(treeDataRef: Ref<TreeDataItem[]>, getReplaceFields: ComputedRef<ReplaceFields>) {
+export function useTree(
+  treeDataRef: Ref<TreeDataItem[]>,
+  getReplaceFields: ComputedRef<ReplaceFields>
+) {
   function getAllKeys(list?: TreeDataItem[]) {
     const keys: string[] = [];
     const treeData = list || unref(treeDataRef);
     const { key: keyField, children: childrenField } = unref(getReplaceFields);
     if (!childrenField || !keyField) return keys;
 
-    for (let index = 0; index < treeData.length; index++) {
-      const node = treeData[index];
+    for (const node of treeData) {
       keys.push(node[keyField]!);
       const children = node[childrenField];
       if (children && children.length) {
@@ -31,9 +33,10 @@ export function useTree(treeDataRef: Ref<TreeDataItem[]>, getReplaceFields: Comp
     const { key: keyField, children: childrenField } = unref(getReplaceFields);
     if (!childrenField || !keyField) return keys;
 
-    for (let index = 0; index < treeData.length; index++) {
-      const node = treeData[index];
-      node.disabled !== true && node.selectable !== false && keys.push(node[keyField]!);
+    for (const node of treeData) {
+      node.disabled !== true &&
+        node.selectable !== false &&
+        keys.push(node[keyField]!);
       const children = node[childrenField];
       if (children && children.length) {
         keys.push(...(getEnabledKeys(children) as string[]));
@@ -42,13 +45,15 @@ export function useTree(treeDataRef: Ref<TreeDataItem[]>, getReplaceFields: Comp
     return keys as Keys;
   }
 
-  function getChildrenKeys(nodeKey: string | number, list?: TreeDataItem[]): Keys {
+  function getChildrenKeys(
+    nodeKey: string | number,
+    list?: TreeDataItem[]
+  ): Keys {
     const keys: Keys = [];
     const treeData = list || unref(treeDataRef);
     const { key: keyField, children: childrenField } = unref(getReplaceFields);
     if (!childrenField || !keyField) return keys;
-    for (let index = 0; index < treeData.length; index++) {
-      const node = treeData[index];
+    for (const node of treeData) {
       const children = node[childrenField];
       if (nodeKey === node[keyField]) {
         keys.push(node[keyField]!);
@@ -65,7 +70,11 @@ export function useTree(treeDataRef: Ref<TreeDataItem[]>, getReplaceFields: Comp
   }
 
   // Update node
-  function updateNodeByKey(key: string, node: TreeDataItem, list?: TreeDataItem[]) {
+  function updateNodeByKey(
+    key: string,
+    node: TreeDataItem,
+    list?: TreeDataItem[]
+  ) {
     if (!key) return;
     const treeData = list || unref(treeDataRef);
     const { key: keyField, children: childrenField } = unref(getReplaceFields);
@@ -92,10 +101,9 @@ export function useTree(treeDataRef: Ref<TreeDataItem[]>, getReplaceFields: Comp
     }
     const res: (string | number)[] = [];
     const data = list || unref(treeDataRef) || [];
-    for (let index = 0; index < data.length; index++) {
-      const item = data[index];
-
-      const { key: keyField, children: childrenField } = unref(getReplaceFields);
+    for (const item of data) {
+      const { key: keyField, children: childrenField } =
+        unref(getReplaceFields);
       const key = keyField ? item[keyField] : '';
       const children = childrenField ? item[childrenField] : [];
       res.push(key);
@@ -110,7 +118,11 @@ export function useTree(treeDataRef: Ref<TreeDataItem[]>, getReplaceFields: Comp
   /**
    * 添加节点
    */
-  function insertNodeByKey({ parentKey = null, node, push = 'push' }: InsertNodeParams) {
+  function insertNodeByKey({
+    parentKey = null,
+    node,
+    push = 'push',
+  }: InsertNodeParams) {
     const treeData: any = cloneDeep(unref(treeDataRef));
     if (!parentKey) {
       treeData[push](node);
@@ -133,24 +145,29 @@ export function useTree(treeDataRef: Ref<TreeDataItem[]>, getReplaceFields: Comp
   /**
    * 批量添加节点
    */
-  function insertNodesByKey({ parentKey = null, list, push = 'push' }: InsertNodeParams) {
+  function insertNodesByKey({
+    parentKey = null,
+    list,
+    push = 'push',
+  }: InsertNodeParams) {
     const treeData: any = cloneDeep(unref(treeDataRef));
     if (!list || list.length < 1) {
       return;
     }
     if (!parentKey) {
-      for (let i = 0; i < list.length; i++) {
-        treeData[push](list[i]);
+      for (const element of list) {
+        treeData[push](element);
       }
     } else {
-      const { key: keyField, children: childrenField } = unref(getReplaceFields);
+      const { key: keyField, children: childrenField } =
+        unref(getReplaceFields);
       if (!childrenField || !keyField) return;
 
       forEach(treeData, (treeItem) => {
         if (treeItem[keyField] === parentKey) {
           treeItem[childrenField] = treeItem[childrenField] || [];
-          for (let i = 0; i < list.length; i++) {
-            treeItem[childrenField][push](list[i]);
+          for (const element of list) {
+            treeItem[childrenField][push](element);
           }
           treeDataRef.value = treeData;
           return true;

@@ -1,7 +1,13 @@
 import type { Component } from 'vue';
 import { h } from 'vue';
 import VXETable from 'vxe-table';
-import { definedComponent, addComponent, componentMap, spanEnds, excludeKeywords } from '../componentMap';
+import {
+  addComponent,
+  componentMap,
+  definedComponent,
+  excludeKeywords,
+  spanEnds,
+} from '../componentMap';
 import { JVxeRenderType, JVxeTypePrefix, JVxeTypes } from '../types/JVxeTypes';
 import { getEnhanced } from './enhancedUtils';
 import { isFunction } from '/@/utils/is';
@@ -24,7 +30,11 @@ export function isRegistered(type: JVxeTypes | string) {
  * @param component 编辑状态显示的组件
  * @param spanComponent 非编辑状态显示的组件，可以为空
  */
-export function registerComponent(type: JVxeTypes, component: Component, spanComponent?: Component) {
+export function registerComponent(
+  type: JVxeTypes,
+  component: Component,
+  spanComponent?: Component
+) {
   addComponent(type, component, spanComponent);
   registerOneComponent(type);
 }
@@ -35,7 +45,10 @@ export function registerComponent(type: JVxeTypes, component: Component, spanCom
  * @param type
  * @param promise
  */
-export async function registerAsyncComponent(type: JVxeTypes, promise: Promise<any>) {
+export async function registerAsyncComponent(
+  type: JVxeTypes,
+  promise: Promise<any>
+) {
   const result = await promise;
   if (isFunction(result.installJVxe)) {
     result.install((component: Component, spanComponent?: Component) => {
@@ -82,7 +95,11 @@ export function registerOneComponent(type: JVxeTypes) {
 }
 
 /** 注册可编辑组件 */
-function createEditRender(type: JVxeTypes, component: Component, spanComponent?: Component) {
+function createEditRender(
+  type: JVxeTypes,
+  component: Component,
+  spanComponent?: Component
+) {
   // 获取当前组件的增强
   const enhanced = getEnhanced(type);
   if (!spanComponent) {
@@ -105,7 +122,10 @@ function createEditRender(type: JVxeTypes, component: Component, spanComponent?:
 }
 
 /** 注册普通组件 */
-function createCellRender(type: JVxeTypes, component: Component = <Component>componentMap.get(JVxeTypes.normal)) {
+function createCellRender(
+  type: JVxeTypes,
+  component: Component = <Component>componentMap.get(JVxeTypes.normal)
+) {
   // 获取当前组件的增强
   const enhanced = getEnhanced(type);
   VXETable.renderer.add(JVxeTypePrefix + type, {
@@ -120,10 +140,10 @@ function createRender(type, component, renderType) {
   return function (renderOptions, params) {
     return [
       h(component, {
-        type: type,
-        params: params,
-        renderOptions: renderOptions,
-        renderType: renderType,
+        type,
+        params,
+        renderOptions,
+        renderType,
       }),
     ];
   };

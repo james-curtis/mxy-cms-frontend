@@ -1,5 +1,4 @@
-import { BasicColumn } from '/@/components/Table';
-import { FormSchema } from '/@/components/Table';
+import type { BasicColumn, FormSchema } from '/@/components/Table';
 import { getAllRolesList, getAllTenantList } from './user.api';
 import { rules } from '/@/utils/helper/validator';
 import { render } from '/@/utils/common/renderUtils';
@@ -141,7 +140,8 @@ export const formSchema: FormSchema[] = [
     dynamicDisabled: ({ values }) => {
       return !!values.id;
     },
-    dynamicRules: ({ model, schema }) => rules.duplicateCheckRule('sys_user', 'username', model, schema, true),
+    dynamicRules: ({ model, schema }) =>
+      rules.duplicateCheckRule('sys_user', 'username', model, schema, true),
   },
   {
     label: '登录密码',
@@ -171,7 +171,8 @@ export const formSchema: FormSchema[] = [
     field: 'workNo',
     required: true,
     component: 'Input',
-    dynamicRules: ({ model, schema }) => rules.duplicateCheckRule('sys_user', 'work_no', model, schema, true),
+    dynamicRules: ({ model, schema }) =>
+      rules.duplicateCheckRule('sys_user', 'work_no', model, schema, true),
   },
   {
     label: '职务',
@@ -214,7 +215,10 @@ export const formSchema: FormSchema[] = [
             },
           ]);
           //所属部门修改后更新负责部门数据
-          formModel.departIds && (formModel.departIds = formModel.departIds.filter((item) => values.value.indexOf(item) > -1));
+          formModel.departIds &&
+            (formModel.departIds = formModel.departIds.filter((item) =>
+              values.value.includes(item)
+            ));
         },
       };
     },
@@ -292,7 +296,15 @@ export const formSchema: FormSchema[] = [
     component: 'Input',
     dynamicRules: ({ model, schema }) => {
       return [
-        { ...rules.duplicateCheckRule('sys_user', 'phone', model, schema, true)[0] },
+        {
+          ...rules.duplicateCheckRule(
+            'sys_user',
+            'phone',
+            model,
+            schema,
+            true
+          )[0],
+        },
         { pattern: /^1[3|4|5|7|8|9][0-9]\d{8}$/, message: '手机号码格式有误' },
       ];
     },
@@ -301,7 +313,9 @@ export const formSchema: FormSchema[] = [
     label: '座机',
     field: 'telephone',
     component: 'Input',
-    rules: [{ pattern: /^0\d{2,3}-[1-9]\d{6,7}$/, message: '请输入正确的座机号码' }],
+    rules: [
+      { pattern: /^0\d{2,3}-[1-9]\d{6,7}$/, message: '请输入正确的座机号码' },
+    ],
   },
   {
     label: '工作流引擎',

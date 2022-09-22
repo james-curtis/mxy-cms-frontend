@@ -1,8 +1,21 @@
 import type { PropType } from 'vue';
 import type { PaginationProps } from './types/pagination';
-import type { BasicColumn, FetchSetting, TableSetting, SorterResult, TableCustomRecord, TableRowSelection, SizeType } from './types/table';
+import type {
+  BasicColumn,
+  FetchSetting,
+  SizeType,
+  SorterResult,
+  TableCustomRecord,
+  TableRowSelection,
+  TableSetting,
+} from './types/table';
 import type { FormProps } from '/@/components/Form';
-import { DEFAULT_FILTER_FN, DEFAULT_SORT_FN, FETCH_SETTING, DEFAULT_SIZE } from './const';
+import {
+  DEFAULT_FILTER_FN,
+  DEFAULT_SIZE,
+  DEFAULT_SORT_FN,
+  FETCH_SETTING,
+} from './const';
 import { propTypes } from '/@/utils/propTypes';
 
 export const basicProps = {
@@ -100,7 +113,9 @@ export const basicProps = {
     default: null,
   },
   title: {
-    type: [String, Function] as PropType<string | ((data: Recordable) => string)>,
+    type: [String, Function] as PropType<
+      string | ((data: Recordable) => string)
+    >,
     default: null,
   },
   titleHelpMessage: {
@@ -113,7 +128,9 @@ export const basicProps = {
     default: null,
   },
   rowKey: {
-    type: [String, Function] as PropType<string | ((record: Recordable) => string)>,
+    type: [String, Function] as PropType<
+      string | ((record: Recordable) => string)
+    >,
     default: '',
   },
   bordered: propTypes.bool,
@@ -123,14 +140,23 @@ export const basicProps = {
   },
   loading: propTypes.bool,
   rowClassName: {
-    type: Function as PropType<(record: TableCustomRecord<any>, index: number) => string>,
+    type: Function as PropType<
+      (record: TableCustomRecord<any>, index: number) => string
+    >,
   },
   scroll: {
     type: Object as PropType<{ x: number | true; y: number }>,
     default: null,
   },
   beforeEditSubmit: {
-    type: Function as PropType<(data: { record: Recordable; index: number; key: string | number; value: any }) => Promise<any>>,
+    type: Function as PropType<
+      (data: {
+        record: Recordable;
+        index: number;
+        key: string | number;
+        value: any;
+      }) => Promise<any>
+    >,
   },
   size: {
     type: String as PropType<SizeType>,

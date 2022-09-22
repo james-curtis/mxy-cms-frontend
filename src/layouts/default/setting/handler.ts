@@ -1,10 +1,13 @@
 import { HandlerEnum } from './enum';
-import { updateHeaderBgColor, updateSidebarBgColor } from '/@/logics/theme/updateBackground';
+import {
+  updateHeaderBgColor,
+  updateSidebarBgColor,
+} from '/@/logics/theme/updateBackground';
 import { updateColorWeak } from '/@/logics/theme/updateColorWeak';
 import { updateGrayMode } from '/@/logics/theme/updateGrayMode';
 
 import { useAppStore } from '/@/store/modules/app';
-import { ProjectConfig } from '/#/config';
+import type { ProjectConfig } from '/#/config';
 import { changeTheme } from '/@/logics/theme';
 import { updateDarkTheme } from '/@/logics/theme/dark';
 import { useRootSetting } from '/@/hooks/setting/useRootSetting';
@@ -19,7 +22,10 @@ export function baseHandler(event: HandlerEnum, value: any) {
   }
 }
 
-export function handler(event: HandlerEnum, value: any): DeepPartial<ProjectConfig> {
+export function handler(
+  event: HandlerEnum,
+  value: any
+): DeepPartial<ProjectConfig> {
   const appStore = useAppStore();
 
   const { getThemeColor, getDarkMode } = useRootSetting();

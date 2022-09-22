@@ -1,11 +1,16 @@
 import { h } from 'vue';
-import { JVxeDataProps, JVxeTableMethods, JVxeTableProps } from '../types';
+import type { JVxeDataProps, JVxeTableMethods, JVxeTableProps } from '../types';
 import JVxeSubPopover from '../components/JVxeSubPopover.vue';
 import JVxeDetailsModal from '../components/JVxeDetailsModal.vue';
 import { useToolbar } from '/@/components/jeecg/JVxeTable/src/hooks/useToolbar';
 import { usePagination } from '/@/components/jeecg/JVxeTable/src/hooks/usePagination';
 
-export function useRenderComponents(props: JVxeTableProps, data: JVxeDataProps, methods: JVxeTableMethods, slots) {
+export function useRenderComponents(
+  props: JVxeTableProps,
+  data: JVxeDataProps,
+  methods: JVxeTableMethods,
+  slots
+) {
   // 渲染 toolbar
   const { renderToolbar } = useToolbar(props, data, methods, slots);
   // 渲染分页器

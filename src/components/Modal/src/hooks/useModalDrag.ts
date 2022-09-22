@@ -1,4 +1,5 @@
-import { Ref, unref, watchEffect } from 'vue';
+import type { Ref } from 'vue';
+import { unref, watchEffect } from 'vue';
 import { useTimeoutFn } from '/@/hooks/core/useTimeout';
 
 export interface UseModalDragMoveContext {
@@ -13,7 +14,7 @@ export function useModalDragMove(context: UseModalDragMoveContext) {
   };
   const drag = (wrap: any) => {
     if (!wrap) return;
-    wrap.setAttribute('data-drag', unref(context.draggable));
+    wrap.dataset.drag = unref(context.draggable);
     const dialogHeaderEl = wrap.querySelector('.ant-modal-header');
     const dragDom = wrap.querySelector('.ant-modal');
 
@@ -86,7 +87,7 @@ export function useModalDragMove(context: UseModalDragMoveContext) {
     for (const wrap of Array.from(dragWraps)) {
       if (!wrap) continue;
       const display = getStyle(wrap, 'display');
-      const draggable = wrap.getAttribute('data-drag');
+      const draggable = wrap.dataset.drag;
       if (display !== 'none') {
         // 拖拽位置
         if (draggable === null || unref(context.destroyOnClose)) {

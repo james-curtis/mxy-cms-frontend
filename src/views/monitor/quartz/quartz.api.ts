@@ -36,8 +36,8 @@ export const getQuartzList = (params) => {
  * @param params
  */
 export const saveOrUpdateQuartz = (params, isUpdate) => {
-  let url = isUpdate ? Api.edit : Api.save;
-  return defHttp.post({ url: url, params });
+  const url = isUpdate ? Api.edit : Api.save;
+  return defHttp.post({ url, params });
 };
 
 /**
@@ -53,9 +53,11 @@ export const getQuartzById = (params) => {
  * @param params
  */
 export const deleteQuartz = (params, handleSuccess) => {
-  return defHttp.delete({ url: Api.delete, data: params }, { joinParamsToUrl: true }).then(() => {
-    handleSuccess();
-  });
+  return defHttp
+    .delete({ url: Api.delete, data: params }, { joinParamsToUrl: true })
+    .then(() => {
+      handleSuccess();
+    });
 };
 
 /**
@@ -99,9 +101,14 @@ export const batchDeleteQuartz = (params, handleSuccess) => {
     okText: '确认',
     cancelText: '取消',
     onOk: () => {
-      return defHttp.delete({ url: Api.deleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
-        handleSuccess();
-      });
+      return defHttp
+        .delete(
+          { url: Api.deleteBatch, data: params },
+          { joinParamsToUrl: true }
+        )
+        .then(() => {
+          handleSuccess();
+        });
     },
   });
 };

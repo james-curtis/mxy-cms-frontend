@@ -1,4 +1,4 @@
-import type { Router, RouteRecordRaw } from 'vue-router';
+import type { RouteRecordRaw, Router } from 'vue-router';
 
 import { usePermissionStoreWithOut } from '/@/store/modules/permission';
 
@@ -84,9 +84,13 @@ export function createPermissionGuard(router: Router) {
       }
       //update-end---author:wangshuai ---date:20220629  for：[issues/I5BG1I]vue3 Auth2未实现------------
       // redirect login page
-      const redirectData: { path: string; replace: boolean; query?: Recordable<string> } = {
+      const redirectData: {
+        path: string;
+        replace: boolean;
+        query?: Recordable<string>;
+      } = {
         //update-begin---author:wangshuai ---date:20220629  for：[issues/I5BG1I]vue3 Auth2未实现------------
-        path: path,
+        path,
         //update-end---author:wangshuai ---date:20220629  for：[issues/I5BG1I]vue3 Auth2未实现------------
         replace: true,
       };
@@ -101,7 +105,11 @@ export function createPermissionGuard(router: Router) {
     }
 
     // Jump to the 404 page after processing the login
-    if (from.path === LOGIN_PATH && to.name === PAGE_NOT_FOUND_ROUTE.name && to.fullPath !== (userStore.getUserInfo.homePath || PageEnum.BASE_HOME)) {
+    if (
+      from.path === LOGIN_PATH &&
+      to.name === PAGE_NOT_FOUND_ROUTE.name &&
+      to.fullPath !== (userStore.getUserInfo.homePath || PageEnum.BASE_HOME)
+    ) {
       next(userStore.getUserInfo.homePath || PageEnum.BASE_HOME);
       return;
     }
@@ -137,7 +145,8 @@ export function createPermissionGuard(router: Router) {
     } else {
       const redirectPath = (from.query.redirect || to.path) as string;
       const redirect = decodeURIComponent(redirectPath);
-      const nextData = to.path === redirect ? { ...to, replace: true } : { path: redirect };
+      const nextData =
+        to.path === redirect ? { ...to, replace: true } : { path: redirect };
       next(nextData);
     }
   });

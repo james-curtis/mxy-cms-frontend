@@ -1,5 +1,4 @@
-import { BasicColumn } from '/@/components/Table';
-import { FormSchema } from '/@/components/Table';
+import type { BasicColumn, FormSchema } from '/@/components/Table';
 import { dictItemCheck } from './dict.api';
 import { rules } from '/@/utils/helper/validator';
 export const columns: BasicColumn[] = [
@@ -73,7 +72,8 @@ export const formSchema: FormSchema[] = [
     dynamicDisabled: ({ values }) => {
       return !!values.id;
     },
-    dynamicRules: ({ model, schema }) => rules.duplicateCheckRule('sys_dict', 'dict_code', model, schema, true),
+    dynamicRules: ({ model, schema }) =>
+      rules.duplicateCheckRule('sys_dict', 'dict_code', model, schema, true),
   },
   {
     label: '描述',
@@ -137,11 +137,15 @@ export const itemFormSchema: FormSchema[] = [
             if (!value) {
               return Promise.reject('请输入数据值');
             }
-            if (new RegExp("[`~!@#$^&*()=|{}'.<>《》/?！￥（）—【】‘；：”“。，、？]").test(value)) {
+            if (
+              new RegExp(
+                "[`~!@#$^&*()=|{}'.<>《》/?！￥（）—【】‘；：”“。，、？]"
+              ).test(value)
+            ) {
               return Promise.reject('数据值不能包含特殊字符！');
             }
             return new Promise<void>((resolve, reject) => {
-              let params = {
+              const params = {
                 dictId: values.dictId,
                 id: model.id,
                 itemValue: value,

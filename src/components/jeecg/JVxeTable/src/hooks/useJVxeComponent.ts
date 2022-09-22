@@ -4,7 +4,7 @@ import { useDesign } from '/@/hooks/web/useDesign';
 import { getEnhanced, replaceProps, vModel } from '../utils/enhancedUtils';
 import { JVxeRenderType } from '../types/JVxeTypes';
 import { isBoolean, isFunction, isObject, isPromise } from '/@/utils/is';
-import { JVxeComponent } from '../types/JVxeComponent';
+import type { JVxeComponent } from '../types/JVxeComponent';
 import { filterDictText } from '/@/utils/dict/JDictSelectUtil';
 
 export function useJVxeCompProps() {
@@ -31,14 +31,16 @@ export function useJVxeComponent(props: JVxeComponent.Props) {
   const rowIndex = computed(() => props.params.$rowIndex);
   const columnIndex = computed(() => props.params.columnIndex);
   // 表格数据长度
-  const fullDataLength = computed(() => props.params.$table.internalData.tableFullData.length);
+  const fullDataLength = computed(
+    () => props.params.$table.internalData.tableFullData.length
+  );
   // 是否正在滚动中
   const scrolling = computed(() => !!props.renderOptions.scrolling);
   const cellProps = computed(() => {
-    let renderOptions = props.renderOptions;
-    let col = originColumn.value;
+    const renderOptions = props.renderOptions;
+    const col = originColumn.value;
 
-    let cellProps = {};
+    const cellProps = {};
 
     // 输入占位符
     cellProps['placeholder'] = replaceProps(col, col.placeholder);
@@ -51,7 +53,9 @@ export function useJVxeComponent(props: JVxeComponent.Props) {
     }
 
     // 判断是否是禁用的列
-    cellProps['disabled'] = isBoolean(col['disabled']) ? col['disabled'] : cellProps['disabled'];
+    cellProps['disabled'] = isBoolean(col['disabled'])
+      ? col['disabled']
+      : cellProps['disabled'];
     // 判断是否禁用行
     if (renderOptions.isDisabledRow(row.value)) {
       cellProps['disabled'] = true;
@@ -78,7 +82,7 @@ export function useJVxeComponent(props: JVxeComponent.Props) {
   });
 
   const listeners = computed(() => {
-    let listeners = Object.assign({}, props.renderOptions.listeners || {});
+    const listeners = Object.assign({}, props.renderOptions.listeners || {});
     // 默认change事件
     if (!listeners.change) {
       listeners.change = async (event) => {
@@ -113,7 +117,7 @@ export function useJVxeComponent(props: JVxeComponent.Props) {
     value,
     (newValue) => {
       // 验证值格式
-      let getValue = enhanced.getValue(newValue, ctx);
+      const getValue = enhanced.getValue(newValue, ctx);
       if (newValue !== getValue) {
         // 值格式不正确，重新赋值
         newValue = getValue;
@@ -121,9 +125,12 @@ export function useJVxeComponent(props: JVxeComponent.Props) {
       }
       innerValue.value = enhanced.setValue(newValue, ctx);
       // 判断是否启用翻译
-      if (props.renderType === JVxeRenderType.spaner && enhanced.translate.enabled === true) {
+      if (
+        props.renderType === JVxeRenderType.spaner &&
+        enhanced.translate.enabled === true
+      ) {
         if (isFunction(enhanced.translate.handler)) {
-          let res = enhanced.translate.handler(newValue, ctx);
+          const res = enhanced.translate.handler(newValue, ctx);
           // 异步翻译，可解决字典查询慢的问题
           if (isPromise(res)) {
             res.then((v) => (innerValue.value = v));
@@ -138,14 +145,14 @@ export function useJVxeComponent(props: JVxeComponent.Props) {
 
   /** 通用处理 change 事件 */
   function handleChangeCommon($value) {
-    let newValue = enhanced.getValue($value, ctx);
-    let oldValue = value.value
+    const newValue = enhanced.getValue($value, ctx);
+    const oldValue = value.value;
     trigger('change', { value: newValue });
     // 触发valueChange事件
     parentTrigger('valueChange', {
       type: props.type,
       value: newValue,
-      oldValue: oldValue,
+      oldValue,
       col: originColumn.value,
       rowIndex: rowIndex.value,
       columnIndex: columnIndex.value,
@@ -164,7 +171,7 @@ export function useJVxeComponent(props: JVxeComponent.Props) {
    * @param args 其他附带参数
    */
   function trigger(name, event?, args: any[] = []) {
-    let listener = listeners.value[name];
+    const listener = listeners.value[name];
     if (isFunction(listener)) {
       if (isObject(event)) {
         event = packageEvent(name, event);
@@ -239,7 +246,10 @@ export function useDefaultEnhanced(): JVxeComponent.EnhancedPartial {
       handler(value, ctx) {
         // 默认翻译方法
         if (ctx) {
-          return filterDictText(unref(ctx.context.column).params.options, value);
+          return filterDictText(
+            unref(ctx.context.column).params.options,
+            value
+          );
         } else {
           return value;
         }

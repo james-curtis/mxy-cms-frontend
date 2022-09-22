@@ -1,7 +1,6 @@
+import { nextTick, unref, watchEffect } from 'vue';
 import type { ComputedRef, Ref } from 'vue';
-import type { FormSchema, FormActionType, FormProps } from '../types/form';
-
-import { unref, nextTick, watchEffect } from 'vue';
+import type { FormActionType, FormProps, FormSchema } from '../types/form';
 
 interface UseAutoFocusContext {
   getSchema: ComputedRef<FormSchema[]>;
@@ -9,7 +8,12 @@ interface UseAutoFocusContext {
   isInitedDefault: Ref<boolean>;
   formElRef: Ref<FormActionType>;
 }
-export async function useAutoFocus({ getSchema, getProps, formElRef, isInitedDefault }: UseAutoFocusContext) {
+export async function useAutoFocus({
+  getSchema,
+  getProps,
+  formElRef,
+  isInitedDefault,
+}: UseAutoFocusContext) {
   watchEffect(async () => {
     if (unref(isInitedDefault) || !unref(getProps).autoFocusFirstItem) {
       return;
@@ -28,7 +32,9 @@ export async function useAutoFocus({ getSchema, getProps, formElRef, isInitedDef
       return;
     }
 
-    const inputEl = el.querySelector('.ant-row:first-child input') as Nullable<HTMLInputElement>;
+    const inputEl = el.querySelector(
+      '.ant-row:first-child input'
+    ) as Nullable<HTMLInputElement>;
     if (!inputEl) return;
     inputEl?.focus();
   });

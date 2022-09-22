@@ -1,11 +1,11 @@
-import { BasicColumn } from '/@/components/Table';
 import dayjs from 'dayjs';
+import type { BasicColumn } from '/@/components/Table';
 export const columns: BasicColumn[] = [
   {
     title: '请求时间',
     dataIndex: 'timestamp',
     width: 50,
-    customRender({text}) {
+    customRender({ text }) {
       return dayjs(text).format('YYYY-MM-DD HH:mm:ss');
     },
   },

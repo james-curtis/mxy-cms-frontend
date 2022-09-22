@@ -1,6 +1,6 @@
+import { ref, unref, watch } from 'vue';
+import { useDebounceFn, useThrottleFn } from '@vueuse/core';
 import type { Ref } from 'vue';
-import { ref, watch, unref } from 'vue';
-import { useThrottleFn, useDebounceFn } from '@vueuse/core';
 
 export type RemoveEventFn = () => void;
 export interface UseEventParams {
@@ -12,7 +12,15 @@ export interface UseEventParams {
   isDebounce?: boolean;
   wait?: number;
 }
-export function useEventListener({ el = window, name, listener, options, autoRemove = true, isDebounce = true, wait = 80 }: UseEventParams): {
+export function useEventListener({
+  el = window,
+  name,
+  listener,
+  options,
+  autoRemove = true,
+  isDebounce = true,
+  wait = 80,
+}: UseEventParams): {
   removeEvent: RemoveEventFn;
 } {
   /* eslint-disable-next-line */
@@ -22,13 +30,16 @@ export function useEventListener({ el = window, name, listener, options, autoRem
   if (el) {
     const element = ref(el as Element) as Ref<Element>;
 
-    const handler = isDebounce ? useDebounceFn(listener, wait) : useThrottleFn(listener, wait);
+    const handler = isDebounce
+      ? useDebounceFn(listener, wait)
+      : useThrottleFn(listener, wait);
     const realHandler = wait ? handler : listener;
     const removeEventListener = (e: Element) => {
       isAddRef.value = true;
       e.removeEventListener(name, realHandler, options);
     };
-    const addEventListener = (e: Element) => e.addEventListener(name, realHandler, options);
+    const addEventListener = (e: Element) =>
+      e.addEventListener(name, realHandler, options);
 
     const removeWatch = watch(
       element,

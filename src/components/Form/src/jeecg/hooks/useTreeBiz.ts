@@ -1,6 +1,6 @@
 import type { Ref } from 'vue';
-import { inject, reactive, ref, computed, unref, watch, nextTick } from 'vue';
-import { TreeActionType } from '/@/components/Tree';
+import { computed, inject, nextTick, reactive, ref, unref, watch } from 'vue';
+import type { TreeActionType } from '/@/components/Tree';
 import { listToTree } from '/@/utils/common/compUtils';
 
 export function useTreeBiz(treeRef, getList, props) {
@@ -19,7 +19,9 @@ export function useTreeBiz(treeRef, getList, props) {
   //是否是打开弹框模式
   const openModal = ref(false);
   // 是否开启父子关联，如果不可以多选，就始终取消父子关联
-  const getCheckStrictly = computed(() => (props.multiple ? props.checkStrictly : true));
+  const getCheckStrictly = computed(() =>
+    props.multiple ? props.checkStrictly : true
+  );
   // 是否是首次加载回显，只有首次加载，才会显示 loading
   let isFirstLoadEcho = true;
 
@@ -71,7 +73,7 @@ export function useTreeBiz(treeRef, getList, props) {
     if (props.checkable == false) {
       checkedKeys.value = props.checkStrictly ? keys.checked : keys;
       const { selectedNodes } = info;
-      let rows = <any[]>[];
+      const rows = <any[]>[];
       selectedNodes.forEach((item) => {
         rows.push(item);
       });
@@ -89,7 +91,9 @@ export function useTreeBiz(treeRef, getList, props) {
         if (info.checked) {
           //update-begin-author:taoyan date:20220408 for: 单选模式下，设定rowKey，无法选中数据-
           checkedKeys.value = [info.node.eventKey];
-          let temp = info.checkedNodes.find((n) => n.key === info.node.eventKey);
+          const temp = info.checkedNodes.find(
+            (n) => n.key === info.node.eventKey
+          );
           selectRows.value = [temp];
           //update-end-author:taoyan date:20220408 for: 单选模式下，设定rowKey，无法选中数据-
         } else {
@@ -100,7 +104,7 @@ export function useTreeBiz(treeRef, getList, props) {
       }
       checkedKeys.value = props.checkStrictly ? keys.checked : keys;
       const { checkedNodes } = info;
-      let rows = <any[]>[];
+      const rows = <any[]>[];
       checkedNodes.forEach((item) => {
         rows.push(item);
       });
@@ -126,7 +130,7 @@ export function useTreeBiz(treeRef, getList, props) {
    * 加载树数据
    */
   async function onLoadData(treeNode, ids) {
-    let params = {};
+    const params = {};
     let startPid = '';
     if (treeNode) {
       startPid = treeNode.eventKey;
@@ -139,7 +143,7 @@ export function useTreeBiz(treeRef, getList, props) {
       params['ids'] = ids;
     }
     let record = await getList(params);
-    let optionData = record;
+    const optionData = record;
     if (!props.serverTreeData) {
       //前端处理数据为tree结构
       record = listToTree(record, props, startPid);
@@ -160,8 +164,13 @@ export function useTreeBiz(treeRef, getList, props) {
           }
           const asyncTreeAction: TreeActionType | null = unref(treeRef);
           if (asyncTreeAction) {
-            asyncTreeAction.updateNodeByKey(treeNode.eventKey, { children: record });
-            asyncTreeAction.setExpandedKeys([treeNode.eventKey, ...asyncTreeAction.getExpandedKeys()]);
+            asyncTreeAction.updateNodeByKey(treeNode.eventKey, {
+              children: record,
+            });
+            asyncTreeAction.setExpandedKeys([
+              treeNode.eventKey,
+              ...asyncTreeAction.getExpandedKeys(),
+            ]);
           }
           resolve();
           return;
@@ -172,7 +181,10 @@ export function useTreeBiz(treeRef, getList, props) {
       const options = <any[]>[];
       optionData.forEach((item) => {
         //update-begin-author:taoyan date:2022-7-4 for: issues/I5F3P4 online配置部门选择后编辑，查看数据应该显示部门名称，不是部门代码
-        options.push({ label: item[props.titleKey], value: item[props.rowKey] });
+        options.push({
+          label: item[props.titleKey],
+          value: item[props.rowKey],
+        });
         //update-end-author:taoyan date:2022-7-4 for: issues/I5F3P4 online配置部门选择后编辑，查看数据应该显示部门名称，不是部门代码
       });
       selectOptions.value = options;
@@ -186,7 +198,7 @@ export function useTreeBiz(treeRef, getList, props) {
    */
   function checkHasChild(pid, treeArray) {
     if (treeArray && treeArray.length > 0) {
-      for (let item of treeArray) {
+      for (const item of treeArray) {
         if (item.key == pid) {
           if (!item.child) {
             item.isLeaf = true;

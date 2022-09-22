@@ -1,11 +1,10 @@
-import type { Ref } from 'vue';
-
-import { computed, unref, onMounted, nextTick, ref } from 'vue';
+import { computed, nextTick, onMounted, ref, unref } from 'vue';
 
 import { TriggerEnum } from '/@/enums/menuEnum';
 
 import { useMenuSetting } from '/@/hooks/setting/useMenuSetting';
 import { useDebounceFn } from '@vueuse/core';
+import type { Ref } from 'vue';
 
 /**
  * Handle related operations of menu events
@@ -35,7 +34,11 @@ export function useTrigger(getIsMobile: Ref<boolean>) {
   const getShowTrigger = computed(() => {
     const trigger = unref(getTrigger);
 
-    return trigger !== TriggerEnum.NONE && !unref(getIsMobile) && (trigger === TriggerEnum.FOOTER || unref(getSplit));
+    return (
+      trigger !== TriggerEnum.NONE &&
+      !unref(getIsMobile) &&
+      (trigger === TriggerEnum.FOOTER || unref(getSplit))
+    );
   });
 
   const getTriggerAttr = computed(() => {
@@ -55,7 +58,11 @@ export function useTrigger(getIsMobile: Ref<boolean>) {
  * @param siderRef
  * @param dragBarRef
  */
-export function useDragLine(siderRef: Ref<any>, dragBarRef: Ref<any>, mix = false) {
+export function useDragLine(
+  siderRef: Ref<any>,
+  dragBarRef: Ref<any>,
+  mix = false
+) {
   const { getMiniWidthNumber, getCollapsed, setMenuSetting } = useMenuSetting();
 
   onMounted(() => {
@@ -74,7 +81,11 @@ export function useDragLine(siderRef: Ref<any>, dragBarRef: Ref<any>, mix = fals
     return unref(elRef);
   }
 
-  function handleMouseMove(ele: HTMLElement, wrap: HTMLElement, clientX: number) {
+  function handleMouseMove(
+    ele: HTMLElement,
+    wrap: HTMLElement,
+    clientX: number
+  ) {
     document.onmousemove = function (innerE) {
       let iT = (ele as any).left + (innerE.clientX - clientX);
       innerE = innerE || window.event;
@@ -83,7 +94,7 @@ export function useDragLine(siderRef: Ref<any>, dragBarRef: Ref<any>, mix = fals
       iT < 0 && (iT = 0);
       iT > maxT && (iT = maxT);
       iT < minT && (iT = minT);
-      ele.style.left = wrap.style.width = iT + 'px';
+      ele.style.left = wrap.style.width = `${iT}px`;
       return false;
     };
   }
@@ -95,14 +106,17 @@ export function useDragLine(siderRef: Ref<any>, dragBarRef: Ref<any>, mix = fals
       document.onmousemove = null;
       document.onmouseup = null;
       wrap.style.transition = 'width 0.2s';
-      const width = parseInt(wrap.style.width);
+      const width = Number.parseInt(wrap.style.width);
 
       if (!mix) {
         const miniWidth = unref(getMiniWidthNumber);
         if (!unref(getCollapsed)) {
-          width > miniWidth + 20 ? setMenuSetting({ menuWidth: width }) : setMenuSetting({ collapsed: true });
+          width > miniWidth + 20
+            ? setMenuSetting({ menuWidth: width })
+            : setMenuSetting({ collapsed: true });
         } else {
-          width > miniWidth && setMenuSetting({ collapsed: false, menuWidth: width });
+          width > miniWidth &&
+            setMenuSetting({ collapsed: false, menuWidth: width });
         }
       } else {
         setMenuSetting({ menuWidth: width });

@@ -6,12 +6,12 @@ import { useUserStore } from '/@/store/modules/user';
 
 import { useTabs } from './useTabs';
 
-import { router, resetRouter } from '/@/router';
+import { resetRouter, router } from '/@/router';
 // import { RootRoute } from '/@/router/routes';
 
 import projectSetting from '/@/settings/projectSetting';
 import { PermissionModeEnum } from '/@/enums/appEnum';
-import { RoleEnum } from '/@/enums/roleEnum';
+import type { RoleEnum } from '/@/enums/roleEnum';
 
 import { intersection } from 'lodash-es';
 import { isArray } from '/@/utils/is';
@@ -28,16 +28,16 @@ export function usePermission(formData?) {
   function hasBpmPermission(code, type) {
     // 禁用-type=2
     // 显示-type=1
-    let codeList: string[] = [];
-    let permissionList = formData.permissionList;
+    const codeList: string[] = [];
+    const permissionList = formData.permissionList;
     if (permissionList && permissionList.length > 0) {
-      for (let item of permissionList) {
+      for (const item of permissionList) {
         if (item.type == type) {
           codeList.push(item.action);
         }
       }
     }
-    return codeList.indexOf(code) >= 0;
+    return codeList.includes(code);
   }
   //==================================工作流权限判断-end=========================================
 
@@ -46,7 +46,10 @@ export function usePermission(formData?) {
    */
   async function togglePermissionMode() {
     appStore.setProjectConfig({
-      permissionMode: projectSetting.permissionMode === PermissionModeEnum.BACK ? PermissionModeEnum.ROUTE_MAPPING : PermissionModeEnum.BACK,
+      permissionMode:
+        projectSetting.permissionMode === PermissionModeEnum.BACK
+          ? PermissionModeEnum.ROUTE_MAPPING
+          : PermissionModeEnum.BACK,
     });
     location.reload();
   }
@@ -70,7 +73,10 @@ export function usePermission(formData?) {
   /**
    * 确定是否存在权限
    */
-  function hasPermission(value?: RoleEnum | RoleEnum[] | string | string[], def = true): boolean {
+  function hasPermission(
+    value?: RoleEnum | RoleEnum[] | string | string[],
+    def = true
+  ): boolean {
     // Visible by default
     if (!value) {
       return def;
@@ -78,11 +84,17 @@ export function usePermission(formData?) {
 
     const permMode = projectSetting.permissionMode;
 
-    if ([PermissionModeEnum.ROUTE_MAPPING, PermissionModeEnum.ROLE].includes(permMode)) {
+    if (
+      [PermissionModeEnum.ROUTE_MAPPING, PermissionModeEnum.ROLE].includes(
+        permMode
+      )
+    ) {
       if (!isArray(value)) {
         return userStore.getRoleList?.includes(value as RoleEnum);
       }
-      return (intersection(value, userStore.getRoleList) as RoleEnum[]).length > 0;
+      return (
+        (intersection(value, userStore.getRoleList) as RoleEnum[]).length > 0
+      );
     }
 
     if (PermissionModeEnum.BACK === permMode) {
@@ -90,7 +102,7 @@ export function usePermission(formData?) {
       if (!isArray(value) && allCodeList && allCodeList.length > 0) {
         //=============================工作流权限判断-显示-begin==============================================
         if (formData) {
-          let code = value as string;
+          const code = value as string;
           if (hasBpmPermission(code, '1') === true) {
             return true;
           }
@@ -105,10 +117,13 @@ export function usePermission(formData?) {
   /**
    * 是否禁用组件
    */
-  function isDisabledAuth(value?: RoleEnum | RoleEnum[] | string | string[], def = true): boolean {
+  function isDisabledAuth(
+    value?: RoleEnum | RoleEnum[] | string | string[],
+    def = true
+  ): boolean {
     //=============================工作流权限判断-禁用-begin==============================================
     if (formData) {
-      let code = value as string;
+      const code = value as string;
       if (hasBpmPermission(code, '2') === true) {
         return true;
       }
@@ -128,7 +143,9 @@ export function usePermission(formData?) {
    */
   async function changeRole(roles: RoleEnum | RoleEnum[]): Promise<void> {
     if (projectSetting.permissionMode !== PermissionModeEnum.ROUTE_MAPPING) {
-      throw new Error('Please switch PermissionModeEnum to ROUTE_MAPPING mode in the configuration to operate!');
+      throw new Error(
+        'Please switch PermissionModeEnum to ROUTE_MAPPING mode in the configuration to operate!'
+      );
     }
 
     if (!isArray(roles)) {
@@ -150,9 +167,9 @@ export function usePermission(formData?) {
    * 判断是不是 代码里写了逻辑但是没有配置权限这种情况
    */
   function isCodingButNoConfig(code) {
-    let all = permissionStore.allAuthList;
-    if (all && all instanceof Array) {
-      let temp = all.filter((item) => item.action == code);
+    const all = permissionStore.allAuthList;
+    if (all && Array.isArray(all)) {
+      const temp = all.filter((item) => item.action == code);
       if (temp && temp.length > 0) {
         if (temp[0].status == '0') {
           return true;
@@ -165,5 +182,11 @@ export function usePermission(formData?) {
   }
   //update-end-author:taoyan date:2022-6-17 for: VUEN-1342【流程】编码方式 节点权限配置好后，未生效
 
-  return { changeRole, hasPermission, togglePermissionMode, refreshMenu, isDisabledAuth };
+  return {
+    changeRole,
+    hasPermission,
+    togglePermissionMode,
+    refreshMenu,
+    isDisabledAuth,
+  };
 }

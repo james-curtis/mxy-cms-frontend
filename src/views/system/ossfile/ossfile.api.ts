@@ -27,7 +27,9 @@ export const list = (params) => defHttp.get({ url: Api.list, params });
  * 删除用户
  */
 export const deleteFile = (params, handleSuccess) => {
-  return defHttp.delete({ url: Api.deleteFile, params }, { joinParamsToUrl: true }).then(() => {
-    handleSuccess();
-  });
+  return defHttp
+    .delete({ url: Api.deleteFile, params }, { joinParamsToUrl: true })
+    .then(() => {
+      handleSuccess();
+    });
 };

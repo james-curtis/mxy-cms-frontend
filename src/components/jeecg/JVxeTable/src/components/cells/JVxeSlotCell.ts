@@ -1,6 +1,9 @@
 import { computed, defineComponent, h } from 'vue';
-import { useJVxeComponent, useJVxeCompProps } from '/@/components/jeecg/JVxeTable/src/hooks/useJVxeComponent';
-import { JVxeComponent } from '/@/components/jeecg/JVxeTable/src/types/JVxeComponent';
+import {
+  useJVxeCompProps,
+  useJVxeComponent,
+} from '/@/components/jeecg/JVxeTable/src/hooks/useJVxeComponent';
+import type { JVxeComponent } from '/@/components/jeecg/JVxeTable/src/types/JVxeComponent';
 
 export default defineComponent({
   name: 'JVxeSlotCell',
@@ -24,7 +27,7 @@ export default defineComponent({
       };
     });
     return () => {
-      let { slot } = props.renderOptions;
+      const { slot } = props.renderOptions;
       if (slot) {
         return h('div', {}, slot(slotProps.value));
       } else {

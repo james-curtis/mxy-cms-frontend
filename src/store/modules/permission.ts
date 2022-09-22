@@ -6,7 +6,11 @@ import { useI18n } from '/@/hooks/web/useI18n';
 import { useUserStore } from './user';
 import { useAppStoreWithOut } from './app';
 import { toRaw } from 'vue';
-import { transformObjToRoute, flatMultiLevelRoutes, addSlashToRouteComponent } from '/@/router/helper/routeHelper';
+import {
+  addSlashToRouteComponent,
+  flatMultiLevelRoutes,
+  transformObjToRoute,
+} from '/@/router/helper/routeHelper';
 import { transformRouteToMenu } from '/@/router/helper/menuHelper';
 
 import projectSetting from '/@/settings/projectSetting';
@@ -18,7 +22,7 @@ import { ERROR_LOG_ROUTE, PAGE_NOT_FOUND_ROUTE } from '/@/router/routes/basic';
 
 import { filter } from '/@/utils/helper/treeHelper';
 
-import { getMenuList,switchVue3Menu } from '/@/api/sys/menu';
+import { getMenuList, switchVue3Menu } from '/@/api/sys/menu';
 import { getPermCode } from '/@/api/sys/user';
 
 import { useMessage } from '/@/hooks/web/useMessage';
@@ -111,7 +115,7 @@ export const usePermissionStore = defineStore({
     },
 
     setLastBuildMenuTime() {
-      this.lastBuildMenuTime = new Date().getTime();
+      this.lastBuildMenuTime = Date.now();
     },
 
     setDynamicAddedRoute(added: boolean) {
@@ -136,7 +140,8 @@ export const usePermissionStore = defineStore({
 
       let routes: AppRouteRecordRaw[] = [];
       const roleList = toRaw(userStore.getRoleList) || [];
-      const { permissionMode = projectSetting.permissionMode } = appStore.getProjectConfig;
+      const { permissionMode = projectSetting.permissionMode } =
+        appStore.getProjectConfig;
 
       const routeFilter = (route: AppRouteRecordRaw) => {
         const { meta } = route;
@@ -156,9 +161,10 @@ export const usePermissionStore = defineStore({
        * */
       const patchHomeAffix = (routes: AppRouteRecordRaw[]) => {
         if (!routes || routes.length === 0) return;
-        let homePath: string = userStore.getUserInfo.homePath || PageEnum.BASE_HOME;
+        let homePath: string =
+          userStore.getUserInfo.homePath || PageEnum.BASE_HOME;
         function patcher(routes: AppRouteRecordRaw[], parentPath = '') {
-          if (parentPath) parentPath = parentPath + '/';
+          if (parentPath) parentPath = `${parentPath}/`;
           routes.forEach((route: AppRouteRecordRaw) => {
             const { path, children, redirect } = route;
             const currentPath = path.startsWith('/') ? path : parentPath + path;
@@ -175,7 +181,7 @@ export const usePermissionStore = defineStore({
         }
         try {
           patcher(routes);
-        } catch (e) {
+        } catch {
           // 已处理完毕跳出循环
         }
         return;
@@ -220,9 +226,9 @@ export const usePermissionStore = defineStore({
             this.changePermissionCode();
             routeList = (await getMenuList()) as AppRouteRecordRaw[];
             // update-begin----author:sunjianlei---date:20220315------for: 判断是否是 vue3 版本的菜单 ---
-            let hasIndex: boolean = false;
-            let hasIcon: boolean = false;
-            for (let menuItem of routeList) {
+            let hasIndex = false;
+            let hasIcon = false;
+            for (const menuItem of routeList) {
               // 条件1：判断组件是否是 layouts/default/index
               if (!hasIndex) {
                 hasIndex = menuItem.component === 'layouts/default/index';
@@ -245,10 +251,10 @@ export const usePermissionStore = defineStore({
                     title: '检测提示',
                     content:
                       '当前菜单表是 <b>Vue2版本</b>，导致菜单加载异常!<br>点击确认，切换到Vue3版菜单！',
-                    onOk:function () {
+                    onOk() {
                       switchVue3Menu();
                       location.reload();
-                    }
+                    },
                   }),
                 100
               );

@@ -13,10 +13,14 @@ export function httpGroupRequest(getPromise, groupId, expire = 1000 * 30) {
   }
 
   if (getAuthCache(groupId)) {
-    console.log('---------popup--------getFrom  Cache--------groupId = ' + groupId);
+    console.log(
+      `---------popup--------getFrom  Cache--------groupId = ${groupId}`
+    );
     return Promise.resolve(getAuthCache(groupId));
   } else {
-    console.log('--------popup----------getFrom  DB---------groupId = ' + groupId);
+    console.log(
+      `--------popup----------getFrom  DB---------groupId = ${groupId}`
+    );
   }
 
   // 还没有发出请求，就发出第一次的请求

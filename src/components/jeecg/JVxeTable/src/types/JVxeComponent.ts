@@ -1,5 +1,5 @@
-import { ComponentInternalInstance, ExtractPropTypes } from 'vue';
-import { useJVxeCompProps } from '/@/components/jeecg/JVxeTable/hooks';
+import type { ComponentInternalInstance, ExtractPropTypes } from 'vue';
+import type { useJVxeCompProps } from '/@/components/jeecg/JVxeTable/hooks';
 
 export namespace JVxeComponent {
   export type Props = ExtractPropTypes<ReturnType<typeof useJVxeCompProps>>;
@@ -20,10 +20,20 @@ export namespace JVxeComponent {
     interceptor: {
       // 已实现：event.clearActived
       // 说明：比如点击了某个组件的弹出层面板之后，此时被激活单元格不应该被自动关闭，通过返回 false 可以阻止默认的行为。
-      'event.clearActived'?: (params, event, target, ctx?: EnhancedCtx) => boolean;
+      'event.clearActived'?: (
+        params,
+        event,
+        target,
+        ctx?: EnhancedCtx
+      ) => boolean;
       // 自定义：event.clearActived.className
       // 说明：比原生的多了一个参数：className，用于判断点击的元素的样式名（递归到顶层）
-      'event.clearActived.className'?: (params, event, target, ctx?: EnhancedCtx) => boolean;
+      'event.clearActived.className'?: (
+        params,
+        event,
+        target,
+        ctx?: EnhancedCtx
+      ) => boolean;
     };
     // 【功能开关】
     switches: {

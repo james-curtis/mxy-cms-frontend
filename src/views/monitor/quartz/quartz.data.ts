@@ -1,4 +1,4 @@
-import { BasicColumn, FormSchema } from '/@/components/Table';
+import type { BasicColumn, FormSchema } from '/@/components/Table';
 import { render } from '/@/utils/common/renderUtils';
 import { JCronValidator } from '/@/components/Form';
 
@@ -72,7 +72,10 @@ export const formSchema: FormSchema[] = [
     label: 'Cron表达式',
     component: 'JEasyCron',
     defaultValue: '* * * * * ? *',
-    rules: [{ required: true, message: '请输入Cron表达式' }, { validator: JCronValidator }],
+    rules: [
+      { required: true, message: '请输入Cron表达式' },
+      { validator: JCronValidator },
+    ],
   },
   {
     field: 'paramterType',

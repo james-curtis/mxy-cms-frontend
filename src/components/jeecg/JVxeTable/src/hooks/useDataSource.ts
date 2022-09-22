@@ -1,8 +1,13 @@
 import { nextTick, watch } from 'vue';
-import { JVxeDataProps, JVxeRefs, JVxeTableMethods } from '../types';
 import { cloneDeep } from 'lodash-es';
+import type { JVxeDataProps, JVxeRefs, JVxeTableMethods } from '../types';
 
-export function useDataSource(props, data: JVxeDataProps, methods: JVxeTableMethods, refs: JVxeRefs) {
+export function useDataSource(
+  props,
+  data: JVxeDataProps,
+  methods: JVxeTableMethods,
+  refs: JVxeRefs
+) {
   watch(
     () => props.dataSource,
     async () => {

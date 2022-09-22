@@ -1,22 +1,26 @@
 export const getData = (() => {
-  let dottedBase = +new Date();
+  let dottedBase = Date.now();
   const barDataSource: any[] = [];
   const barMultiData: any[] = [];
   const barLineData: any[] = [];
 
   for (let i = 0; i < 20; i++) {
-    let obj = { name: '', value: 0 };
+    const obj = { name: '', value: 0 };
     const date = new Date((dottedBase += 1000 * 3600 * 24));
-    obj.name = [date.getFullYear(), date.getMonth() + 1, date.getDate()].join('-');
+    obj.name = [date.getFullYear(), date.getMonth() + 1, date.getDate()].join(
+      '-'
+    );
     obj.value = Math.random() * 200;
     barDataSource.push(obj);
   }
 
   for (let j = 0; j < 2; j++) {
     for (let i = 0; i < 20; i++) {
-      let obj = { name: '', value: 0, type: 2010 + j + '' };
+      const obj = { name: '', value: 0, type: `${2010 + j}` };
       const date = new Date(dottedBase + 1000 * 3600 * 24 * i);
-      obj.name = [date.getFullYear(), date.getMonth() + 1, date.getDate()].join('-');
+      obj.name = [date.getFullYear(), date.getMonth() + 1, date.getDate()].join(
+        '-'
+      );
       obj.value = Math.random() * 200;
       barMultiData.push(obj);
     }
@@ -38,9 +42,16 @@ export const getData = (() => {
   ];
   for (let j = 0; j < 2; j++) {
     for (let i = 0; i < 15; i++) {
-      let obj = { name: '', value: 0, type: 2010 + j + '', seriesType: j >= 1 ? 'line' : 'bar' };
+      const obj = {
+        name: '',
+        value: 0,
+        type: `${2010 + j}`,
+        seriesType: j >= 1 ? 'line' : 'bar',
+      };
       const date = new Date(dottedBase + 1000 * 3600 * 24 * i);
-      obj.name = [date.getFullYear(), date.getMonth() + 1, date.getDate()].join('-');
+      obj.name = [date.getFullYear(), date.getMonth() + 1, date.getDate()].join(
+        '-'
+      );
       obj.value = Math.random() * 200;
       barLineData.push(obj);
     }

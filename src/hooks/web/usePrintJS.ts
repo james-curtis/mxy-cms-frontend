@@ -1,6 +1,7 @@
 import { nextTick } from 'vue';
-import $printJS, { Configuration } from 'print-js';
+import $printJS from 'print-js';
 import Print from 'vue-print-nb-jeecg/src/printarea';
+import type { Configuration } from 'print-js';
 
 /**
  * 调用 printJS，如果type = html，就走 printNB 的方法
@@ -26,7 +27,7 @@ let closeBtn = true;
 
 function localPrint(domId) {
   if (typeof domId === 'string' && !domId.startsWith('#')) {
-    domId = '#' + domId;
+    domId = `#${domId}`;
   }
   nextTick(() => {
     if (closeBtn) {

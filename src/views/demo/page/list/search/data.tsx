@@ -1,4 +1,4 @@
-import { FormSchema } from '/@/components/Form/index';
+import type { FormSchema } from '/@/components/Form/index';
 
 export const searchList = (() => {
   const result: any[] = [];
@@ -7,7 +7,8 @@ export const searchList = (() => {
       id: i,
       title: 'Jeecg Admin',
       description: ['Jeecg', '设计语言', 'Typescript'],
-      content: '基于Vue Next, TypeScript, Ant Design实现的一套完整的企业级后台管理系统。',
+      content:
+        '基于Vue Next, TypeScript, Ant Design实现的一套完整的企业级后台管理系统。',
       time: '2020-11-14 11:20',
     });
   }

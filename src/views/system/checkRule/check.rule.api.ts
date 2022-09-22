@@ -35,9 +35,11 @@ export const getCheckRuleList = (params) => {
  * @param handleSuccess
  */
 export const deleteCheckRule = (params, handleSuccess) => {
-  return defHttp.delete({ url: Api.delete, data: params }, { joinParamsToUrl: true }).then(() => {
-    handleSuccess();
-  });
+  return defHttp
+    .delete({ url: Api.delete, data: params }, { joinParamsToUrl: true })
+    .then(() => {
+      handleSuccess();
+    });
 };
 
 /**
@@ -51,9 +53,14 @@ export const batchDeleteCheckRule = (params, handleSuccess) => {
     okText: '确认',
     cancelText: '取消',
     onOk: () => {
-      return defHttp.delete({ url: Api.deleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
-        handleSuccess();
-      });
+      return defHttp
+        .delete(
+          { url: Api.deleteBatch, data: params },
+          { joinParamsToUrl: true }
+        )
+        .then(() => {
+          handleSuccess();
+        });
     },
   });
 };
@@ -65,8 +72,11 @@ export const batchDeleteCheckRule = (params, handleSuccess) => {
  */
 export const validateCheckRule = (ruleCode, value) => {
   value = encodeURIComponent(value);
-  let params = { ruleCode, value };
-  return defHttp.get({ url: Api.checkByCode, params }, { isTransformResponse: false });
+  const params = { ruleCode, value };
+  return defHttp.get(
+    { url: Api.checkByCode, params },
+    { isTransformResponse: false }
+  );
 };
 
 /**

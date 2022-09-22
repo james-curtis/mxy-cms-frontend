@@ -1,7 +1,7 @@
 import type { ComputedRef, Ref } from 'vue';
-import type { FormProps, FormSchema, FormActionType } from '../types/form';
+import type { FormActionType, FormProps, FormSchema } from '../types/form';
 import type { NamePath } from 'ant-design-vue/lib/form/interface';
-import { unref, toRaw } from 'vue';
+import { toRaw, unref } from 'vue';
 import { isArray, isFunction, isObject, isString } from '/@/utils/is';
 import { deepMerge, getValueType } from '/@/utils';
 import { dateItemType, handleInputNumberValue } from '../helper';
@@ -58,10 +58,10 @@ export function useFormEvents({
       let value = values[key];
 
       //antd3升级后，online表单时间控件选中值报js错 TypeError: Reflect.has called on non-object
-      if(!(values instanceof Object)){
+      if (!(values instanceof Object)) {
         return;
       }
-      
+
       const hasKey = Reflect.has(values, key);
 
       value = handleInputNumberValue(schema?.component, value);
@@ -81,7 +81,11 @@ export function useFormEvents({
             if (typeof componentProps === 'function') {
               _props = _props({ formModel });
             }
-            formModel[key] = value ? (_props?.valueFormat ? value : dateUtil(value)) : null;
+            formModel[key] = value
+              ? _props?.valueFormat
+                ? value
+                : dateUtil(value)
+              : null;
           }
         } else {
           formModel[key] = value;
@@ -126,11 +130,19 @@ export function useFormEvents({
   /**
    * @description: Insert after a certain field, if not insert the last
    */
-  async function appendSchemaByField(schema: FormSchema, prefixField?: string, first = false) {
+  async function appendSchemaByField(
+    schema: FormSchema,
+    prefixField?: string,
+    first = false
+  ) {
     const schemaList: FormSchema[] = cloneDeep(unref(getSchema));
 
-    const index = schemaList.findIndex((schema) => schema.field === prefixField);
-    const hasInList = schemaList.some((item) => item.field === prefixField || schema.field);
+    const index = schemaList.findIndex(
+      (schema) => schema.field === prefixField
+    );
+    const hasInList = schemaList.some(
+      (item) => item.field === prefixField || schema.field
+    );
 
     if (!hasInList) return;
 
@@ -145,7 +157,9 @@ export function useFormEvents({
     schemaRef.value = schemaList;
   }
 
-  async function resetSchema(data: Partial<FormSchema> | Partial<FormSchema>[]) {
+  async function resetSchema(
+    data: Partial<FormSchema> | Partial<FormSchema>[]
+  ) {
     let updateData: Partial<FormSchema>[] = [];
     if (isObject(data)) {
       updateData.push(data as FormSchema);
@@ -154,16 +168,24 @@ export function useFormEvents({
       updateData = [...data];
     }
 
-    const hasField = updateData.every((item) => item.component === 'Divider' || (Reflect.has(item, 'field') && item.field));
+    const hasField = updateData.every(
+      (item) =>
+        item.component === 'Divider' ||
+        (Reflect.has(item, 'field') && item.field)
+    );
 
     if (!hasField) {
-      error('All children of the form Schema array that need to be updated must contain the `field` field');
+      error(
+        'All children of the form Schema array that need to be updated must contain the `field` field'
+      );
       return;
     }
     schemaRef.value = updateData as FormSchema[];
   }
 
-  async function updateSchema(data: Partial<FormSchema> | Partial<FormSchema>[]) {
+  async function updateSchema(
+    data: Partial<FormSchema> | Partial<FormSchema>[]
+  ) {
     let updateData: Partial<FormSchema>[] = [];
     if (isObject(data)) {
       updateData.push(data as FormSchema);
@@ -172,10 +194,16 @@ export function useFormEvents({
       updateData = [...data];
     }
 
-    const hasField = updateData.every((item) => item.component === 'Divider' || (Reflect.has(item, 'field') && item.field));
+    const hasField = updateData.every(
+      (item) =>
+        item.component === 'Divider' ||
+        (Reflect.has(item, 'field') && item.field)
+    );
 
     if (!hasField) {
-      error('All children of the form Schema array that need to be updated must contain the `field` field');
+      error(
+        'All children of the form Schema array that need to be updated must contain the `field` field'
+      );
       return;
     }
     const schema: FormSchema[] = [];
@@ -219,7 +247,10 @@ export function useFormEvents({
     await unref(formElRef)?.clearValidate(name);
   }
 
-  async function scrollToField(name: NamePath, options?: ScrollOptions | undefined) {
+  async function scrollToField(
+    name: NamePath,
+    options?: ScrollOptions | undefined
+  ) {
     await unref(formElRef)?.scrollToField(name, options);
   }
 
@@ -239,9 +270,9 @@ export function useFormEvents({
       const values = await validate();
       //update-begin---author:zhangdaihao   Date:20140212  for：[bug号]树机构调整------------
       //--updateBy-begin----author:zyf---date:20211206------for:对查询表单提交的数组处理成字符串------
-      for (let key in values) {
-        if (values[key] instanceof Array) {
-          let valueType = getValueType(getProps, key);
+      for (const key in values) {
+        if (Array.isArray(values[key])) {
+          const valueType = getValueType(getProps, key);
           if (valueType === 'string') {
             values[key] = values[key].join(',');
           }

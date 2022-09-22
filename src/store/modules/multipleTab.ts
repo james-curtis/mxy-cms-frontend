@@ -1,4 +1,8 @@
-import type { RouteLocationNormalized, RouteLocationRaw, Router } from 'vue-router';
+import type {
+  RouteLocationNormalized,
+  RouteLocationRaw,
+  Router,
+} from 'vue-router';
 
 import { toRaw, unref } from 'vue';
 import { defineStore } from 'pinia';
@@ -124,7 +128,9 @@ export const useMultipleTabStore = defineStore({
         path === PageEnum.ERROR_PAGE ||
         path === PageEnum.BASE_LOGIN ||
         !name ||
-        [REDIRECT_ROUTE.name, PAGE_NOT_FOUND_ROUTE.name].includes(name as string)
+        [REDIRECT_ROUTE.name, PAGE_NOT_FOUND_ROUTE.name].includes(
+          name as string
+        )
       ) {
         return;
       }
@@ -156,9 +162,14 @@ export const useMultipleTabStore = defineStore({
           // const realName: string = path.match(/(\S*)\//)![1];
           const realPath = meta?.realPath ?? '';
           // 获取到已经打开的动态路由数, 判断是否大于某一个值
-          if (this.tabList.filter((e) => e.meta?.realPath ?? '' === realPath).length >= dynamicLevel) {
+          if (
+            this.tabList.filter((e) => e.meta?.realPath ?? '' === realPath)
+              .length >= dynamicLevel
+          ) {
             // 关闭第一个
-            const index = this.tabList.findIndex((item) => item.meta.realPath === realPath);
+            const index = this.tabList.findIndex(
+              (item) => item.meta.realPath === realPath
+            );
             index !== -1 && this.tabList.splice(index, 1);
           }
         }
@@ -174,7 +185,9 @@ export const useMultipleTabStore = defineStore({
         if (affix) {
           return;
         }
-        const index = this.tabList.findIndex((item) => item.fullPath === fullPath);
+        const index = this.tabList.findIndex(
+          (item) => item.fullPath === fullPath
+        );
         index !== -1 && this.tabList.splice(index, 1);
       };
 
@@ -214,7 +227,9 @@ export const useMultipleTabStore = defineStore({
 
     // Close according to key
     async closeTabByKey(key: string, router: Router) {
-      const index = this.tabList.findIndex((item) => (item.fullPath || item.path) === key);
+      const index = this.tabList.findIndex(
+        (item) => (item.fullPath || item.path) === key
+      );
       if (index !== -1) {
         await this.closeTab(this.tabList[index], router);
         const { currentRoute, replace } = router;
@@ -270,7 +285,9 @@ export const useMultipleTabStore = defineStore({
 
     // Close the tab on the left and jump
     async closeRightTabs(route: RouteLocationNormalized, router: Router) {
-      const index = this.tabList.findIndex((item) => item.fullPath === route.fullPath);
+      const index = this.tabList.findIndex(
+        (item) => item.fullPath === route.fullPath
+      );
 
       if (index >= 0 && index < this.tabList.length - 1) {
         const rightTabs = this.tabList.slice(index + 1, this.tabList.length);
@@ -323,7 +340,9 @@ export const useMultipleTabStore = defineStore({
      * Close tabs in bulk
      */
     async bulkCloseTabs(pathList: string[]) {
-      this.tabList = this.tabList.filter((item) => !pathList.includes(item.fullPath));
+      this.tabList = this.tabList.filter(
+        (item) => !pathList.includes(item.fullPath)
+      );
     },
 
     /**

@@ -15,12 +15,18 @@ export abstract class AxiosTransform {
    * @description: Process configuration before request
    * @description: Process configuration before request
    */
-  beforeRequestHook?: (config: AxiosRequestConfig, options: RequestOptions) => AxiosRequestConfig;
+  beforeRequestHook?: (
+    config: AxiosRequestConfig,
+    options: RequestOptions
+  ) => AxiosRequestConfig;
 
   /**
    * @description: Request successfully processed
    */
-  transformRequestHook?: (res: AxiosResponse<Result>, options: RequestOptions) => any;
+  transformRequestHook?: (
+    res: AxiosResponse<Result>,
+    options: RequestOptions
+  ) => any;
 
   /**
    * @description: 请求失败处理
@@ -30,7 +36,10 @@ export abstract class AxiosTransform {
   /**
    * @description: 请求之前的拦截器
    */
-  requestInterceptors?: (config: AxiosRequestConfig, options: CreateAxiosOptions) => AxiosRequestConfig;
+  requestInterceptors?: (
+    config: AxiosRequestConfig,
+    options: CreateAxiosOptions
+  ) => AxiosRequestConfig;
 
   /**
    * @description: 请求之后的拦截器

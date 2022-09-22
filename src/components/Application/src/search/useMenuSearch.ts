@@ -1,5 +1,6 @@
 import type { Menu } from '/@/router/types';
-import { ref, onBeforeMount, unref, Ref, nextTick } from 'vue';
+import type { Ref } from 'vue';
+import { nextTick, onBeforeMount, ref, unref } from 'vue';
 import { getMenus } from '/@/router/menus';
 import { cloneDeep } from 'lodash-es';
 import { filter, forEach } from '/@/utils/helper/treeHelper';
@@ -16,7 +17,22 @@ export interface SearchResult {
 
 // Translate special characters
 function transform(c: string) {
-  const code: string[] = ['$', '(', ')', '*', '+', '.', '[', ']', '?', '\\', '^', '{', '}', '|'];
+  const code: string[] = [
+    '$',
+    '(',
+    ')',
+    '*',
+    '+',
+    '.',
+    '[',
+    ']',
+    '?',
+    '\\',
+    '^',
+    '{',
+    '}',
+    '|',
+  ];
   return code.includes(c) ? `\\${c}` : c;
 }
 
@@ -26,7 +42,11 @@ function createSearchReg(key: string) {
   return new RegExp(str);
 }
 
-export function useMenuSearch(refs: Ref<HTMLElement[]>, scrollWrap: Ref<ElRef>, emit: EmitType) {
+export function useMenuSearch(
+  refs: Ref<HTMLElement[]>,
+  scrollWrap: Ref<ElRef>,
+  emit: EmitType
+) {
   const searchResult = ref<SearchResult[]>([]);
   const keyword = ref('');
   const activeIndex = ref(-1);
@@ -69,14 +89,22 @@ export function useMenuSearch(refs: Ref<HTMLElement[]>, scrollWrap: Ref<ElRef>, 
     const ret: SearchResult[] = [];
     filterMenu.forEach((item) => {
       const { name, path, icon, children, hideMenu, meta } = item;
-      if (!hideMenu && reg.test(name) && (!children?.length || meta?.hideChildrenInMenu)) {
+      if (
+        !hideMenu &&
+        reg.test(name) &&
+        (!children?.length || meta?.hideChildrenInMenu)
+      ) {
         ret.push({
           name: parent?.name ? `${parent.name} > ${name}` : name,
           path,
           icon,
         });
       }
-      if (!meta?.hideChildrenInMenu && Array.isArray(children) && children.length) {
+      if (
+        !meta?.hideChildrenInMenu &&
+        Array.isArray(children) &&
+        children.length
+      ) {
         ret.push(...handlerSearchResult(children, reg, item));
       }
     });
@@ -113,7 +141,12 @@ export function useMenuSearch(refs: Ref<HTMLElement[]>, scrollWrap: Ref<ElRef>, 
   // the scroll bar needs to scroll automatically
   function handleScroll() {
     const refList = unref(refs);
-    if (!refList || !Array.isArray(refList) || refList.length === 0 || !unref(scrollWrap)) {
+    if (
+      !refList ||
+      !Array.isArray(refList) ||
+      refList.length === 0 ||
+      !unref(scrollWrap)
+    ) {
       return;
     }
 
@@ -166,5 +199,12 @@ export function useMenuSearch(refs: Ref<HTMLElement[]>, scrollWrap: Ref<ElRef>, 
   // esc close
   onKeyStroke('Escape', handleClose);
 
-  return { handleSearch, searchResult, keyword, activeIndex, handleMouseenter, handleEnter };
+  return {
+    handleSearch,
+    searchResult,
+    keyword,
+    activeIndex,
+    handleMouseenter,
+    handleEnter,
+  };
 }

@@ -14,32 +14,72 @@
           </a-tooltip>
         </template>
         <div v-if="type === 'chart'">
-          <Trend term="周同比" :percentage="12" v-if="index === 0" />
-          <Trend term="日同比" :percentage="11" v-if="index === 0" :type="false" />
+          <Trend v-if="index === 0" term="周同比" :percentage="12" />
+          <Trend
+            v-if="index === 0"
+            term="日同比"
+            :percentage="11"
+            :type="false"
+          />
 
-          <Line v-if="index === 1" :option="option" :chartData="chartData" height="50px"></Line>
+          <Line
+            v-if="index === 1"
+            :option="option"
+            :chart-data="chartData"
+            height="50px"
+          />
 
-          <Bar v-if="index === 2" :option="option" :chartData="chartData" height="50px"></Bar>
+          <Bar
+            v-if="index === 2"
+            :option="option"
+            :chart-data="chartData"
+            height="50px"
+          />
 
-          <Progress v-if="index === 3" :percent="78" :show-info="false"></Progress>
+          <Progress v-if="index === 3" :percent="78" :show-info="false" />
         </div>
         <div v-else>
-          <Line v-if="index === 0" :option="option" :chartData="chartData" height="50px"></Line>
+          <Line
+            v-if="index === 0"
+            :option="option"
+            :chart-data="chartData"
+            height="50px"
+          />
 
-          <Line v-if="index === 1" :option="option" :chartData="chartData" height="50px"></Line>
+          <Line
+            v-if="index === 1"
+            :option="option"
+            :chart-data="chartData"
+            height="50px"
+          />
 
-          <Bar v-if="index === 2" :option="option" :chartData="chartData" height="50px"></Bar>
+          <Bar
+            v-if="index === 2"
+            :option="option"
+            :chart-data="chartData"
+            height="50px"
+          />
 
-          <Bar v-if="index === 3" :option="option" :chartData="chartData" height="50px"></Bar>
+          <Bar
+            v-if="index === 3"
+            :option="option"
+            :chart-data="chartData"
+            height="50px"
+          />
         </div>
-        <template #footer v-if="type === 'chart'">
+        <template v-if="type === 'chart'" #footer>
           <span v-if="inde !== 3"
             >{{ item.footer }}<span>{{ item.value }}</span></span
           >
-          <Trend term="周同比" :percentage="12" v-if="index === 3" />
-          <Trend term="日同比" :percentage="11" v-if="index === 3" :type="false" />
+          <Trend v-if="index === 3" term="周同比" :percentage="12" />
+          <Trend
+            v-if="index === 3"
+            term="日同比"
+            :percentage="11"
+            :type="false"
+          />
         </template>
-        <template #footer v-else>
+        <template v-else #footer>
           <span
             >{{ item.footer }}<span>{{ item.value }}</span></span
           >
@@ -49,56 +89,61 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import { ref, computed } from 'vue';
-  import { Icon } from '/@/components/Icon';
-  import { Progress } from 'ant-design-vue';
-  import ChartCard from '/@/components/chart/ChartCard.vue';
-  import Trend from '/@/components/chart/Trend.vue';
-  import Bar from '/@/components/chart/Bar.vue';
-  import Line from '/@/components/chart/Line.vue';
-  import { chartCardList, bdcCardList } from '../data';
+import { computed, ref } from 'vue';
+import { Icon } from '/@/components/Icon';
+import { Progress } from 'ant-design-vue';
+import ChartCard from '/@/components/chart/ChartCard.vue';
+import Trend from '/@/components/chart/Trend.vue';
+import Bar from '/@/components/chart/Bar.vue';
+import Line from '/@/components/chart/Line.vue';
+import { bdcCardList, chartCardList } from '../data';
 
-  const props = defineProps({
-    loading: {
-      type: Boolean,
-    },
-    type: {
-      type: String,
-      default: 'chart',
-    },
-  });
-  const option = ref({ xAxis: { show: false, boundaryGap: false }, yAxis: { show: false, boundaryGap: false, max: 220 } });
+const props = defineProps({
+  loading: {
+    type: Boolean,
+  },
+  type: {
+    type: String,
+    default: 'chart',
+  },
+});
+const option = ref({
+  xAxis: { show: false, boundaryGap: false },
+  yAxis: { show: false, boundaryGap: false, max: 220 },
+});
 
-  const chartData = ref([
-    {
-      name: '1月',
-      value: 50,
-    },
-    {
-      name: '2月',
-      value: 100,
-    },
-    {
-      name: '3月',
-      value: 150,
-    },
-    {
-      name: '4月',
-      value: 40,
-    },
-    {
-      name: '5月',
-      value: 110,
-    },
-    {
-      name: '6月',
-      value: 120,
-    },
-  ]);
+const chartData = ref([
+  {
+    name: '1月',
+    value: 50,
+  },
+  {
+    name: '2月',
+    value: 100,
+  },
+  {
+    name: '3月',
+    value: 150,
+  },
+  {
+    name: '4月',
+    value: 40,
+  },
+  {
+    name: '5月',
+    value: 110,
+  },
+  {
+    name: '6月',
+    value: 120,
+  },
+]);
 
-  const dataList = computed(() => (props.type === 'dbc' ? bdcCardList : chartCardList));
+const dataList = computed(() =>
+  props.type === 'dbc' ? bdcCardList : chartCardList
+);
 
-  function getTotal(total, index) {
-    return index === 0 ? `￥${total}` : index === 3 ? `${total}%` : total;
-  }
+function getTotal(total, index) {
+  return index === 0 ? `￥${total}` : index === 3 ? `${total}%` : total;
+}
 </script>

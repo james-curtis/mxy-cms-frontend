@@ -37,13 +37,14 @@ function createEnterPlugin(maxOutput = 8) {
       [`*> .-enter-${d}:nth-child(${index})`]: {
         transform: `translate${upd}(-50px)`,
       },
-      [`* > .enter-${d}:nth-child(${index}),* > .-enter-${d}:nth-child(${index})`]: {
-        'z-index': `${10 - index}`,
-        opacity: '0',
-        animation: `enter-${d}-animation 0.4s ease-in-out 0.3s`,
-        'animation-fill-mode': 'forwards',
-        'animation-delay': `${(index * 1) / 10}s`,
-      },
+      [`* > .enter-${d}:nth-child(${index}),* > .-enter-${d}:nth-child(${index})`]:
+        {
+          'z-index': `${10 - index}`,
+          opacity: '0',
+          animation: `enter-${d}-animation 0.4s ease-in-out 0.3s`,
+          'animation-fill-mode': 'forwards',
+          'animation-delay': `${(index * 1) / 10}s`,
+        },
     };
   };
   const handler = ({ addBase }) => {

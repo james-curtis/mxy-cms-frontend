@@ -39,4 +39,5 @@ export const initDictOptions = (code) => {
  * @param options 查询配置
  * @return List<Map>
  */
-export const ajaxGetDictItems = (code, params, options?) => defHttp.get({ url: `/sys/dict/getDictItems/${code}`, params }, options);
+export const ajaxGetDictItems = (code, params, options?) =>
+  defHttp.get({ url: `/sys/dict/getDictItems/${code}`, params }, options);

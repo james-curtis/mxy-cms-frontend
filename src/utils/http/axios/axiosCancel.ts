@@ -5,7 +5,8 @@ import { isFunction } from '/@/utils/is';
 // Used to store the identification and cancellation function of each request
 let pendingMap = new Map<string, Canceler>();
 
-export const getPendingUrl = (config: AxiosRequestConfig) => [config.method, config.url].join('&');
+export const getPendingUrl = (config: AxiosRequestConfig) =>
+  [config.method, config.url].join('&');
 
 export class AxiosCanceler {
   /**

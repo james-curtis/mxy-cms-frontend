@@ -1,14 +1,14 @@
-import { ref, reactive, provide, resolveComponent } from 'vue';
+import { provide, reactive, ref, resolveComponent } from 'vue';
 import { useDesign } from '/@/hooks/web/useDesign';
-import { JVxeDataProps, JVxeRefs, JVxeTableProps } from '../types';
-import { VxeGridInstance } from 'vxe-table';
+import type { JVxeDataProps, JVxeRefs, JVxeTableProps } from '../types';
+import type { VxeGridInstance } from 'vxe-table';
 import { randomString } from '/@/utils/common/compUtils';
 
 export function useData(props: JVxeTableProps): JVxeDataProps {
   const { prefixCls } = useDesign('j-vxe-table');
   provide('prefixCls', prefixCls);
   return {
-    prefixCls: prefixCls,
+    prefixCls,
     caseId: `j-vxe-${randomString(8)}`,
     vxeDataSource: ref([]),
     scroll: reactive({ top: 0, left: 0 }),
@@ -29,8 +29,10 @@ export function useData(props: JVxeTableProps): JVxeDataProps {
         activeMethod: () => !props.disabled,
       },
       expandConfig: {
-        iconClose: 'ant-table-row-expand-icon ant-table-row-expand-icon-collapsed',
-        iconOpen: 'ant-table-row-expand-icon ant-table-row-expand-icon-expanded',
+        iconClose:
+          'ant-table-row-expand-icon ant-table-row-expand-icon-collapsed',
+        iconOpen:
+          'ant-table-row-expand-icon ant-table-row-expand-icon-expanded',
       },
       // 虚拟滚动配置，y轴大于xx条数据时启用虚拟滚动
       scrollY: {

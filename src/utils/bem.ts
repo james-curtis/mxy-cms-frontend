@@ -18,7 +18,10 @@ function genBem(name: string, mods?: Mods): string {
     return mods.reduce<string>((ret, item) => ret + genBem(name, item), '');
   }
 
-  return Object.keys(mods).reduce((ret, key) => ret + (mods[key] ? genBem(name, key) : ''), '');
+  return Object.keys(mods).reduce(
+    (ret, key) => ret + (mods[key] ? genBem(name, key) : ''),
+    ''
+  );
 }
 
 /**

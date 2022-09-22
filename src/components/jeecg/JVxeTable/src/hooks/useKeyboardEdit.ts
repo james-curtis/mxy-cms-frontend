@@ -1,9 +1,9 @@
 /*
  * JVxeTable 键盘操作
  */
+import { computed } from 'vue';
 import type { VxeTablePropTypes } from 'vxe-table';
 import type { JVxeTableProps } from '../types';
-import { computed } from 'vue';
 
 /**
  * JVxeTable 键盘操作

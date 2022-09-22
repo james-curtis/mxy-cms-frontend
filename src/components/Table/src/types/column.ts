@@ -1,4 +1,4 @@
-import { VNodeChild } from 'vue';
+import type { VNodeChild } from 'vue';
 
 export interface ColumnFilterItem {
   text?: string;
@@ -25,7 +25,9 @@ export interface FilterDropdownProps {
   visible?: boolean;
 }
 
-export declare type CustomRenderFunction<T> = (record: RecordProps<T>) => VNodeChild | JSX.Element;
+export declare type CustomRenderFunction<T> = (
+  record: RecordProps<T>
+) => VNodeChild | JSX.Element;
 
 export interface ColumnProps<T> {
   /**
@@ -71,7 +73,10 @@ export interface ColumnProps<T> {
    * Customized filter overlay
    * @type any (slot)
    */
-  filterDropdown?: VNodeChild | JSX.Element | ((props: FilterDropdownProps) => VNodeChild | JSX.Element);
+  filterDropdown?:
+    | VNodeChild
+    | JSX.Element
+    | ((props: FilterDropdownProps) => VNodeChild | JSX.Element);
 
   /**
    * Whether filterDropdown is visible

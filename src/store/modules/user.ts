@@ -1,18 +1,35 @@
-import type { UserInfo, LoginInfo } from '/#/store';
+import type { LoginInfo, UserInfo } from '/#/store';
 import type { ErrorMessageMode } from '/#/axios';
 import { defineStore } from 'pinia';
 import { store } from '/@/store';
-import { RoleEnum } from '/@/enums/roleEnum';
+import type { RoleEnum } from '/@/enums/roleEnum';
 import { PageEnum } from '/@/enums/pageEnum';
-import { ROLES_KEY, TOKEN_KEY, USER_INFO_KEY, LOGIN_INFO_KEY, DB_DICT_DATA_KEY, TENANT_ID } from '/@/enums/cacheEnum';
-import { getAuthCache, setAuthCache, removeAuthCache } from '/@/utils/auth';
-import { GetUserInfoModel, LoginParams, ThirdLoginParams } from '/@/api/sys/model/userModel';
-import { doLogout, getUserInfo, loginApi, phoneLoginApi, thirdLogin } from '/@/api/sys/user';
+import {
+  DB_DICT_DATA_KEY,
+  LOGIN_INFO_KEY,
+  ROLES_KEY,
+  TENANT_ID,
+  TOKEN_KEY,
+  USER_INFO_KEY,
+} from '/@/enums/cacheEnum';
+import { getAuthCache, removeAuthCache, setAuthCache } from '/@/utils/auth';
+import type {
+  GetUserInfoModel,
+  LoginParams,
+  ThirdLoginParams,
+} from '/@/api/sys/model/userModel';
+import {
+  doLogout,
+  getUserInfo,
+  loginApi,
+  phoneLoginApi,
+  thirdLogin,
+} from '/@/api/sys/user';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { useMessage } from '/@/hooks/web/useMessage';
 import { router } from '/@/router';
 import { usePermissionStore } from '/@/store/modules/permission';
-import { RouteRecordRaw } from 'vue-router';
+import type { RouteRecordRaw } from 'vue-router';
 import { PAGE_NOT_FOUND_ROUTE } from '/@/router/routes/basic';
 import { isArray } from '/@/utils/is';
 import { useGlobSetting } from '/@/hooks/setting';
@@ -63,7 +80,9 @@ export const useUserStore = defineStore({
       return this.dictItems || getAuthCache(DB_DICT_DATA_KEY);
     },
     getRoleList(): RoleEnum[] {
-      return this.roleList.length > 0 ? this.roleList : getAuthCache<RoleEnum[]>(ROLES_KEY);
+      return this.roleList.length > 0
+        ? this.roleList
+        : getAuthCache<RoleEnum[]>(ROLES_KEY);
     },
     getSessionTimeout(): boolean {
       return !!this.sessionTimeout;
@@ -86,7 +105,7 @@ export const useUserStore = defineStore({
     },
     setUserInfo(info: UserInfo | null) {
       this.userInfo = info;
-      this.lastUpdateTime = new Date().getTime();
+      this.lastUpdateTime = Date.now();
       setAuthCache(USER_INFO_KEY, info);
     },
     setLoginInfo(info: LoginInfo | null) {
@@ -166,9 +185,15 @@ export const useUserStore = defineStore({
         }
         await this.setLoginInfo({ ...data, isLogin: true });
         //update-begin-author:liusq date:2022-5-5 for:登录成功后缓存拖拽模块的接口前缀
-        localStorage.setItem(JDragConfigEnum.DRAG_BASE_URL, useGlobSetting().domainUrl);
+        localStorage.setItem(
+          JDragConfigEnum.DRAG_BASE_URL,
+          useGlobSetting().domainUrl
+        );
         //update-end-author:liusq date:2022-5-5 for: 登录成功后缓存拖拽模块的接口前缀
-        goHome && (await router.replace((userInfo && userInfo.homePath) || PageEnum.BASE_HOME));
+        goHome &&
+          (await router.replace(
+            (userInfo && userInfo.homePath) || PageEnum.BASE_HOME
+          ));
       }
       return data;
     },

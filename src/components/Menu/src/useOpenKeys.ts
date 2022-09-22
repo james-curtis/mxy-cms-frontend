@@ -2,15 +2,20 @@ import { MenuModeEnum } from '/@/enums/menuEnum';
 import type { Menu as MenuType } from '/@/router/types';
 import type { MenuState } from './types';
 
-import { computed, Ref, toRaw } from 'vue';
+import type { Ref } from 'vue';
+import { computed, toRaw, unref } from 'vue';
 
-import { unref } from 'vue';
 import { uniq } from 'lodash-es';
 import { useMenuSetting } from '/@/hooks/setting/useMenuSetting';
 import { getAllParentPath } from '/@/router/helper/menuHelper';
 import { useTimeoutFn } from '/@/hooks/core/useTimeout';
 
-export function useOpenKeys(menuState: MenuState, menus: Ref<MenuType[]>, mode: Ref<MenuModeEnum>, accordion: Ref<boolean>) {
+export function useOpenKeys(
+  menuState: MenuState,
+  menus: Ref<MenuType[]>,
+  mode: Ref<MenuModeEnum>,
+  accordion: Ref<boolean>
+) {
   const { getCollapsed, getIsMixSidebar } = useMenuSetting();
 
   async function setOpenKeys(path: string) {
@@ -26,7 +31,10 @@ export function useOpenKeys(menuState: MenuState, menus: Ref<MenuType[]>, mode: 
           return;
         }
         if (!unref(accordion)) {
-          menuState.openKeys = uniq([...menuState.openKeys, ...getAllParentPath(menuList, path)]);
+          menuState.openKeys = uniq([
+            ...menuState.openKeys,
+            ...getAllParentPath(menuList, path),
+          ]);
         } else {
           menuState.openKeys = getAllParentPath(menuList, path);
         }
@@ -51,7 +59,11 @@ export function useOpenKeys(menuState: MenuState, menus: Ref<MenuType[]>, mode: 
   }
 
   function handleOpenChange(openKeys: string[]) {
-    if (unref(mode) === MenuModeEnum.HORIZONTAL || !unref(accordion) || unref(getIsMixSidebar)) {
+    if (
+      unref(mode) === MenuModeEnum.HORIZONTAL ||
+      !unref(accordion) ||
+      unref(getIsMixSidebar)
+    ) {
       menuState.openKeys = openKeys;
     } else {
       // const menuList = toRaw(menus.value);
@@ -63,8 +75,10 @@ export function useOpenKeys(menuState: MenuState, menus: Ref<MenuType[]>, mode: 
         }
       }
       if (!unref(getCollapsed)) {
-        const latestOpenKey = openKeys.find((key) => menuState.openKeys.indexOf(key) === -1);
-        if (rootSubMenuKeys.indexOf(latestOpenKey as string) === -1) {
+        const latestOpenKey = openKeys.find(
+          (key) => !menuState.openKeys.includes(key)
+        );
+        if (!rootSubMenuKeys.includes(latestOpenKey as string)) {
           menuState.openKeys = openKeys;
         } else {
           menuState.openKeys = latestOpenKey ? [latestOpenKey] : [];

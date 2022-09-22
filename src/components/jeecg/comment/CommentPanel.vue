@@ -1,14 +1,26 @@
 <template>
-  <div class="comment-tabs-warp" v-if="showStatus">
-    <a-tabs @change="handleChange" :animated="false">
-      <a-tab-pane tab="评论" key="comment" class="comment-list-tab">
-        <comment-list :tableName="tableName" :dataId="dataId" :datetime="datetime1"></comment-list>
+  <div v-if="showStatus" class="comment-tabs-warp">
+    <a-tabs :animated="false" @change="handleChange">
+      <a-tab-pane key="comment" tab="评论" class="comment-list-tab">
+        <comment-list
+          :table-name="tableName"
+          :data-id="dataId"
+          :datetime="datetime1"
+        />
       </a-tab-pane>
-      <a-tab-pane tab="文件" key="file">
-        <comment-files :tableName="tableName" :dataId="dataId" :datetime="datetime2"></comment-files>
+      <a-tab-pane key="file" tab="文件">
+        <comment-files
+          :table-name="tableName"
+          :data-id="dataId"
+          :datetime="datetime2"
+        />
       </a-tab-pane>
-      <a-tab-pane tab="日志" key="log">
-        <data-log-list :tableName="tableName" :dataId="dataId" :datetime="datetime3"></data-log-list>
+      <a-tab-pane key="log" tab="日志">
+        <data-log-list
+          :table-name="tableName"
+          :data-id="dataId"
+          :datetime="datetime3"
+        />
       </a-tab-pane>
     </a-tabs>
   </div>
@@ -16,78 +28,81 @@
 </template>
 
 <script>
-  /**
-   * 评论区域
-   */
-  import { propTypes } from '/@/utils/propTypes';
-  import { computed, ref } from 'vue';
-  import CommentList from './CommentList.vue';
-  import CommentFiles from './CommentFiles.vue';
-  import DataLogList from './DataLogList.vue';
+/**
+ * 评论区域
+ */
+import { propTypes } from '/@/utils/propTypes';
+import { computed, ref } from 'vue';
+import CommentList from './CommentList.vue';
+import CommentFiles from './CommentFiles.vue';
+import DataLogList from './DataLogList.vue';
 
-  export default {
-    name: 'CommentPanel',
-    components: {
-      CommentList,
-      CommentFiles,
-      DataLogList,
-    },
-    props: {
-      tableName: propTypes.string.def(''),
-      dataId: propTypes.string.def(''),
-    },
-    setup(props) {
-      const showStatus = computed(() => {
-        if (props.dataId && props.tableName) {
-          return true;
-        }
-        return false;
-      });
-
-      const datetime1 = ref(1);
-      const datetime2 = ref(1);
-      const datetime3 = ref(1);
-      function handleChange(e) {
-        let temp = new Date().getTime();
-        if (e == 'comment') {
-          datetime1.value = temp;
-        } else if (e == 'file') {
-          datetime2.value = temp;
-        } else {
-          datetime3.value = temp;
-        }
+export default {
+  name: 'CommentPanel',
+  components: {
+    CommentList,
+    CommentFiles,
+    DataLogList,
+  },
+  props: {
+    tableName: propTypes.string.def(''),
+    dataId: propTypes.string.def(''),
+  },
+  setup(props) {
+    const showStatus = computed(() => {
+      if (props.dataId && props.tableName) {
+        return true;
       }
+      return false;
+    });
 
-      // VUEN-1978【bug】online关联记录和他表字段存在问题  20 修改完数据，再次打开不切换tab的时候，修改日志没有变化
-      function reload() {
-        let temp = new Date().getTime();
+    const datetime1 = ref(1);
+    const datetime2 = ref(1);
+    const datetime3 = ref(1);
+    function handleChange(e) {
+      const temp = Date.now();
+      if (e == 'comment') {
         datetime1.value = temp;
+      } else if (e == 'file') {
         datetime2.value = temp;
+      } else {
         datetime3.value = temp;
       }
+    }
 
-      return {
-        showStatus,
-        handleChange,
-        datetime1,
-        datetime2,
-        datetime3,
-        reload
-      };
-    },
-  };
+    // VUEN-1978【bug】online关联记录和他表字段存在问题  20 修改完数据，再次打开不切换tab的时候，修改日志没有变化
+    function reload() {
+      const temp = Date.now();
+      datetime1.value = temp;
+      datetime2.value = temp;
+      datetime3.value = temp;
+    }
+
+    return {
+      showStatus,
+      handleChange,
+      datetime1,
+      datetime2,
+      datetime3,
+      reload,
+    };
+  },
+};
 </script>
 
 <style lang="less" scoped>
-  .comment-tabs-warp {
-    height: 100%;
+.comment-tabs-warp {
+  height: 100%;
+  overflow: visible;
+  > .ant-tabs {
     overflow: visible;
-    > .ant-tabs {
-      overflow: visible;
-    }
   }
-  //antd3升级后，表单右侧讨论样式调整
-  ::v-deep(.ant-tabs-top  .ant-tabs-nav, .ant-tabs-bottom  .ant-tabs-nav, .ant-tabs-top  div  .ant-tabs-nav, .ant-tabs-bottom  div  .ant-tabs-nav) {
-    margin: 0 16px 0;
-  }
+}
+//antd3升级后，表单右侧讨论样式调整
+::v-deep(.ant-tabs-top .ant-tabs-nav, .ant-tabs-bottom
+    .ant-tabs-nav, .ant-tabs-top div .ant-tabs-nav, .ant-tabs-bottom
+    div
+    .ant-tabs-nav) {
+  margin: 0 16px 0;
+}
 </style>

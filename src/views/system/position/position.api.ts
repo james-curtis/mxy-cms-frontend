@@ -30,8 +30,8 @@ export const getPositionList = (params) => {
  * @param params
  */
 export const saveOrUpdatePosition = (params, isUpdate) => {
-  let url = isUpdate ? Api.edit : Api.save;
-  return defHttp.post({ url: url, params });
+  const url = isUpdate ? Api.edit : Api.save;
+  return defHttp.post({ url, params });
 };
 
 /**
@@ -47,9 +47,11 @@ export const getPositionById = (params) => {
  * @param params
  */
 export const deletePosition = (params, handleSuccess) => {
-  return defHttp.delete({ url: Api.delete, data: params }, { joinParamsToUrl: true }).then(() => {
-    handleSuccess();
-  });
+  return defHttp
+    .delete({ url: Api.delete, data: params }, { joinParamsToUrl: true })
+    .then(() => {
+      handleSuccess();
+    });
 };
 
 /**
@@ -63,9 +65,14 @@ export const batchDeletePosition = (params, handleSuccess) => {
     okText: '确认',
     cancelText: '取消',
     onOk: () => {
-      return defHttp.delete({ url: Api.deleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
-        handleSuccess();
-      });
+      return defHttp
+        .delete(
+          { url: Api.deleteBatch, data: params },
+          { joinParamsToUrl: true }
+        )
+        .then(() => {
+          handleSuccess();
+        });
     },
   });
 };

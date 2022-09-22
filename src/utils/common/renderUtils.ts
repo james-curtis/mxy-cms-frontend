@@ -15,7 +15,7 @@ const render = {
    */
   renderAvatar: ({ record }) => {
     if (record.avatar) {
-      let avatarList = record.avatar.split(',');
+      const avatarList = record.avatar.split(',');
       return h(
         'span',
         avatarList.map((item) => {
@@ -32,7 +32,8 @@ const render = {
         Avatar,
         { shape: 'square', size: 'default' },
         {
-          icon: () => h(Icon, { icon: 'ant-design:file-image-outlined', size: 30 }),
+          icon: () =>
+            h(Icon, { icon: 'ant-design:file-image-outlined', size: 30 }),
         }
       );
     }
@@ -45,8 +46,8 @@ const render = {
    */
   renderDict: (v, code, renderTag = false) => {
     let text = '';
-    let array = getDictItemsByCode(code) || [];
-    let obj = array.filter((item) => {
+    const array = getDictItemsByCode(code) || [];
+    const obj = array.filter((item) => {
       return item.value == v;
     });
     if (obj.length > 0) {
@@ -65,11 +66,12 @@ const render = {
         Avatar,
         { shape: 'square', size: 25 },
         {
-          icon: () => h(Icon, { icon: 'ant-design:file-image-outlined', size: 25 }),
+          icon: () =>
+            h(Icon, { icon: 'ant-design:file-image-outlined', size: 25 }),
         }
       );
     }
-    let avatarList = text.split(',');
+    const avatarList = text.split(',');
     return h(
       'span',
       avatarList.map((item) => {
@@ -90,9 +92,9 @@ const render = {
    */
   renderTip: (text, len = 20) => {
     if (text) {
-      let showText = text + '';
+      let showText = `${text}`;
       if (showText.length > len) {
-        showText = showText.substr(0, len) + '...';
+        showText = `${showText.slice(0, Math.max(0, len))}...`;
       }
       return h(Tooltip, { title: text }, () => showText);
     }
@@ -108,7 +110,7 @@ const render = {
     }
     const len = 20;
     if (text.length > len) {
-      text = text.substr(0, len);
+      text = text.slice(0, Math.max(0, len));
     }
     return h('a', { href: text, target: '_blank' }, text);
   },
@@ -120,14 +122,16 @@ const render = {
   renderDictNative: (v, array, renderTag = false) => {
     let text = '';
     let color = '';
-    let obj = array.filter((item) => {
+    const obj = array.filter((item) => {
       return item.value == v;
     });
     if (obj.length > 0) {
       text = obj[0].label;
       color = obj[0].color;
     }
-    return isEmpty(text) || !renderTag ? h('span', text) : h(Tag, { color }, () => text);
+    return isEmpty(text) || !renderTag
+      ? h('span', text)
+      : h(Tag, { color }, () => text);
   },
   /**
    * 渲染富文本
@@ -147,7 +151,7 @@ const render = {
     return text ? filterMultiDictText(arr, text) : '';
   },
   renderCategoryTree: (text, code) => {
-    let array = getDictItemsByCode(code);
+    const array = getDictItemsByCode(code);
     return filterMultiDictText(array, text);
   },
   renderTag(text, color) {
@@ -164,7 +168,7 @@ function downloadFile(url) {
     return;
   }
   if (url.indexOf(',') > 0) {
-    url = url.substring(0, url.indexOf(','));
+    url = url.slice(0, Math.max(0, url.indexOf(',')));
   }
   url = getFileAccessHttpUrl(url.split(',')[0]);
   if (url) {

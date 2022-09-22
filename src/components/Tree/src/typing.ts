@@ -1,5 +1,8 @@
-import type { TreeDataItem, CheckEvent as CheckEventOrigin } from 'ant-design-vue/es/tree/Tree';
-import { ContextMenuItem } from '/@/hooks/web/useContextMenu';
+import type {
+  CheckEvent as CheckEventOrigin,
+  TreeDataItem,
+} from 'ant-design-vue/es/tree/Tree';
+import type { ContextMenuItem } from '/@/hooks/web/useContextMenu';
 
 export interface ActionItem {
   render: (record: Recordable) => any;
@@ -17,7 +20,9 @@ export interface ReplaceFields {
 }
 
 export type Keys = (string | number)[];
-export type CheckKeys = (string | number)[] | { checked: (string | number)[]; halfChecked: (string | number)[] };
+export type CheckKeys =
+  | (string | number)[]
+  | { checked: (string | number)[]; halfChecked: (string | number)[] };
 
 export interface TreeActionType {
   checkAll: (checkAll: boolean) => void;

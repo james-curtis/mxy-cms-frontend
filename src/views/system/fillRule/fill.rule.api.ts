@@ -35,9 +35,11 @@ export const getFillRuleList = (params) => {
  * @param handleSuccess
  */
 export const deleteFillRule = (params, handleSuccess) => {
-  return defHttp.delete({ url: Api.delete, data: params }, { joinParamsToUrl: true }).then(() => {
-    handleSuccess();
-  });
+  return defHttp
+    .delete({ url: Api.delete, data: params }, { joinParamsToUrl: true })
+    .then(() => {
+      handleSuccess();
+    });
 };
 
 /**
@@ -51,9 +53,14 @@ export const batchDeleteFillRule = (params, handleSuccess) => {
     okText: '确认',
     cancelText: '取消',
     onOk: () => {
-      return defHttp.delete({ url: Api.deleteBatch, data: params }, { joinParamsToUrl: true }).then(() => {
-        handleSuccess();
-      });
+      return defHttp
+        .delete(
+          { url: Api.deleteBatch, data: params },
+          { joinParamsToUrl: true }
+        )
+        .then(() => {
+          handleSuccess();
+        });
     },
   });
 };

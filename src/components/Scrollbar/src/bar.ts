@@ -1,7 +1,16 @@
-import { defineComponent, h, computed, ref, getCurrentInstance, onUnmounted, inject, Ref } from 'vue';
-import { on, off } from '/@/utils/domUtils';
+import {
+  computed,
+  defineComponent,
+  getCurrentInstance,
+  h,
+  inject,
+  onUnmounted,
+  ref,
+} from 'vue';
+import { off, on } from '/@/utils/domUtils';
 
-import { renderThumbStyle, BAR_MAP } from './util';
+import { BAR_MAP, renderThumbStyle } from './util';
+import type { Ref } from 'vue';
 
 export default defineComponent({
   name: 'Bar',
@@ -15,7 +24,10 @@ export default defineComponent({
   setup(props) {
     const instance = getCurrentInstance();
     const thumb = ref();
-    const wrap = inject('scroll-bar-wrap', {} as Ref<Nullable<HTMLElement>>) as any;
+    const wrap = inject(
+      'scroll-bar-wrap',
+      {} as Ref<Nullable<HTMLElement>>
+    ) as any;
     const bar = computed(() => {
       return BAR_MAP[props.vertical ? 'vertical' : 'horizontal'];
     });
@@ -29,15 +41,22 @@ export default defineComponent({
       window.getSelection()?.removeAllRanges();
       startDrag(e);
       barStore.value[bar.value.axis] =
-        e.currentTarget[bar.value.offset] - (e[bar.value.client] - e.currentTarget.getBoundingClientRect()[bar.value.direction]);
+        e.currentTarget[bar.value.offset] -
+        (e[bar.value.client] -
+          e.currentTarget.getBoundingClientRect()[bar.value.direction]);
     };
 
     const clickTrackHandler = (e: any) => {
-      const offset = Math.abs(e.target.getBoundingClientRect()[bar.value.direction] - e[bar.value.client]);
+      const offset = Math.abs(
+        e.target.getBoundingClientRect()[bar.value.direction] -
+          e[bar.value.client]
+      );
       const thumbHalf = thumb.value[bar.value.offset] / 2;
-      const thumbPositionPercentage = ((offset - thumbHalf) * 100) / instance?.vnode.el?.[bar.value.offset];
+      const thumbPositionPercentage =
+        ((offset - thumbHalf) * 100) / instance?.vnode.el?.[bar.value.offset];
 
-      wrap.value[bar.value.scroll] = (thumbPositionPercentage * wrap.value[bar.value.scrollSize]) / 100;
+      wrap.value[bar.value.scroll] =
+        (thumbPositionPercentage * wrap.value[bar.value.scrollSize]) / 100;
     };
     const startDrag = (e: any) => {
       e.stopImmediatePropagation();
@@ -53,10 +72,16 @@ export default defineComponent({
 
       if (!prevPage) return;
 
-      const offset = (instance?.vnode.el?.getBoundingClientRect()[bar.value.direction] - e[bar.value.client]) * -1;
+      const offset =
+        (instance?.vnode.el?.getBoundingClientRect()[bar.value.direction] -
+          e[bar.value.client]) *
+        -1;
       const thumbClickPosition = thumb.value[bar.value.offset] - prevPage;
-      const thumbPositionPercentage = ((offset - thumbClickPosition) * 100) / instance?.vnode.el?.[bar.value.offset];
-      wrap.value[bar.value.scroll] = (thumbPositionPercentage * wrap.value[bar.value.scrollSize]) / 100;
+      const thumbPositionPercentage =
+        ((offset - thumbClickPosition) * 100) /
+        instance?.vnode.el?.[bar.value.offset];
+      wrap.value[bar.value.scroll] =
+        (thumbPositionPercentage * wrap.value[bar.value.scrollSize]) / 100;
     };
 
     function mouseUpDocumentHandler() {
@@ -74,7 +99,7 @@ export default defineComponent({
       h(
         'div',
         {
-          class: ['scrollbar__bar', 'is-' + bar.value.key],
+          class: ['scrollbar__bar', `is-${bar.value.key}`],
           onMousedown: clickTrackHandler,
         },
         h('div', {

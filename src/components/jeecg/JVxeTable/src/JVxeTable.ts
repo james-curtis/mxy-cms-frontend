@@ -1,13 +1,13 @@
 import { defineComponent, h, ref, useSlots } from 'vue';
 import { vxeEmits, vxeProps } from './vxe.data';
-import { useData, useRefs, useResolveComponent as rc } from './hooks/useData';
+import { useResolveComponent as rc, useData, useRefs } from './hooks/useData';
 import { useColumns } from './hooks/useColumns';
 import { useMethods } from './hooks/useMethods';
 import { useDataSource } from './hooks/useDataSource';
 import { useDragSort } from './hooks/useDragSort';
 import { useRenderComponents } from './hooks/useRenderComponents';
 import { useFinallyProps } from './hooks/useFinallyProps';
-import { JVxeTableProps } from './types';
+import type { JVxeTableProps } from './types';
 import './style/index.less';
 
 export default defineComponent({
@@ -20,7 +20,13 @@ export default defineComponent({
     const refs = useRefs();
     const slots = useSlots();
     const data = useData(props);
-    const { methods, publicMethods, created } = useMethods(props, context, data, refs, instanceRef);
+    const { methods, publicMethods, created } = useMethods(
+      props,
+      context,
+      data,
+      refs,
+      instanceRef
+    );
     created();
     useColumns(props, data, methods, slots);
     useDataSource(props, data, methods, refs);
@@ -37,6 +43,9 @@ export default defineComponent({
       ...renderComponents,
       vxeDataSource: data.vxeDataSource,
     };
+  },
+  created() {
+    this.instanceRef = this;
   },
   render() {
     return h(
@@ -70,8 +79,5 @@ export default defineComponent({
         }
       )
     );
-  },
-  created() {
-    this.instanceRef = this;
   },
 });

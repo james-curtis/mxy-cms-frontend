@@ -1,4 +1,3 @@
-import type { JVxeVueComponent } from './types';
 import { JVxeTypes } from './types/JVxeTypes';
 
 import JVxeSlotCell from './components/cells/JVxeSlotCell';
@@ -15,13 +14,14 @@ import JVxeUploadCell from './components/cells/JVxeUploadCell.vue';
 // import { TagsInputCell, TagsSpanCell } from './components/cells/JVxeTagsCell.vue'
 import JVxeProgressCell from './components/cells/JVxeProgressCell.vue';
 import JVxeTextareaCell from './components/cells/JVxeTextareaCell.vue';
+import type { JVxeVueComponent } from './types';
 // import JVxeDepartSelectCell from './components/cells/JVxeDepartSelectCell.vue'
 // import JVxeUserSelectCell from './components/cells/JVxeUserSelectCell.vue'
 
 const componentMap = new Map<JVxeTypes | string, JVxeVueComponent>();
 
 /** span 组件结尾 */
-export const spanEnds: string = ':span';
+export const spanEnds = ':span';
 
 /** 定义不能用于注册的关键字 */
 export const excludeKeywords: Array<JVxeTypes> = [
@@ -39,9 +39,15 @@ export const excludeKeywords: Array<JVxeTypes> = [
  * @param component Vue组件
  * @param spanComponent 显示组件，可空，默认为 JVxeNormalCell 组件
  */
-export function addComponent(type: JVxeTypes, component: JVxeVueComponent, spanComponent?: JVxeVueComponent) {
+export function addComponent(
+  type: JVxeTypes,
+  component: JVxeVueComponent,
+  spanComponent?: JVxeVueComponent
+) {
   if (excludeKeywords.includes(type)) {
-    throw new Error(`【addComponent】不能使用"${type}"作为组件的name，因为这是关键字。`);
+    throw new Error(
+      `【addComponent】不能使用"${type}"作为组件的name，因为这是关键字。`
+    );
   }
   if (componentMap.has(type)) {
     throw new Error(`【addComponent】组件"${type}"已存在`);

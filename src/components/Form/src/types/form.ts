@@ -1,10 +1,9 @@
 import type { NamePath, RuleObject } from 'ant-design-vue/lib/form/interface';
-import type { VNode, ComputedRef } from 'vue';
+import type { CSSProperties, ComputedRef, VNode } from 'vue';
 import type { ButtonProps as AntdButtonProps } from '/@/components/Button';
 import type { FormItem } from './formItem';
 import type { ColEx, ComponentType } from './index';
 import type { TableActionType } from '/@/components/Table/src/types/table';
-import type { CSSProperties } from 'vue';
 import type { RowProps } from 'ant-design-vue/lib/grid/Row';
 
 export type FieldMapToTime = [string, [string, string], string?][];
@@ -31,12 +30,20 @@ export interface FormActionType {
   resetFields: () => Promise<void>;
   getFieldsValue: () => Recordable;
   clearValidate: (name?: string | string[]) => Promise<void>;
-  updateSchema: (data: Partial<FormSchema> | Partial<FormSchema>[]) => Promise<void>;
-  resetSchema: (data: Partial<FormSchema> | Partial<FormSchema>[]) => Promise<void>;
+  updateSchema: (
+    data: Partial<FormSchema> | Partial<FormSchema>[]
+  ) => Promise<void>;
+  resetSchema: (
+    data: Partial<FormSchema> | Partial<FormSchema>[]
+  ) => Promise<void>;
   setProps: (formProps: Partial<FormProps>) => Promise<void>;
   getProps: ComputedRef<Partial<FormProps>>;
   removeSchemaByFiled: (field: string | string[]) => Promise<void>;
-  appendSchemaByField: (schema: FormSchema, prefixField: string | undefined, first?: boolean | undefined) => Promise<void>;
+  appendSchemaByField: (
+    schema: FormSchema,
+    prefixField: string | undefined,
+    first?: boolean | undefined
+  ) => Promise<void>;
   validateFields: (nameList?: NamePath[]) => Promise<any>;
   validate: (nameList?: NamePath[]) => Promise<any>;
   scrollToField: (name: NamePath, options?: ScrollOptions) => Promise<void>;
@@ -135,7 +142,10 @@ export interface FormSchema {
   // Auxiliary text
   subLabel?: string;
   // Help text on the right side of the text
-  helpMessage?: string | string[] | ((renderCallbackParams: RenderCallbackParams) => string | string[]);
+  helpMessage?:
+    | string
+    | string[]
+    | ((renderCallbackParams: RenderCallbackParams) => string | string[]);
   // BaseHelp component props
   helpComponentProps?: Partial<HelpComponentProps>;
   // Label width, if it is passed, the labelCol and WrapperCol configured by itemProps will be invalid
@@ -146,12 +156,22 @@ export interface FormSchema {
   component: ComponentType;
   // Component parameters
   componentProps?:
-    | ((opt: { schema: FormSchema; tableAction: TableActionType; formActionType: FormActionType; formModel: Recordable }) => Recordable)
+    | ((opt: {
+        schema: FormSchema;
+        tableAction: TableActionType;
+        formActionType: FormActionType;
+        formModel: Recordable;
+      }) => Recordable)
     | object;
   // Required
-  required?: boolean | ((renderCallbackParams: RenderCallbackParams) => boolean);
+  required?:
+    | boolean
+    | ((renderCallbackParams: RenderCallbackParams) => boolean);
 
-  suffix?: string | number | ((values: RenderCallbackParams) => string | number);
+  suffix?:
+    | string
+    | number
+    | ((values: RenderCallbackParams) => string | number);
 
   // Validation rules
   rules?: Rule[];
@@ -176,12 +196,20 @@ export interface FormSchema {
   show?: boolean | ((renderCallbackParams: RenderCallbackParams) => boolean);
 
   // Render the content in the form-item tag
-  render?: (renderCallbackParams: RenderCallbackParams) => VNode | VNode[] | string;
+  render?: (
+    renderCallbackParams: RenderCallbackParams
+  ) => VNode | VNode[] | string;
 
   // Rendering col content requires outer wrapper form-item
-  renderColContent?: (renderCallbackParams: RenderCallbackParams) => VNode | VNode[] | string;
+  renderColContent?: (
+    renderCallbackParams: RenderCallbackParams
+  ) => VNode | VNode[] | string;
 
-  renderComponentContent?: ((renderCallbackParams: RenderCallbackParams) => any) | VNode | VNode[] | string;
+  renderComponentContent?:
+    | ((renderCallbackParams: RenderCallbackParams) => any)
+    | VNode
+    | VNode[]
+    | string;
 
   // Custom slot, in from-item
   slot?: string;
@@ -189,15 +217,17 @@ export interface FormSchema {
   // Custom slot, similar to renderColContent
   colSlot?: string;
 
-  dynamicDisabled?: boolean | ((renderCallbackParams: RenderCallbackParams) => boolean);
+  dynamicDisabled?:
+    | boolean
+    | ((renderCallbackParams: RenderCallbackParams) => boolean);
 
   dynamicRules?: (renderCallbackParams: RenderCallbackParams) => Rule[];
 
   // 这个属性自定义的 用于自定义的业务 比如在表单打开的时候修改表单的禁用状态，但是又不能重写componentProps，因为他的内容太多了，所以使用dynamicDisabled和buss实现
   buss?: any;
-  
+
   //label字数控制（label宽度）
-  labelLength?: number
+  labelLength?: number;
 }
 export interface HelpComponentProps {
   maxWidth: string;

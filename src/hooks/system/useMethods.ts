@@ -8,7 +8,8 @@ const glob = useGlobSetting();
 /**
  * 导出文件xlsx的mime-type
  */
-export const XLSX_MIME_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+export const XLSX_MIME_TYPE =
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 /**
  * 导出文件xlsx的文件后缀
  */
@@ -21,7 +22,10 @@ export function useMethods() {
    * @param url
    */
   async function exportXls(name, url, params, isXlsx = false) {
-    const data = await defHttp.get({ url: url, params: params, responseType: 'blob' }, { isTransformResponse: false });
+    const data = await defHttp.get(
+      { url, params, responseType: 'blob' },
+      { isTransformResponse: false }
+    );
     if (!data) {
       createMessage.warning('文件下载失败');
       return;
@@ -29,17 +33,20 @@ export function useMethods() {
     if (!name || typeof name != 'string') {
       name = '导出文件';
     }
-    let blobOptions = { type: 'application/vnd.ms-excel' };
+    const blobOptions = { type: 'application/vnd.ms-excel' };
     let fileSuffix = '.xls';
     if (isXlsx === true) {
       blobOptions['type'] = XLSX_MIME_TYPE;
       fileSuffix = XLSX_FILE_SUFFIX;
     }
     if (typeof window.navigator.msSaveBlob !== 'undefined') {
-      window.navigator.msSaveBlob(new Blob([data], blobOptions), name + fileSuffix);
+      window.navigator.msSaveBlob(
+        new Blob([data], blobOptions),
+        name + fileSuffix
+      );
     } else {
-      let url = window.URL.createObjectURL(new Blob([data], blobOptions));
-      let link = document.createElement('a');
+      const url = window.URL.createObjectURL(new Blob([data], blobOptions));
+      const link = document.createElement('a');
       link.style.display = 'none';
       link.href = url;
       link.setAttribute('download', name + fileSuffix);
@@ -60,11 +67,11 @@ export function useMethods() {
     const isReturn = (fileInfo) => {
       try {
         if (fileInfo.code === 201) {
-          let {
+          const {
             message,
             result: { msg, fileUrl, fileName },
           } = fileInfo;
-          let href = glob.uploadUrl + fileUrl;
+          const href = glob.uploadUrl + fileUrl;
           createWarningModal({
             title: message,
             centered: false,
@@ -76,7 +83,9 @@ export function useMethods() {
         } else if (fileInfo.code === 500) {
           createMessage.error(fileInfo.message || `${data.file.name} 导入失败`);
         } else {
-          createMessage.success(fileInfo.message || `${data.file.name} 文件上传成功`);
+          createMessage.success(
+            fileInfo.message || `${data.file.name} 文件上传成功`
+          );
         }
       } catch (error) {
         console.log('导入的数据异常', error);
@@ -84,12 +93,18 @@ export function useMethods() {
         typeof success === 'function' ? success(fileInfo) : '';
       }
     };
-    await defHttp.uploadFile({ url }, { file: data.file }, { success: isReturn });
+    await defHttp.uploadFile(
+      { url },
+      { file: data.file },
+      { success: isReturn }
+    );
   }
 
   return {
-    handleExportXls: (name: string, url: string, params?: object) => exportXls(name, url, params),
+    handleExportXls: (name: string, url: string, params?: object) =>
+      exportXls(name, url, params),
     handleImportXls: (data, url, success) => importXls(data, url, success),
-    handleExportXlsx: (name: string, url: string, params?: object) => exportXls(name, url, params, true),
+    handleExportXlsx: (name: string, url: string, params?: object) =>
+      exportXls(name, url, params, true),
   };
 }

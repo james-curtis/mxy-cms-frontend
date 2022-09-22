@@ -90,4 +90,13 @@ export const vxeProps = () => ({
   keyboardEdit: propTypes.bool.def(false),
 });
 
-export const vxeEmits = ['save', 'added', 'removed', 'inserted', 'dragged', 'selectRowChange', 'pageChange', 'valueChange'];
+export const vxeEmits = [
+  'save',
+  'added',
+  'removed',
+  'inserted',
+  'dragged',
+  'selectRowChange',
+  'pageChange',
+  'valueChange',
+];

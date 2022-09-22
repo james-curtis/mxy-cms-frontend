@@ -1,8 +1,7 @@
-import { DescItem } from '/@/components/Description/index';
-import { BasicColumn } from '/@/components/Table/src/types/table';
-import { Button } from '/@/components/Button';
-
 import { Badge } from 'ant-design-vue';
+import type { DescItem } from '/@/components/Description/index';
+import type { BasicColumn } from '/@/components/Table/src/types/table';
+import { Button } from '/@/components/Button';
 
 export const refundData = {
   a1: '1000000000',

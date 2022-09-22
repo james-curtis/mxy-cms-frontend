@@ -8,7 +8,12 @@ import { dataURLtoBlob, urlToBase64 } from './base64Conver';
  * @param mime
  * @param bom
  */
-export function downloadByOnlineUrl(url: string, filename: string, mime?: string, bom?: BlobPart) {
+export function downloadByOnlineUrl(
+  url: string,
+  filename: string,
+  mime?: string,
+  bom?: BlobPart
+) {
   urlToBase64(url).then((base64) => {
     downloadByBase64(base64, filename, mime, bom);
   });
@@ -21,7 +26,12 @@ export function downloadByOnlineUrl(url: string, filename: string, mime?: string
  * @param mime
  * @param bom
  */
-export function downloadByBase64(buf: string, filename: string, mime?: string, bom?: BlobPart) {
+export function downloadByBase64(
+  buf: string,
+  filename: string,
+  mime?: string,
+  bom?: BlobPart
+) {
   const base64Buf = dataURLtoBlob(buf);
   downloadByData(base64Buf, filename, mime, bom);
 }
@@ -33,7 +43,12 @@ export function downloadByBase64(buf: string, filename: string, mime?: string, b
  * @param {*} mime
  * @param {*} bom
  */
-export function downloadByData(data: BlobPart, filename: string, mime?: string, bom?: BlobPart) {
+export function downloadByData(
+  data: BlobPart,
+  filename: string,
+  mime?: string,
+  bom?: BlobPart
+) {
   const blobData = typeof bom !== 'undefined' ? [bom, data] : [data];
   const blob = new Blob(blobData, { type: mime || 'application/octet-stream' });
   if (typeof window.navigator.msSaveBlob !== 'undefined') {
@@ -58,9 +73,17 @@ export function downloadByData(data: BlobPart, filename: string, mime?: string, 
  * Download file according to file address
  * @param {*} sUrl
  */
-export function downloadByUrl({ url, target = '_blank', fileName }: { url: string; target?: TargetContext; fileName?: string }): boolean {
-  const isChrome = window.navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
-  const isSafari = window.navigator.userAgent.toLowerCase().indexOf('safari') > -1;
+export function downloadByUrl({
+  url,
+  target = '_blank',
+  fileName,
+}: {
+  url: string;
+  target?: TargetContext;
+  fileName?: string;
+}): boolean {
+  const isChrome = window.navigator.userAgent.toLowerCase().includes('chrome');
+  const isSafari = window.navigator.userAgent.toLowerCase().includes('safari');
 
   if (/(iP)/g.test(window.navigator.userAgent)) {
     console.error('Your browser does not support download!');
@@ -72,7 +95,8 @@ export function downloadByUrl({ url, target = '_blank', fileName }: { url: strin
     link.target = target;
 
     if (link.download !== undefined) {
-      link.download = fileName || url.substring(url.lastIndexOf('/') + 1, url.length);
+      link.download =
+        fileName || url.substring(url.lastIndexOf('/') + 1, url.length);
     }
 
     if (document.createEvent) {
@@ -82,7 +106,7 @@ export function downloadByUrl({ url, target = '_blank', fileName }: { url: strin
       return true;
     }
   }
-  if (url.indexOf('?') === -1) {
+  if (!url.includes('?')) {
     url += '?download';
   }
 

@@ -64,9 +64,11 @@ export const createStorage = ({
       const stringData = JSON.stringify({
         value,
         time: Date.now(),
-        expire: !isNullOrUnDef(expire) ? new Date().getTime() + expire * 1000 : null,
+        expire: !isNullOrUnDef(expire) ? Date.now() + expire * 1000 : null,
       });
-      const stringifyValue = this.hasEncrypt ? this.encryption.encryptByAES(stringData) : stringData;
+      const stringifyValue = this.hasEncrypt
+        ? this.encryption.encryptByAES(stringData)
+        : stringData;
       this.storage.setItem(this.getKey(key), stringifyValue);
     }
 
@@ -80,14 +82,16 @@ export const createStorage = ({
       if (!val) return def;
 
       try {
-        const decVal = this.hasEncrypt ? this.encryption.decryptByAES(val) : val;
+        const decVal = this.hasEncrypt
+          ? this.encryption.decryptByAES(val)
+          : val;
         const data = JSON.parse(decVal);
         const { value, expire } = data;
-        if (isNullOrUnDef(expire) || expire >= new Date().getTime()) {
+        if (isNullOrUnDef(expire) || expire >= Date.now()) {
           return value;
         }
         this.remove(key);
-      } catch (e) {
+      } catch {
         return def;
       }
     }

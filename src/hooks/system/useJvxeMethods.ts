@@ -1,8 +1,18 @@
 import { defHttp } from '/@/utils/http/axios';
 import { ref, unref } from 'vue';
-import { VALIDATE_FAILED, validateFormModelAndTables } from '/@/utils/common/vxeUtils';
+import {
+  VALIDATE_FAILED,
+  validateFormModelAndTables,
+} from '/@/utils/common/vxeUtils';
 
-export function useJvxeMethod(requestAddOrEdit, classifyIntoFormData, tableRefs, activeKey, refKeys, validateSubForm?) {
+export function useJvxeMethod(
+  requestAddOrEdit,
+  classifyIntoFormData,
+  tableRefs,
+  activeKey,
+  refKeys,
+  validateSubForm?
+) {
   const formRef = ref();
   /** 查询某个tab的数据 */
   function requestSubTableData(url, params, tab, success) {
@@ -10,7 +20,7 @@ export function useJvxeMethod(requestAddOrEdit, classifyIntoFormData, tableRefs,
     defHttp
       .get({ url, params }, { isTransformResponse: false })
       .then((res) => {
-        let { result } = res;
+        const { result } = res;
         if (res.success && result) {
           if (Array.isArray(result)) {
             tab.dataSource = result;
@@ -35,7 +45,7 @@ export function useJvxeMethod(requestAddOrEdit, classifyIntoFormData, tableRefs,
 
   /** 获取所有的editableTable实例*/
   function getAllTable() {
-    let values = Object.values(tableRefs);
+    const values = Object.values(tableRefs);
     return Promise.all(values);
   }
   /** 确定按钮点击事件 */
@@ -43,25 +53,33 @@ export function useJvxeMethod(requestAddOrEdit, classifyIntoFormData, tableRefs,
     /** 触发表单验证 */
     getAllTable()
       .then((tables) => {
-        let values = formRef.value.getFieldsValue();
-        return validateFormModelAndTables(formRef.value.validate, values, tables, formRef.value.getProps);
+        const values = formRef.value.getFieldsValue();
+        return validateFormModelAndTables(
+          formRef.value.validate,
+          values,
+          tables,
+          formRef.value.getProps
+        );
       })
       .then((allValues) => {
         /** 一次性验证一对一的所有子表 */
-        return validateSubForm && typeof validateSubForm === 'function' ? validateSubForm(allValues) : validateAllSubOne(allValues);
+        return validateSubForm && typeof validateSubForm === 'function'
+          ? validateSubForm(allValues)
+          : validateAllSubOne(allValues);
       })
       .then((allValues) => {
         if (typeof classifyIntoFormData !== 'function') {
           throw throwNotFunction('classifyIntoFormData');
         }
-        let formData = classifyIntoFormData(allValues);
+        const formData = classifyIntoFormData(allValues);
         // 发起请求
         return requestAddOrEdit(formData);
       })
       .catch((e) => {
         if (e.error === VALIDATE_FAILED) {
           // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
-          activeKey.value = e.index == null ? unref(activeKey) : refKeys.value[e.index];
+          activeKey.value =
+            e.index == null ? unref(activeKey) : refKeys.value[e.index];
         } else {
           console.error(e);
         }
@@ -103,21 +121,21 @@ export function useValidateAntFormAndTable(activeKey, refMap) {
    * 获取所有子表数据
    */
   async function getSubFormAndTableData() {
-    let formData = {};
-    let all = Object.keys(refMap);
+    const formData = {};
+    const all = Object.keys(refMap);
     let key = '';
-    for (let i = 0; i < all.length; i++) {
-      key = all[i];
-      let instance = refMap[key].value;
+    for (const element of all) {
+      key = element;
+      const instance = refMap[key].value;
       if (instance.isForm) {
-        let subFormData = await validateFormAndGetData(instance, key);
+        const subFormData = await validateFormAndGetData(instance, key);
         if (subFormData) {
-          formData[key + 'List'] = [subFormData];
+          formData[`${key}List`] = [subFormData];
         }
       } else {
-        let arr = await validateTableAndGetData(instance, key);
+        const arr = await validateTableAndGetData(instance, key);
         if (arr && arr.length > 0) {
-          formData[key + 'List'] = arr;
+          formData[`${key}List`] = arr;
         }
       }
     }
@@ -131,7 +149,7 @@ export function useValidateAntFormAndTable(activeKey, refMap) {
   function transformData(data) {
     if (data) {
       Object.keys(data).map((k) => {
-        if (data[k] instanceof Array) {
+        if (Array.isArray(data[k])) {
           data[k] = data[k].join(',');
         }
       });
@@ -163,7 +181,7 @@ export function useValidateAntFormAndTable(activeKey, refMap) {
    */
   async function validateFormAndGetData(instance, key) {
     try {
-      let data = await instance.getFormData();
+      const data = await instance.getFormData();
       transformData(data);
       return data;
     } catch (e) {

@@ -1,4 +1,4 @@
-import { BasicColumn, FormSchema } from '/@/components/Table';
+import type { BasicColumn, FormSchema } from '/@/components/Table';
 import { rules } from '/@/utils/helper/validator';
 
 export const columns: BasicColumn[] = [
@@ -63,7 +63,13 @@ export const formSchema: FormSchema[] = [
       return !!values.id;
     },
     dynamicRules: ({ model, schema }) => {
-      return rules.duplicateCheckRule('sys_position', 'code', model, schema, true);
+      return rules.duplicateCheckRule(
+        'sys_position',
+        'code',
+        model,
+        schema,
+        true
+      );
     },
   },
 ];

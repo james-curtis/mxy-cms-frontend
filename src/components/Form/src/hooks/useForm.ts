@@ -1,13 +1,20 @@
-import type { FormProps, FormActionType, UseFormReturnType, FormSchema } from '../types/form';
+import type {
+  FormActionType,
+  FormProps,
+  FormSchema,
+  UseFormReturnType,
+} from '../types/form';
 import type { NamePath } from 'ant-design-vue/lib/form/interface';
 import type { DynamicProps } from '/#/utils';
 import { handleRangeValue } from '../utils/formUtils';
-import { ref, onUnmounted, unref, nextTick, watch } from 'vue';
+import { nextTick, onUnmounted, ref, unref, watch } from 'vue';
 import { isProdMode } from '/@/utils/env';
 import { error } from '/@/utils/log';
 import { getDynamicProps, getValueType } from '/@/utils';
 
-export declare type ValidateFields = (nameList?: NamePath[]) => Promise<Recordable>;
+export declare type ValidateFields = (
+  nameList?: NamePath[]
+) => Promise<Recordable>;
 
 type Props = Partial<DynamicProps<FormProps>>;
 
@@ -18,7 +25,9 @@ export function useForm(props?: Props): UseFormReturnType {
   async function getForm() {
     const form = unref(formRef);
     if (!form) {
-      error('The form instance has not been obtained, please make sure that the form has been rendered when performing the form operation!');
+      error(
+        'The form instance has not been obtained, please make sure that the form has been rendered when performing the form operation!'
+      );
     }
     await nextTick();
     return form as FormActionType;
@@ -48,7 +57,10 @@ export function useForm(props?: Props): UseFormReturnType {
   }
 
   const methods: FormActionType = {
-    scrollToField: async (name: NamePath, options?: ScrollOptions | undefined) => {
+    scrollToField: async (
+      name: NamePath,
+      options?: ScrollOptions | undefined
+    ) => {
       const form = await getForm();
       form.scrollToField(name, options);
     },
@@ -85,10 +97,10 @@ export function useForm(props?: Props): UseFormReturnType {
     // TODO promisify
     getFieldsValue: <T>() => {
       //update-begin-author:taoyan date:2022-7-5 for: VUEN-1341【流程】编码方式 流程节点编辑表单时，填写数据报错 包括用户组件、部门组件、省市区
-      let values = unref(formRef)?.getFieldsValue() as T;
-      if(values){
-        Object.keys(values).map(key=>{
-          if (values[key] instanceof Array) {
+      const values = unref(formRef)?.getFieldsValue() as T;
+      if (values) {
+        Object.keys(values).map((key) => {
+          if (Array.isArray(values[key])) {
             values[key] = values[key].join(',');
           }
         });
@@ -102,7 +114,11 @@ export function useForm(props?: Props): UseFormReturnType {
       form.setFieldsValue<T>(values);
     },
 
-    appendSchemaByField: async (schema: FormSchema, prefixField: string | undefined, first: boolean) => {
+    appendSchemaByField: async (
+      schema: FormSchema,
+      prefixField: string | undefined,
+      first: boolean
+    ) => {
       const form = await getForm();
       form.appendSchemaByField(schema, prefixField, first);
     },
@@ -120,11 +136,11 @@ export function useForm(props?: Props): UseFormReturnType {
      */
     validate: async (nameList?: NamePath[]): Promise<Recordable> => {
       const form = await getForm();
-      let getProps = props || form.getProps;
-      let values = form.validate(nameList).then((values) => {
-        for (let key in values) {
-          if (values[key] instanceof Array) {
-            let valueType = getValueType(getProps, key);
+      const getProps = props || form.getProps;
+      const values = form.validate(nameList).then((values) => {
+        for (const key in values) {
+          if (Array.isArray(values[key])) {
+            const valueType = getValueType(getProps, key);
             if (valueType === 'string') {
               values[key] = values[key].join(',');
             }

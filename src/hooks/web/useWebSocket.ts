@@ -1,7 +1,8 @@
 // noinspection JSUnusedGlobalSymbols
 
 import { unref } from 'vue';
-import { useWebSocket, WebSocketResult } from '@vueuse/core';
+import type { WebSocketResult } from '@vueuse/core';
+import { useWebSocket } from '@vueuse/core';
 import { getToken } from '/@/utils/auth';
 
 let result: WebSocketResult<any>;
@@ -13,17 +14,17 @@ const listeners = new Map();
  */
 export function connectWebSocket(url: string) {
   //update-begin-author:taoyan date:2022-4-24 for: v2.4.6 的 websocket 服务端，存在性能和安全问题。 #3278
-  let token = (getToken() || '') as string;
+  const token = (getToken() || '') as string;
   result = useWebSocket(url, {
     // 自动重连 (遇到错误最多重复连接10次)
     autoReconnect: {
-      retries : 10,
-      delay : 5000
+      retries: 10,
+      delay: 5000,
     },
     // 心跳检测
     heartbeat: {
-      message: "ping",
-      interval: 55000
+      message: 'ping',
+      interval: 55000,
     },
     protocols: [token],
   });
@@ -33,7 +34,7 @@ export function connectWebSocket(url: string) {
     result.close = onClose;
 
     const ws = unref(result.ws);
-    if(ws!=null){
+    if (ws != null) {
       ws.onerror = onError;
       ws.onmessage = onMessage;
     }
@@ -49,7 +50,7 @@ function onClose(e) {
 }
 
 function onError(e) {
-  console.log('[WebSocket] 连接发生错误: ', e);
+  console.log('[WebSocket] 连接发生错误:', e);
 }
 
 function onMessage(e) {
@@ -68,7 +69,6 @@ function onMessage(e) {
   }
 }
 
-
 /**
  * 添加 WebSocket 消息监听
  * @param callback
@@ -78,7 +78,9 @@ export function onWebSocket(callback: (data: object) => any) {
     if (typeof callback === 'function') {
       listeners.set(callback, null);
     } else {
-      console.debug('[WebSocket] 添加 WebSocket 消息监听失败：传入的参数不是一个方法');
+      console.debug(
+        '[WebSocket] 添加 WebSocket 消息监听失败：传入的参数不是一个方法'
+      );
     }
   }
 }

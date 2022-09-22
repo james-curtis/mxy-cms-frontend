@@ -1,10 +1,9 @@
-import type { JPromptProps } from '../typing';
-import { render, createVNode, nextTick } from 'vue';
+import { createVNode, nextTick, render } from 'vue';
 import { error } from '/@/utils/log';
 import JPrompt from '../JPrompt.vue';
+import type { JPromptProps } from '../typing';
 
 export function useJPrompt() {
-
   function createJPrompt(options: JPromptProps) {
     let instance = null;
     const box = document.createElement('div');

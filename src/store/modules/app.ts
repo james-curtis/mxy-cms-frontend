@@ -1,10 +1,16 @@
-import type { ProjectConfig, HeaderSetting, MenuSetting, TransitionSetting, MultiTabsSetting } from '/#/config';
+import type {
+  HeaderSetting,
+  MenuSetting,
+  MultiTabsSetting,
+  ProjectConfig,
+  TransitionSetting,
+} from '/#/config';
 import type { BeforeMiniState } from '/#/store';
 
 import { defineStore } from 'pinia';
 import { store } from '/@/store';
 
-import { ThemeEnum } from '/@/enums/appEnum';
+import type { ThemeEnum } from '/@/enums/appEnum';
 import { APP_DARK_MODE_KEY_, PROJ_CFG_KEY } from '/@/enums/cacheEnum';
 import { Persistent } from '/@/utils/cache/persistent';
 import { darkMode } from '/@/settings/designSetting';
@@ -20,7 +26,7 @@ interface AppState {
   // When the window shrinks, remember some states, and restore these states when the window is restored
   beforeMiniInfo: BeforeMiniState;
   // 页面跳转临时参数存储
-  messageHrefParams: any
+  messageHrefParams: any;
 }
 let timeId: TimeoutHandle;
 export const useAppStore = defineStore({
@@ -30,14 +36,16 @@ export const useAppStore = defineStore({
     pageLoading: false,
     projectConfig: Persistent.getLocal(PROJ_CFG_KEY),
     beforeMiniInfo: {},
-    messageHrefParams: {}
+    messageHrefParams: {},
   }),
   getters: {
     getPageLoading(): boolean {
       return this.pageLoading;
     },
     getDarkMode(): 'light' | 'dark' | string {
-      return this.darkMode || localStorage.getItem(APP_DARK_MODE_KEY_) || darkMode;
+      return (
+        this.darkMode || localStorage.getItem(APP_DARK_MODE_KEY_) || darkMode
+      );
     },
 
     getBeforeMiniInfo(): BeforeMiniState {
@@ -60,9 +68,9 @@ export const useAppStore = defineStore({
     getMultiTabsSetting(): MultiTabsSetting {
       return this.getProjectConfig.multiTabsSetting;
     },
-    getMessageHrefParams():any{
+    getMessageHrefParams(): any {
       return this.messageHrefParams;
-    }
+    },
   },
   actions: {
     setPageLoading(loading: boolean): void {
@@ -102,7 +110,6 @@ export const useAppStore = defineStore({
     setMessageHrefParams(params: any): void {
       this.messageHrefParams = params;
     },
-    
   },
 });
 

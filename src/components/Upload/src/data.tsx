@@ -1,5 +1,6 @@
-import type { BasicColumn, ActionItem } from '/@/components/Table';
-import { FileItem, PreviewFileItem, UploadResultStatus } from './typing';
+import type { ActionItem, BasicColumn } from '/@/components/Table';
+import type { FileItem, PreviewFileItem } from './typing';
+import { UploadResultStatus } from './typing';
 import {
   // checkImgType,
   isImgTypeByName,
@@ -52,7 +53,7 @@ export function createTableColumns(): BasicColumn[] {
       title: t('component.upload.fileSize'),
       width: 100,
       customRender: ({ text = 0 }) => {
-        return text && (text / 1024).toFixed(2) + 'KB';
+        return text && `${(text / 1024).toFixed(2)}KB`;
       },
     },
     // {
@@ -66,11 +67,17 @@ export function createTableColumns(): BasicColumn[] {
       width: 100,
       customRender: ({ text }) => {
         if (text === UploadResultStatus.SUCCESS) {
-          return <Tag color="green">{() => t('component.upload.uploadSuccess')}</Tag>;
+          return (
+            <Tag color="green">{() => t('component.upload.uploadSuccess')}</Tag>
+          );
         } else if (text === UploadResultStatus.ERROR) {
-          return <Tag color="red">{() => t('component.upload.uploadError')}</Tag>;
+          return (
+            <Tag color="red">{() => t('component.upload.uploadError')}</Tag>
+          );
         } else if (text === UploadResultStatus.UPLOADING) {
-          return <Tag color="blue">{() => t('component.upload.uploading')}</Tag>;
+          return (
+            <Tag color="blue">{() => t('component.upload.uploading')}</Tag>
+          );
         }
 
         return text;
@@ -122,7 +129,13 @@ export function createPreviewColumns(): BasicColumn[] {
   ];
 }
 
-export function createPreviewActionColumn({ handleRemove, handleDownload }: { handleRemove: Fn; handleDownload: Fn }): BasicColumn {
+export function createPreviewActionColumn({
+  handleRemove,
+  handleDownload,
+}: {
+  handleRemove: Fn;
+  handleDownload: Fn;
+}): BasicColumn {
   return {
     width: 160,
     title: t('component.upload.operating'),

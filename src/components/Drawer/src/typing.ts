@@ -1,5 +1,5 @@
 import type { ButtonProps } from 'ant-design-vue/lib/button/buttonTypes';
-import type { CSSProperties, VNodeChild, ComputedRef } from 'vue';
+import type { CSSProperties, ComputedRef, VNodeChild } from 'vue';
 import type { ScrollContainerOptions } from '/@/components/Container/index';
 
 export interface DrawerInstance {
@@ -8,12 +8,19 @@ export interface DrawerInstance {
 }
 
 export interface ReturnMethods extends DrawerInstance {
-  openDrawer: <T = any>(visible?: boolean, data?: T, openOnSet?: boolean) => void;
+  openDrawer: <T = any>(
+    visible?: boolean,
+    data?: T,
+    openOnSet?: boolean
+  ) => void;
   closeDrawer: () => void;
   getVisible?: ComputedRef<boolean>;
 }
 
-export type RegisterFn = (drawerInstance: DrawerInstance, uuid?: string) => void;
+export type RegisterFn = (
+  drawerInstance: DrawerInstance,
+  uuid?: string
+) => void;
 
 export interface ReturnInnerMethods extends DrawerInstance {
   closeDrawer: () => void;

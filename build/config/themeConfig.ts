@@ -15,7 +15,10 @@ export interface GenerateColorsParams {
   color?: string;
 }
 
-export function generateAntColors(color: string, theme: GenerateTheme = 'default') {
+export function generateAntColors(
+  color: string,
+  theme: GenerateTheme = 'default'
+) {
   return generate(color, {
     theme,
   });
@@ -51,7 +54,9 @@ export function generateColors({
       .toRgbString();
   });
 
-  const shortAlphaColors = alphaColors.map((item) => item.replace(/\s/g, '').replace(/0\./g, '.'));
+  const shortAlphaColors = alphaColors.map((item) =>
+    item.replace(/\s/g, '').replace(/0\./g, '.')
+  );
 
   const tinycolorLightens = arr
     .map((_t, i) => {

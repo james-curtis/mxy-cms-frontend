@@ -1,10 +1,17 @@
-import { reactive, ref, unref, defineAsyncComponent, toRaw, markRaw } from 'vue';
+import {
+  defineAsyncComponent,
+  h,
+  markRaw,
+  reactive,
+  ref,
+  toRaw,
+  unref,
+} from 'vue';
 import { httpGroupRequest } from '/@/components/Form/src/utils/GroupRequest';
 import { defHttp } from '/@/utils/http/axios';
 import { filterMultiDictText } from '/@/utils/dict/JDictSelectUtil.js';
 import { useMessage } from '/@/hooks/web/useMessage';
-import { OnlineColumn } from '/@/components/jeecg/OnLine/types/onlineConfig';
-import { h } from 'vue';
+import type { OnlineColumn } from '/@/components/jeecg/OnLine/types/onlineConfig';
 import { useRouter } from 'vue-router';
 import { useMethods } from '/@/hooks/system/useMethods';
 import { importViewsFile } from '/@/utils';
@@ -100,11 +107,11 @@ export function usePopBiz(props, tableRef?) {
     if (!selectedRowKeys || selectedRowKeys.length == 0) {
       selectRows.value = [];
     } else {
-      for (let i = 0; i < selectedRowKeys.length; i++) {
-        let combineKey = combineRowKey(getRowByKey(selectedRowKeys[i]));
-        let keys = unref(checkedKeys);
-        if (combineKey && keys.indexOf(combineKey) < 0) {
-          let row = getRowByKey(selectedRowKeys[i]);
+      for (const selectedRowKey of selectedRowKeys) {
+        const combineKey = combineRowKey(getRowByKey(selectedRowKey));
+        const keys = unref(checkedKeys);
+        if (combineKey && !keys.includes(combineKey)) {
+          const row = getRowByKey(selectedRowKey);
           row && selectRows.value.push(row);
         }
       }
@@ -118,8 +125,8 @@ export function usePopBiz(props, tableRef?) {
    */
   function filterUnuseSelect() {
     selectRows.value = unref(selectRows).filter((item) => {
-      let combineKey = combineRowKey(item);
-      return unref(checkedKeys).indexOf(combineKey) >= 0;
+      const combineKey = combineRowKey(item);
+      return unref(checkedKeys).includes(combineKey);
     });
   }
 
@@ -128,7 +135,9 @@ export function usePopBiz(props, tableRef?) {
    * @param key
    */
   function getRowByKey(key) {
-    let row = unref(dataSource).filter((record) => combineRowKey(record) === key);
+    const row = unref(dataSource).filter(
+      (record) => combineRowKey(record) === key
+    );
     return row && row.length > 0 ? row[0] : '';
   }
 
@@ -140,7 +149,7 @@ export function usePopBiz(props, tableRef?) {
     Object.keys(record).forEach((key) => {
       res = key == 'rowIndex' ? record[key] + res : res + record[key];
     });
-    res = res.length > 50 ? res.substring(0, 50) : res;
+    res = res.length > 50 ? res.slice(0, 50) : res;
     return res;
   }
 
@@ -148,25 +157,39 @@ export function usePopBiz(props, tableRef?) {
    * 加载列信息
    */
   function loadColumnsInfo() {
-    let url = `${configUrl.getColumns}${props.code}`;
+    const url = `${configUrl.getColumns}${props.code}`;
     //缓存key
-    let groupIdKey = props.groupId ? `${props.groupId}${url}` : '';
-    httpGroupRequest(() => defHttp.get({ url }, { isTransformResponse: false, successMessageMode: 'none' }), groupIdKey).then((res) => {
+    const groupIdKey = props.groupId ? `${props.groupId}${url}` : '';
+    httpGroupRequest(
+      () =>
+        defHttp.get(
+          { url },
+          { isTransformResponse: false, successMessageMode: 'none' }
+        ),
+      groupIdKey
+    ).then((res) => {
       if (res.success) {
         initDictOptionData(res.result.dictOptions);
         cgRpConfigId.value = res.result.cgRpConfigId;
         title.value = res.result.cgRpConfigName;
-        let currColumns = res.result.columns;
-        for (let a = 0; a < currColumns.length; a++) {
-          if (currColumns[a].customRender) {
-            let dictCode = currColumns[a].customRender;
-            currColumns[a].customRender = ({ text }) => {
-              return filterMultiDictText(unref(dictOptions)[dictCode], text + '');
+        const currColumns = res.result.columns;
+        for (const currColumn of currColumns) {
+          if (currColumn.customRender) {
+            const dictCode = currColumn.customRender;
+            currColumn.customRender = ({ text }) => {
+              return filterMultiDictText(
+                unref(dictOptions)[dictCode],
+                `${text}`
+              );
             };
           }
           // 排序字段受控
-          if (unref(iSorter) && currColumns[a].dataIndex === unref(iSorter).column) {
-            currColumns[a].sortOrder = unref(iSorter).order === 'asc' ? 'ascend' : 'descend';
+          if (
+            unref(iSorter) &&
+            currColumn.dataIndex === unref(iSorter).column
+          ) {
+            currColumn.sortOrder =
+              unref(iSorter).order === 'asc' ? 'ascend' : 'descend';
           }
         }
         if (currColumns[0].key !== 'rowIndex') {
@@ -176,8 +199,8 @@ export function usePopBiz(props, tableRef?) {
             key: 'rowIndex',
             width: 60,
             align: 'center',
-            customRender: function ({ text }) {
-              return parseInt(text) + 1;
+            customRender({ text }) {
+              return Number.parseInt(text) + 1;
             },
           });
         }
@@ -193,19 +216,36 @@ export function usePopBiz(props, tableRef?) {
   function loadColumnsAndData() {
     // 第一次加载 置空isTotal 在这里调用确保 该方法只是进入页面后 加载一次 其余查询不走该方法
     pagination.isTotal = '';
-    let url = `${configUrl.getColumnsAndData}${props.id}`;
+    const url = `${configUrl.getColumnsAndData}${props.id}`;
     //缓存key
-    let groupIdKey = props.groupId ? `${props.groupId}${url}` : '';
-    httpGroupRequest(() => defHttp.get({ url }, { isTransformResponse: false, successMessageMode: 'none' }), groupIdKey).then((res) => {
+    const groupIdKey = props.groupId ? `${props.groupId}${url}` : '';
+    httpGroupRequest(
+      () =>
+        defHttp.get(
+          { url },
+          { isTransformResponse: false, successMessageMode: 'none' }
+        ),
+      groupIdKey
+    ).then((res) => {
       if (res.success) {
         initDictOptionData(res.result.dictOptions);
         cgRpConfigId.value = props.id;
-        let { columns: metaColumnList, cgreportHeadName, fieldHrefSlots, isGroupTitle } = res.result;
+        const {
+          columns: metaColumnList,
+          cgreportHeadName,
+          fieldHrefSlots,
+          isGroupTitle,
+        } = res.result;
         title.value = cgreportHeadName;
         // href 跳转
         const fieldHrefSlotKeysMap = {};
-        fieldHrefSlots.forEach((item) => (fieldHrefSlotKeysMap[item.slotName] = item));
-        let currColumns = handleColumnHrefAndDict(metaColumnList, fieldHrefSlotKeysMap);
+        fieldHrefSlots.forEach(
+          (item) => (fieldHrefSlotKeysMap[item.slotName] = item)
+        );
+        let currColumns = handleColumnHrefAndDict(
+          metaColumnList,
+          fieldHrefSlotKeysMap
+        );
 
         // popup需要序号， 普通列表不需要
         if (clickThenCheckFlag === true) {
@@ -215,8 +255,8 @@ export function usePopBiz(props, tableRef?) {
             key: 'rowIndex',
             width: 60,
             align: 'center',
-            customRender: function ({ text }) {
-              return parseInt(text) + 1;
+            customRender({ text }) {
+              return Number.parseInt(text) + 1;
             },
           });
         }
@@ -238,9 +278,12 @@ export function usePopBiz(props, tableRef?) {
   /**
    * 处理求和的列 合计逻辑 [待优化 3.0]
    */
-  function handleSumColumn(metaColumnList: OnlineColumn[], dataTotal: number): void {
+  function handleSumColumn(
+    metaColumnList: OnlineColumn[],
+    dataTotal: number
+  ): void {
     // 获取需要合计列的dataIndex
-    let sumColumnList = getNeedSumColumns(metaColumnList);
+    const sumColumnList = getNeedSumColumns(metaColumnList);
     // 判断是否为第一次获取数据，如果是的话，则需要重新设置pageSize
     if (pagination.isTotal == '') {
       if (sumColumnList.length > 0) {
@@ -248,7 +291,7 @@ export function usePopBiz(props, tableRef?) {
         // 有合计字段时，每次最多查询原pageSize-1条记录，另外需要第一次时将查询的10条中删除最后一条
         // 删除最后一条数据 如果第一次得到的数据长度等于pageSize的话，则删除最后一条
         if (dataSource.value.length == pagination.pageSize) {
-          let remove_data = dataSource.value.pop();
+          const remove_data = dataSource.value.pop();
         }
         pagination.realPageSize = pagination.pageSize - 1;
       } else {
@@ -257,26 +300,30 @@ export function usePopBiz(props, tableRef?) {
     }
     // 需要添加合计字段
     if (pagination.isTotal) {
-      let totalRow = {};
+      const totalRow = {};
       sumColumnList.forEach((dataIndex) => {
         let count = 0;
         dataSource.value.forEach((row) => {
           // 统计去除null及空数据
           if (row[dataIndex] != null && row[dataIndex] != '') {
-            count += parseFloat(row[dataIndex]);
+            count += Number.parseFloat(row[dataIndex]);
           }
         });
-        totalRow[dataIndex] = isNaN(count) ? '包含非数字内容' : count.toFixed(2);
+        totalRow[dataIndex] = isNaN(count)
+          ? '包含非数字内容'
+          : count.toFixed(2);
 
         // 长整形时合计不显示.00后缀
-        let v = metaColumnList.find((v) => v.dataIndex == dataIndex);
+        const v = metaColumnList.find((v) => v.dataIndex == dataIndex);
         if (v && v.fieldType == 'Long') {
-          totalRow[dataIndex] = parseInt(totalRow[dataIndex]);
+          totalRow[dataIndex] = Number.parseInt(totalRow[dataIndex]);
         }
       });
       dataSource.value.push(totalRow);
       pagination.realTotal = dataTotal;
-      pagination.total = Number(dataTotal) + Number(Math.floor(dataTotal / pagination.realPageSize));
+      pagination.total =
+        Number(dataTotal) +
+        Number(Math.floor(dataTotal / pagination.realPageSize));
     }
   }
 
@@ -285,14 +332,14 @@ export function usePopBiz(props, tableRef?) {
    * @param columns
    */
   function getNeedSumColumns(columns: OnlineColumn[]): string[] {
-    let arr: string[] = [];
-    for (let column of columns) {
+    const arr: string[] = [];
+    for (const column of columns) {
       if (column.isTotal === '1') {
         arr.push(column.dataIndex!);
       }
-        // 【VUEN-1569】【online报表】合计无效
+      // 【VUEN-1569】【online报表】合计无效
       if (column.children && column.children.length > 0) {
-        let subArray = getNeedSumColumns(column.children);
+        const subArray = getNeedSumColumns(column.children);
         if (subArray.length > 0) {
           arr.push(...subArray);
         }
@@ -304,8 +351,11 @@ export function usePopBiz(props, tableRef?) {
   /**
    * 处理列的href和字典翻译
    */
-  function handleColumnHrefAndDict(columns: OnlineColumn[], fieldHrefSlotKeysMap: {}): OnlineColumn[] {
-    for (let column of columns) {
+  function handleColumnHrefAndDict(
+    columns: OnlineColumn[],
+    fieldHrefSlotKeysMap: {}
+  ): OnlineColumn[] {
+    for (const column of columns) {
       let { customRender, hrefSlotName, fieldType } = column;
       // online 报表中类型配置为日期（yyyy-MM-dd ），但是实际展示为日期时间格式(yyyy-MM-dd HH:mm:ss) issues/3042
       if (fieldType == 'Date') {
@@ -314,14 +364,20 @@ export function usePopBiz(props, tableRef?) {
             return '';
           }
           if (text.length > 10) {
-            return text.substring(0, 10);
+            return text.slice(0, 10);
           }
           return text;
         };
       } else {
-        if (!hrefSlotName && column.scopedSlots && column.scopedSlots.customRender) {
+        if (
+          !hrefSlotName &&
+          column.scopedSlots &&
+          column.scopedSlots.customRender
+        ) {
           //【Online报表】字典和href互斥 这里通过fieldHrefSlotKeysMap 先找到是href的列
-          if (fieldHrefSlotKeysMap.hasOwnProperty(column.scopedSlots.customRender)) {
+          if (
+            fieldHrefSlotKeysMap.hasOwnProperty(column.scopedSlots.customRender)
+          ) {
             hrefSlotName = column.scopedSlots.customRender;
           }
         }
@@ -329,28 +385,31 @@ export function usePopBiz(props, tableRef?) {
         // 如果 hrefSlotName 有值则代表使用了href跳转
         // 两者可以兼容。兼容的具体思路为：先获取到字典替换的值，再添加href链接跳转
         if (customRender || hrefSlotName) {
-          let dictCode = customRender as string;
-          let replaceFlag = '_replace_text_';
+          const dictCode = customRender as string;
+          const replaceFlag = '_replace_text_';
           column.customRender = ({ text, record }) => {
             let value = text;
             // 如果 dictCode 有值，就进行字典转换
             if (dictCode) {
               if (dictCode.startsWith(replaceFlag)) {
-                let textFieldName = dictCode.replace(replaceFlag, '');
+                const textFieldName = dictCode.replace(replaceFlag, '');
                 value = record[textFieldName];
               } else {
-                value = filterMultiDictText(unref(dictOptions)[dictCode], text + '');
+                value = filterMultiDictText(
+                  unref(dictOptions)[dictCode],
+                  `${text}`
+                );
               }
             }
             // 扩展参数设置列的内容长度
             if (column.showLength) {
               if (value && value.length > column.showLength) {
-                value = value.substr(0, column.showLength) + '...';
+                value = `${value.slice(0, Math.max(0, column.showLength))}...`;
               }
             }
             // 如果 hrefSlotName 有值，就生成一个 a 标签，包裹住字典替换后（或原生）的值
             if (hrefSlotName) {
-              let field = fieldHrefSlotKeysMap[hrefSlotName];
+              const field = fieldHrefSlotKeysMap[hrefSlotName];
               if (field) {
                 return h(
                   'a',
@@ -374,21 +433,24 @@ export function usePopBiz(props, tableRef?) {
    * @param columns
    */
   function handleGroupTitle(columns: OnlineColumn[]): OnlineColumn[] {
-    let newColumns: OnlineColumn[] = [];
-    for (let column of columns) {
+    const newColumns: OnlineColumn[] = [];
+    for (const column of columns) {
       //排序字段受控  ---- 此逻辑为新增逻辑 待
       if (unref(iSorter) && column.dataIndex === unref(iSorter).column) {
-        column.sortOrder = unref(iSorter).order === 'asc' ? 'ascend' : 'descend';
+        column.sortOrder =
+          unref(iSorter).order === 'asc' ? 'ascend' : 'descend';
       }
       //判断字段是否需要合并表头
       if (column.groupTitle) {
-        let clIndex = newColumns.findIndex((im) => im.title === column.groupTitle);
+        const clIndex = newColumns.findIndex(
+          (im) => im.title === column.groupTitle
+        );
         if (clIndex !== -1) {
           //表头已存在直接push children
           newColumns[clIndex].children!.push(column);
         } else {
           //表头不存在组装表头信息
-          let clGroup: OnlineColumn = {},
+          const clGroup: OnlineColumn = {},
             child: OnlineColumn[] = [];
           child.push(column);
           clGroup.title = column.groupTitle;
@@ -404,7 +466,7 @@ export function usePopBiz(props, tableRef?) {
   }
 
   // 获取路由器对象 href跳转用到
-  let router = useRouter();
+  const router = useRouter();
   /**
    * href 点击事件
    * @param field
@@ -412,14 +474,15 @@ export function usePopBiz(props, tableRef?) {
    */
   function handleClickFieldHref(field, record) {
     let href = field.href;
-    let urlPattern = /(ht|f)tp(s?)\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_]*)?/;
-    let compPattern = /\.vue(\?.*)?$/;
-    let jsPattern = /{{([^}]+)}}/g; // {{ xxx }}
+    const urlPattern =
+      /(ht|f)tp(s?)\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_]*)?/;
+    const compPattern = /\.vue(\?.*)?$/;
+    const jsPattern = /{{([^}]+)}}/g; // {{ xxx }}
     if (typeof href === 'string') {
       href = href.trim().replace(/\${([^}]+)?}/g, (s1, s2) => record[s2]);
       // 执行 {{...}} JS增强语句
       if (jsPattern.test(href)) {
-        href = href.replace(jsPattern, function (text, s0) {
+        href = href.replace(jsPattern, (text, s0) => {
           try {
             return eval(s0);
           } catch (e) {
@@ -444,10 +507,10 @@ export function usePopBiz(props, tableRef?) {
    */
   function handleExport() {
     const { handleExportXls } = useMethods();
-    let url = `${configUrl.export}${cgRpConfigId.value}`;
-    let params = getQueryParams(); //查询条件
+    const url = `${configUrl.export}${cgRpConfigId.value}`;
+    const params = getQueryParams(); //查询条件
     // 【VUEN-1568】如果选中了某些行，就只导出选中的行
-    let keys = unref(checkedKeys);
+    const keys = unref(checkedKeys);
     if (keys.length > 0) {
       params['force_id'] = keys
         .map((i) => (getRowByKey(i) as any)?.id)
@@ -481,10 +544,15 @@ export function usePopBiz(props, tableRef?) {
    */
   function onShowTotal(total) {
     // 重新根据是否有合计计算每页显示的数据
-    let start = (pagination.current - 1) * pagination.realPageSize + 1;
-    let end = start + (pagination.isTotal ? dataSource.value.length - 1 : dataSource.value.length) - 1;
-    let realTotal = pagination.isTotal ? pagination.realTotal : total;
-    return start + '-' + end + ' 共' + realTotal + '条';
+    const start = (pagination.current - 1) * pagination.realPageSize + 1;
+    const end =
+      start +
+      (pagination.isTotal
+        ? dataSource.value.length - 1
+        : dataSource.value.length) -
+      1;
+    const realTotal = pagination.isTotal ? pagination.realTotal : total;
+    return `${start}-${end} 共${realTotal}条`;
   }
 
   /**
@@ -500,10 +568,17 @@ export function usePopBiz(props, tableRef?) {
    * @param data 数据结果集
    */
   function initQueryInfo(data) {
-    let url = `${configUrl.getQueryInfo}${unref(cgRpConfigId)}`;
+    const url = `${configUrl.getQueryInfo}${unref(cgRpConfigId)}`;
     //缓存key
-    let groupIdKey = props.groupId ? `${props.groupId}${url}` : '';
-    httpGroupRequest(() => defHttp.get({ url }, { isTransformResponse: false, successMessageMode: 'none' }), groupIdKey).then((res) => {
+    const groupIdKey = props.groupId ? `${props.groupId}${url}` : '';
+    httpGroupRequest(
+      () =>
+        defHttp.get(
+          { url },
+          { isTransformResponse: false, successMessageMode: 'none' }
+        ),
+      groupIdKey
+    ).then((res) => {
       // console.log("获取查询条件", res);
       if (res.success) {
         dynamicParamHandler(res.result);
@@ -530,14 +605,23 @@ export function usePopBiz(props, tableRef?) {
     if (arg == 1) {
       pagination.current = 1;
     }
-    let params = getQueryParams(); //查询条件
+    const params = getQueryParams(); //查询条件
     loading.value = true;
-    let url = `${configUrl.getData}${unref(cgRpConfigId)}`;
+    const url = `${configUrl.getData}${unref(cgRpConfigId)}`;
     //缓存key
-    let groupIdKey = props.groupId ? `${props.groupId}${url}${JSON.stringify(params)}` : '';
-    httpGroupRequest(() => defHttp.get({ url, params }, { isTransformResponse: false, successMessageMode: 'none' }), groupIdKey).then((res) => {
+    const groupIdKey = props.groupId
+      ? `${props.groupId}${url}${JSON.stringify(params)}`
+      : '';
+    httpGroupRequest(
+      () =>
+        defHttp.get(
+          { url, params },
+          { isTransformResponse: false, successMessageMode: 'none' }
+        ),
+      groupIdKey
+    ).then((res) => {
       loading.value = false;
-      let data = res.result;
+      const data = res.result;
       console.log('表格信息:', data);
       setDataSource(data);
     });
@@ -549,7 +633,7 @@ export function usePopBiz(props, tableRef?) {
   function setDataSource(data) {
     if (data) {
       pagination.total = Number(data.total);
-      let currentPage = pagination?.current ?? 1;
+      const currentPage = pagination?.current ?? 1;
       for (let a = 0; a < data.records.length; a++) {
         if (!data.records[a].rowIndex) {
           data.records[a].rowIndex = a + (currentPage - 1) * 10;
@@ -568,14 +652,14 @@ export function usePopBiz(props, tableRef?) {
    * 获取查询参数
    */
   function getQueryParams() {
-    let paramTarget = {};
+    const paramTarget = {};
     if (unref(dynamicParam)) {
       //处理自定义参数
       Object.keys(unref(dynamicParam)).map((key) => {
-        paramTarget['self_' + key] = unref(dynamicParam)[key];
+        paramTarget[`self_${key}`] = unref(dynamicParam)[key];
       });
     }
-    let param = Object.assign(paramTarget, unref(queryParam), unref(iSorter));
+    const param = Object.assign(paramTarget, unref(queryParam), unref(iSorter));
     param.pageNo = pagination.current;
     // 合计逻辑 [待优化 3.0]
     //  实际查询时不使用table组件的pageSize，而使用自定义的realPageSize,realPageSize会在第一次获取到数据后变化
@@ -589,19 +673,19 @@ export function usePopBiz(props, tableRef?) {
   function dynamicParamHandler(arr?) {
     if (arr && arr.length > 0) {
       //第一次加载查询条件前 初始化queryParam为空对象
-      let queryTemp = {};
-      for (let item of arr) {
+      const queryTemp = {};
+      for (const item of arr) {
         if (item.mode === 'single') {
           queryTemp[item.field] = '';
         }
       }
       queryParam.value = { ...queryTemp };
     }
-    let dynamicTemp = {};
+    const dynamicTemp = {};
     if (props.param) {
       Object.keys(props.param).map((key) => {
         let str = props.param[key];
-        if (key in queryParam) {
+        if (key in queryParam.value) {
           if (str && str.startsWith("'") && str.endsWith("'")) {
             str = str.substring(1, str.length - 1);
           }
@@ -646,22 +730,22 @@ export function usePopBiz(props, tableRef?) {
    */
   function clickThenCheck(record) {
     if (clickThenCheckFlag === true) {
-      let rowKey = combineRowKey(record);
+      const rowKey = combineRowKey(record);
       if (!unref(checkedKeys) || unref(checkedKeys).length == 0) {
-        let arr1: any[] = [],
+        const arr1: any[] = [],
           arr2: any[] = [];
         arr1.push(record);
         arr2.push(rowKey);
         checkedKeys.value = arr2;
         selectRows.value = arr1;
       } else {
-        if (unref(checkedKeys).indexOf(rowKey) < 0) {
+        if (!unref(checkedKeys).includes(rowKey)) {
           //不存在就选中
           checkedKeys.value.push(rowKey);
           selectRows.value.push(record);
         } else {
           //已选中就取消
-          let rowKey_index = unref(checkedKeys).indexOf(rowKey);
+          const rowKey_index = unref(checkedKeys).indexOf(rowKey);
           checkedKeys.value.splice(rowKey_index, 1);
           selectRows.value.splice(rowKey_index, 1);
         }
@@ -671,7 +755,7 @@ export function usePopBiz(props, tableRef?) {
 
   //防止字典中有垃圾数据
   function initDictOptionData(arr) {
-    let obj = {};
+    const obj = {};
     Object.keys(arr).map((k) => {
       obj[k] = arr[k].filter((item) => {
         return item != null;
@@ -690,8 +774,11 @@ export function usePopBiz(props, tableRef?) {
       return;
     }
 
-    for (let key in obj) {
-      if (obj.hasOwnProperty(key) && (obj[key] == null || obj[key] == undefined || obj[key] === '')) {
+    for (const key in obj) {
+      if (
+        obj.hasOwnProperty(key) &&
+        (obj[key] == null || obj[key] == undefined || obj[key] === '')
+      ) {
         delete obj[key];
       }
     }
@@ -737,15 +824,15 @@ export function usePopBiz(props, tableRef?) {
   // 超链点击事件--> 打开一个modal窗口
   function openHrefCompModal(href) {
     // 解析 href 参数
-    let index = href.indexOf('?');
+    const index = href.indexOf('?');
     let path = href;
     if (index !== -1) {
-      path = href.substring(0, index);
-      let paramString = href.substring(index + 1, href.length);
-      let paramArray = paramString.split('&');
-      let params = {};
+      path = href.slice(0, Math.max(0, index));
+      const paramString = href.substring(index + 1, href.length);
+      const paramArray = paramString.split('&');
+      const params = {};
       paramArray.forEach((paramObject) => {
-        let paramItem = paramObject.split('=');
+        const paramItem = paramObject.split('=');
         params[paramItem[0]] = paramItem[1];
       });
       hrefComponent.value.params = params;
@@ -754,7 +841,9 @@ export function usePopBiz(props, tableRef?) {
     }
     hrefComponent.value.model.visible = true;
     hrefComponent.value.model.title = '操作';
-    hrefComponent.value.is = markRaw(defineAsyncComponent(() => importViewsFile(path)));
+    hrefComponent.value.is = markRaw(
+      defineAsyncComponent(() => importViewsFile(path))
+    );
   }
 
   //update-begin-author:taoyan date:2022-5-31 for: VUEN-1155 popup 选择数据时，会选择多条重复数据
@@ -762,8 +851,8 @@ export function usePopBiz(props, tableRef?) {
    * emit事件 获取选中的行数据
    */
   function getOkSelectRows(): any[] {
-    let arr = unref(selectRows);
-    let selectedRowKeys = checkedKeys.value;
+    const arr = unref(selectRows);
+    const selectedRowKeys = checkedKeys.value;
     console.log('arr', arr);
     if (!selectedRowKeys || selectedRowKeys.length <= 0) {
       return [];
@@ -771,12 +860,12 @@ export function usePopBiz(props, tableRef?) {
     if (!arr || arr.length <= 0) {
       return [];
     }
-    let rows: any = [];
-    for (let key of selectedRowKeys) {
-      for (let i = 0; i < arr.length; i++) {
-        let combineKey = combineRowKey(arr[i]);
+    const rows: any = [];
+    for (const key of selectedRowKeys) {
+      for (const element of arr) {
+        const combineKey = combineRowKey(element);
         if (key === combineKey) {
-          rows.push(toRaw(arr[i]));
+          rows.push(toRaw(element));
           break;
         }
       }

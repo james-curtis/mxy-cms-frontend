@@ -26,7 +26,12 @@ export const list = (params) => defHttp.get({ url: Api.list, params });
 export const deleteBatch = (params, confirm = false) => {
   return new Promise((resolve, reject) => {
     const doDelete = () => {
-      resolve(defHttp.delete({ url: Api.deleteBatch, params }, { joinParamsToUrl: true }));
+      resolve(
+        defHttp.delete(
+          { url: Api.deleteBatch, params },
+          { joinParamsToUrl: true }
+        )
+      );
     };
     if (confirm) {
       createConfirm({
@@ -57,4 +62,5 @@ export const saveOrUpdate = (params, isUpdate) => {
  * 发送消息测试
  * @param params
  */
-export const sendMessageTest = (params) => defHttp.post({ url: Api.send, params });
+export const sendMessageTest = (params) =>
+  defHttp.post({ url: Api.send, params });

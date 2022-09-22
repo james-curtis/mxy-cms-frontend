@@ -1,4 +1,4 @@
-import { BasicColumn, FormSchema } from '/@/components/Table';
+import type { BasicColumn, FormSchema } from '/@/components/Table';
 
 const dbDriverMap = {
   // MySQL 数据库
@@ -34,7 +34,10 @@ const dbDriverMap = {
 };
 const dbUrlMap = {
   // MySQL 数据库
-  '1': { dbUrl: 'jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false' },
+  '1': {
+    dbUrl:
+      'jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false',
+  },
   //MySQL5.7+ 数据库
   '4': {
     dbUrl:
@@ -43,13 +46,22 @@ const dbUrlMap = {
   // Oracle
   '2': { dbUrl: 'jdbc:oracle:thin:@127.0.0.1:1521:ORCL' },
   // SQLServer 数据库
-  '3': { dbUrl: 'jdbc:sqlserver://127.0.0.1:1433;SelectMethod=cursor;DatabaseName=jeecgboot' },
+  '3': {
+    dbUrl:
+      'jdbc:sqlserver://127.0.0.1:1433;SelectMethod=cursor;DatabaseName=jeecgboot',
+  },
   // Mariadb 数据库
-  '5': { dbUrl: 'jdbc:mariadb://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useSSL=false' },
+  '5': {
+    dbUrl:
+      'jdbc:mariadb://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useSSL=false',
+  },
   // Postgresql 数据库
   '6': { dbUrl: 'jdbc:postgresql://127.0.0.1:5432/jeecg-boot' },
   // 达梦 数据库
-  '7': { dbUrl: 'jdbc:dm://127.0.0.1:5236/?jeecg-boot&zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8' },
+  '7': {
+    dbUrl:
+      'jdbc:dm://127.0.0.1:5236/?jeecg-boot&zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8',
+  },
   // 人大金仓 数据库
   '8': { dbUrl: 'jdbc:kingbase8://127.0.0.1:54321/jeecg-boot' },
   // 神通 数据库

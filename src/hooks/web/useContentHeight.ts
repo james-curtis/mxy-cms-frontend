@@ -1,4 +1,5 @@
-import { ComputedRef, isRef, nextTick, Ref, ref, unref, watch } from 'vue';
+import type { ComputedRef, Ref } from 'vue';
+import { isRef, nextTick, ref, unref, watch } from 'vue';
 import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
 import { useWindowSizeFn } from '/@/hooks/event/useWindowSizeFn';
 import { useLayoutHeight } from '/@/layouts/default/content/useContentViewHeight';
@@ -27,7 +28,7 @@ type Upward = number | string | null | undefined;
  * @returns 响应式高度
  */
 export function useContentHeight(
-  flag: ComputedRef<Boolean>,
+  flag: ComputedRef<boolean>,
   anchorRef: Ref,
   subtractHeightRefs: Ref[],
   substractSpaceRefs: Ref[],
@@ -50,7 +51,10 @@ export function useContentHeight(
     });
   }
 
-  function calcSubtractSpace(element: Element | null | undefined, direction: 'all' | 'top' | 'bottom' = 'all'): number {
+  function calcSubtractSpace(
+    element: Element | null | undefined,
+    direction: 'all' | 'top' | 'bottom' = 'all'
+  ): number {
     function numberPx(px: string) {
       return Number(px.replace(/[^\d]/g, ''));
     }
@@ -82,7 +86,9 @@ export function useContentHeight(
     if (element == null) {
       return null;
     }
-    return (element instanceof HTMLDivElement ? element : element.$el) as HTMLDivElement;
+    return (
+      element instanceof HTMLDivElement ? element : element.$el
+    ) as HTMLDivElement;
   }
 
   async function calcContentHeight() {
@@ -112,7 +118,10 @@ export function useContentHeight(
 
     // upwardSpace
     let upwardSpaceHeight = 0;
-    function upward(element: Element | null, upwardLvlOrClass: number | string | null | undefined) {
+    function upward(
+      element: Element | null,
+      upwardLvlOrClass: number | string | null | undefined
+    ) {
       if (element && upwardLvlOrClass) {
         const parent = element.parentElement;
         if (parent) {
@@ -139,7 +148,12 @@ export function useContentHeight(
     }
 
     let height =
-      bottomIncludeBody - unref(layoutFooterHeightRef) - unref(offsetHeightRef) - substractHeight - substractSpaceHeight - upwardSpaceHeight;
+      bottomIncludeBody -
+      unref(layoutFooterHeightRef) -
+      unref(offsetHeightRef) -
+      substractHeight -
+      substractSpaceHeight -
+      upwardSpaceHeight;
 
     // compensation height
     const calcCompensationHeight = () => {
@@ -147,7 +161,10 @@ export function useContentHeight(
         height += getEl(unref(item))?.offsetHeight ?? 0;
       });
     };
-    if (compensationHeight.useLayoutFooter && unref(layoutFooterHeightRef) > 0) {
+    if (
+      compensationHeight.useLayoutFooter &&
+      unref(layoutFooterHeightRef) > 0
+    ) {
       calcCompensationHeight();
     } else {
       calcCompensationHeight();

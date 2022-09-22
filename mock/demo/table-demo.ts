@@ -1,11 +1,13 @@
-import { MockMethod } from 'vite-plugin-mock';
 import { Random } from 'mockjs';
-import { resultPageSuccess, baseUrl } from '../_util';
+import { baseUrl, resultPageSuccess } from '../_util';
+import type { MockMethod } from 'vite-plugin-mock';
 
 function getRandomPics(count = 10): string[] {
   const arr: string[] = [];
   for (let i = 0; i < count; i++) {
-    arr.push(Random.image('800x600', Random.color(), Random.color(), Random.title()));
+    arr.push(
+      Random.image('800x600', Random.color(), Random.color(), Random.title())
+    );
   }
   return arr;
 }
@@ -27,7 +29,12 @@ const demoList = (() => {
       name6: '@cname()',
       name7: '@cname()',
       name8: '@cname()',
-      avatar: Random.image('400x400', Random.color(), Random.color(), Random.first()),
+      avatar: Random.image(
+        '400x400',
+        Random.color(),
+        Random.color(),
+        Random.first()
+      ),
       imgArr: getRandomPics(Math.ceil(Math.random() * 3) + 1),
       imgs: getRandomPics(Math.ceil(Math.random() * 3) + 1),
       date: `@date('yyyy-MM-dd')`,

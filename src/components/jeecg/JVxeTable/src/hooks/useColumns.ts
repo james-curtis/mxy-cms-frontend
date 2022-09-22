@@ -1,4 +1,3 @@
-import type { JVxeColumn, JVxeDataProps, JVxeTableProps } from '../types';
 import { computed, nextTick } from 'vue';
 import { isArray, isEmpty, isPromise } from '/@/utils/is';
 import { cloneDeep } from 'lodash-es';
@@ -7,9 +6,14 @@ import { initDictOptions } from '/@/utils/dict';
 import { pushIfNotExist } from '/@/utils/common/compUtils';
 import { getEnhanced } from '../utils/enhancedUtils';
 import { isRegistered } from '../utils/registerUtils';
-import { JVxeComponent } from '../types/JVxeComponent';
 import { useValidateRules } from './useValidateRules';
-import { JVxeTableMethods } from '../types';
+import type {
+  JVxeColumn,
+  JVxeDataProps,
+  JVxeTableMethods,
+  JVxeTableProps,
+} from '../types';
+import type { JVxeComponent } from '../types/JVxeComponent';
 
 // handle 方法参数
 export interface HandleArgs {
@@ -23,16 +27,21 @@ export interface HandleArgs {
   enhanced?: JVxeComponent.Enhanced;
 }
 
-export function useColumns(props: JVxeTableProps, data: JVxeDataProps, methods: JVxeTableMethods, slots) {
+export function useColumns(
+  props: JVxeTableProps,
+  data: JVxeDataProps,
+  methods: JVxeTableMethods,
+  slots
+) {
   data.vxeColumns = computed(() => {
-    let columns: JVxeColumn[] = [];
+    const columns: JVxeColumn[] = [];
     if (isArray(props.columns)) {
       // handle 方法参数
       const args: HandleArgs = { props, slots, data, methods, columns };
       let seqColumn, selectionColumn, expandColumn, dragSortColumn;
       props.columns.forEach((column: JVxeColumn) => {
         // 排除未授权的列 1 = 显示/隐藏； 2 = 禁用
-        let auth = methods.getColAuth(column.key);
+        const auth = methods.getColAuth(column.key);
         if (auth?.type == '1' && !auth.isAuth) {
           return;
         } else if (auth?.type == '2' && !auth.isAuth) {
@@ -42,7 +51,7 @@ export function useColumns(props: JVxeTableProps, data: JVxeDataProps, methods: 
         if (column.type == null || isEmpty(column.type)) {
           column.type = JVxeTypes.normal;
         }
-        let col: JVxeColumn = cloneDeep(column);
+        const col: JVxeColumn = cloneDeep(column);
         // 处理隐藏列
         if (col.type === JVxeTypes.hidden) {
           return handleInnerColumn(args, col, handleHiddenColumn);
@@ -73,7 +82,10 @@ export function useColumns(props: JVxeTableProps, data: JVxeDataProps, methods: 
         if (col.type === JVxeTypes.rowNumber) {
           seqColumn = col;
           columns.push(col);
-        } else if (col.type === JVxeTypes.rowRadio || col.type === JVxeTypes.rowCheckbox) {
+        } else if (
+          col.type === JVxeTypes.rowRadio ||
+          col.type === JVxeTypes.rowCheckbox
+        ) {
           selectionColumn = col;
           columns.push(col);
         } else if (col.type === JVxeTypes.rowExpand) {
@@ -97,12 +109,19 @@ export function useColumns(props: JVxeTableProps, data: JVxeDataProps, methods: 
 }
 
 /** 处理内置列 */
-function handleInnerColumn(args: HandleArgs, col: JVxeColumn, handler: (args: HandleArgs) => void, assign?: boolean) {
-  let renderOptions = col?.editRender || col?.cellRender;
+function handleInnerColumn(
+  args: HandleArgs,
+  col: JVxeColumn,
+  handler: (args: HandleArgs) => void,
+  assign?: boolean
+) {
+  const renderOptions = col?.editRender || col?.cellRender;
   return handler({
     ...args,
-    col: col,
-    renderOptions: assign ? Object.assign({}, args.renderOptions, renderOptions) : renderOptions,
+    col,
+    renderOptions: assign
+      ? Object.assign({}, args.renderOptions, renderOptions)
+      : renderOptions,
   });
 }
 
@@ -121,7 +140,7 @@ function handleHiddenColumn({ col, columns }: HandleArgs) {
 function handleSeqColumn({ props, col, columns }: HandleArgs) {
   // 判断是否开启了行号列
   if (props.rowNumber) {
-    let column = {
+    const column = {
       type: 'seq',
       title: '#',
       width: 60,
@@ -146,9 +165,9 @@ function handleSelectionColumn({ props, data, col, columns }: HandleArgs) {
     if (data.statistics.has && !props.rowExpand && !props.dragSort) {
       width = 60;
     }
-    let column = {
+    const column = {
       type: props.rowSelectionType,
-      width: width,
+      width,
       fixed: 'left',
       align: 'center',
     };
@@ -170,10 +189,10 @@ function handleExpandColumn({ props, data, col, columns }: HandleArgs) {
     if (data.statistics.has && !props.dragSort) {
       width = 60;
     }
-    let column = {
+    const column = {
       type: 'expand',
       title: '',
-      width: width,
+      width,
       fixed: 'left',
       align: 'center',
       slots: { content: 'expandContent' },
@@ -187,20 +206,26 @@ function handleExpandColumn({ props, data, col, columns }: HandleArgs) {
 }
 
 /** 处理可排序列 */
-function handleDragSortColumn({ props, data, col, columns, renderOptions }: HandleArgs) {
+function handleDragSortColumn({
+  props,
+  data,
+  col,
+  columns,
+  renderOptions,
+}: HandleArgs) {
   // 是否可拖动排序
   if (props.dragSort) {
     let width = 40;
     if (data.statistics.has) {
       width = 60;
     }
-    let column: any = {
+    const column: any = {
       title: '',
-      width: width,
+      width,
       fixed: 'left',
       align: 'center',
     };
-    let cellRender = {
+    const cellRender = {
       name: JVxeTypePrefix + JVxeTypes.rowDragSort,
       sortKey: props.sortKey,
     };
@@ -221,12 +246,12 @@ function handleDragSortColumn({ props, data, col, columns, renderOptions }: Hand
 function handlerCol(args: HandleArgs) {
   const { props, col, columns, enhanced } = args;
   if (!col) return;
-  let { type } = col;
+  const { type } = col;
   col.field = col.key;
   delete col.type;
   let renderName = 'cellRender';
   // 渲染选项
-  let $renderOptions: any = { name: JVxeTypePrefix + type };
+  const $renderOptions: any = { name: JVxeTypePrefix + type };
   if (enhanced?.switches.editRender) {
     if (!(enhanced.switches.visible || props.alwaysEdit)) {
       renderName = 'editRender';
@@ -269,7 +294,7 @@ async function handleDict({ col, methods }: HandleArgs) {
           }
           const dictOptions: any = await initDictOptions(dictCodeString);
           //update-end-author:taoyan date:2022-6-1 for: VUEN-1180 【代码生成】子表不支持带条件？
-          let options = col.params.options ?? [];
+          const options = col.params.options ?? [];
           dictOptions.forEach((dict) => {
             // 过滤重复数据
             if (options.findIndex((o) => o.value === dict.value) === -1) {
@@ -283,7 +308,9 @@ async function handleDict({ col, methods }: HandleArgs) {
       await nextTick();
       await methods.getXTable().updateData();
     } catch (e) {
-      console.group(`[JVxeTable] 查询字典 "${col.params.dictCode}" 时发生异常！`);
+      console.group(
+        `[JVxeTable] 查询字典 "${col.params.dictCode}" 时发生异常！`
+      );
       console.warn(e);
       console.groupEnd();
     }
@@ -308,7 +335,7 @@ function handleStatistics({ col, data }: HandleArgs) {
     data.statistics.has = true;
     col.statistics.forEach((item) => {
       if (!isEmpty(item)) {
-        let arr = data.statistics[(item as string).toLowerCase()];
+        const arr = data.statistics[(item as string).toLowerCase()];
         if (isArray(arr)) {
           pushIfNotExist(arr, col.key);
         }
@@ -332,7 +359,11 @@ function handleSlots({ slots, col, renderOptions }: HandleArgs) {
 /** 处理联动列 */
 function handleLinkage({ data, col, renderOptions, methods }: HandleArgs) {
   // 处理联动列，联动列只能作用于 select 组件
-  if (col && col.params.type === JVxeTypes.select && data.innerLinkageConfig != null) {
+  if (
+    col &&
+    col.params.type === JVxeTypes.select &&
+    data.innerLinkageConfig != null
+  ) {
     // 判断当前列是否是联动列
     if (data.innerLinkageConfig.has(col.key)) {
       renderOptions.linkage = {

@@ -1,9 +1,8 @@
+import { h } from 'vue';
+import { Popover } from 'ant-design-vue';
 import type { FunctionalComponent, defineComponent } from 'vue';
 import type { ComponentType } from '../../types/componentType';
 import { componentMap } from '/@/components/Table/src/componentMap';
-
-import { Popover } from 'ant-design-vue';
-import { h } from 'vue';
 
 export interface ComponentProps {
   component: ComponentType;
@@ -14,7 +13,13 @@ export interface ComponentProps {
 }
 
 export const CellComponent: FunctionalComponent = (
-  { component = 'Input', rule = true, ruleMessage, popoverVisible, getPopupContainer }: ComponentProps,
+  {
+    component = 'Input',
+    rule = true,
+    ruleMessage,
+    popoverVisible,
+    getPopupContainer,
+  }: ComponentProps,
   { attrs }
 ) => {
   const Comp = componentMap.get(component) as typeof defineComponent;

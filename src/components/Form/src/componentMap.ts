@@ -1,24 +1,21 @@
-import type { Component } from 'vue';
-import type { ComponentType } from './types/index';
-
 /**
  * Component list, register here to setting it in the form
  */
 import {
-  Input,
-  Select,
-  Radio,
-  Checkbox,
   AutoComplete,
   Cascader,
+  Checkbox,
   DatePicker,
+  Divider,
+  Input,
   InputNumber,
+  Radio,
+  Rate,
+  Select,
+  Slider,
   Switch,
   TimePicker,
   TreeSelect,
-  Slider,
-  Rate,
-  Divider,
 } from 'ant-design-vue';
 import ApiRadioGroup from './components/ApiRadioGroup.vue';
 import RadioButtonGroup from './components/RadioButtonGroup.vue';
@@ -58,6 +55,8 @@ import JSearchSelect from './jeecg/components/JSearchSelect.vue';
 import JAddInput from './jeecg/components/JAddInput.vue';
 import { Time } from '/@/components/Time';
 import JRangeNumber from './jeecg/components/JRangeNumber.vue';
+import type { ComponentType } from './types/index';
+import type { Component } from 'vue';
 
 const componentMap = new Map<ComponentType, Component>();
 

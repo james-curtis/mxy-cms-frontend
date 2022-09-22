@@ -1,5 +1,4 @@
-import { BasicColumn } from '/@/components/Table';
-import { FormSchema } from '/@/components/Table';
+import type { BasicColumn, FormSchema } from '/@/components/Table';
 import { render } from '/@/utils/common/renderUtils';
 
 export const columns: BasicColumn[] = [
@@ -68,7 +67,7 @@ export const searchFormSchema: FormSchema[] = [
     label: '生日',
     component: 'RangePicker',
     componentProps: {
-      valueType: 'Date'
+      valueType: 'Date',
     },
     colProps: { span: 8 },
   },
@@ -179,7 +178,14 @@ export const formSchema: FormSchema[] = [
     field: 'email',
     label: '邮箱',
     component: 'Input',
-    rules: [{ required: false, type: 'email', message: '邮箱格式不正确', trigger: 'blur' }],
+    rules: [
+      {
+        required: false,
+        type: 'email',
+        message: '邮箱格式不正确',
+        trigger: 'blur',
+      },
+    ],
     componentProps: {
       placeholder: '请输入邮箱',
     },

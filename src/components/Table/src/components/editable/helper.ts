@@ -1,4 +1,4 @@
-import { ComponentType } from '../../types/componentType';
+import type { ComponentType } from '../../types/componentType';
 import { useI18n } from '/@/hooks/web/useI18n';
 
 const { t } = useI18n();

@@ -1,15 +1,21 @@
-import { computed, reactive, h } from 'vue';
-import { JVxeTableMethods, JVxeTableProps } from '/@/components/jeecg/JVxeTable/src/types';
-import { isEmpty } from '/@/utils/is';
+import { computed, h, reactive } from 'vue';
 import { Pagination } from 'ant-design-vue';
+import type {
+  JVxeTableMethods,
+  JVxeTableProps,
+} from '/@/components/jeecg/JVxeTable/src/types';
+import { isEmpty } from '/@/utils/is';
 
-export function usePagination(props: JVxeTableProps, methods: JVxeTableMethods) {
+export function usePagination(
+  props: JVxeTableProps,
+  methods: JVxeTableMethods
+) {
   const innerPagination = reactive({
     current: 1,
     pageSize: 10,
     pageSizeOptions: ['10', '20', '30'],
     showTotal: (total, range) => {
-      return range[0] + '-' + range[1] + ' 共 ' + total + ' 条';
+      return `${range[0]}-${range[1]} 共 ${total} 条`;
     },
     showQuickJumper: true,
     showSizeChanger: true,

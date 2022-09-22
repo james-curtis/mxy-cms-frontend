@@ -1,7 +1,7 @@
-import { Ref } from 'vue';
+import type { Ref } from 'vue';
 import { duplicateCheck } from '/@/views/system/user/user.api';
-import { BasicColumn, FormSchema } from '/@/components/Table';
-import { DescItem } from '/@/components/Description';
+import type { BasicColumn, FormSchema } from '/@/components/Table';
+import type { DescItem } from '/@/components/Description';
 import { findTree } from '/@/utils/common/compUtils';
 
 // 用户信息 columns
@@ -109,7 +109,7 @@ export const departRoleModalFormSchema: FormSchema[] = [
               return Promise.reject('部门角色编码不可输入汉字！');
             }
             return new Promise((resolve, reject) => {
-              let params = {
+              const params = {
                 tableName: 'sys_depart_role',
                 fieldName: 'role_code',
                 fieldVal: value,
@@ -132,7 +132,9 @@ export const departRoleModalFormSchema: FormSchema[] = [
     field: 'description',
     label: '描述',
     component: 'Input',
-    rules: [{ min: 0, max: 126, message: '长度不能超过 126 个字符', trigger: 'blur' }],
+    rules: [
+      { min: 0, max: 126, message: '长度不能超过 126 个字符', trigger: 'blur' },
+    ],
   },
 ];
 
@@ -148,7 +150,7 @@ export function useBaseInfoForm(treeData: Ref<any[]>) {
       label: '上级部门',
       render(val) {
         if (val) {
-          let data = findTree(treeData.value, (item) => item.key == val);
+          const data = findTree(treeData.value, (item) => item.key == val);
           return data?.title ?? val;
         }
         return val;

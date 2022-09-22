@@ -1,4 +1,7 @@
-import type { RouteLocationNormalized, RouteRecordNormalized } from 'vue-router';
+import type {
+  RouteLocationNormalized,
+  RouteRecordNormalized,
+} from 'vue-router';
 import type { App, Plugin } from 'vue';
 
 import { unref } from 'vue';
@@ -30,21 +33,32 @@ export function getPopupContainer(node?: HTMLElement): HTMLElement {
 export function setObjToUrlParams(baseUrl: string, obj: any): string {
   let parameters = '';
   for (const key in obj) {
-    parameters += key + '=' + encodeURIComponent(obj[key]) + '&';
+    parameters += `${key}=${encodeURIComponent(obj[key])}&`;
   }
   parameters = parameters.replace(/&$/, '');
-  return /\?$/.test(baseUrl) ? baseUrl + parameters : baseUrl.replace(/\/?$/, '?') + parameters;
+  return /\?$/.test(baseUrl)
+    ? baseUrl + parameters
+    : baseUrl.replace(/\/?$/, '?') + parameters;
 }
 
 export function deepMerge<T = any>(src: any = {}, target: any = {}): T {
   let key: string;
   for (key in target) {
-    src[key] = isObject(src[key]) ? deepMerge(src[key], target[key]) : (src[key] = target[key]);
+    src[key] = isObject(src[key])
+      ? deepMerge(src[key], target[key])
+      : (src[key] = target[key]);
   }
   return src;
 }
 
-export function openWindow(url: string, opt?: { target?: TargetContext | string; noopener?: boolean; noreferrer?: boolean }) {
+export function openWindow(
+  url: string,
+  opt?: {
+    target?: TargetContext | string;
+    noopener?: boolean;
+    noreferrer?: boolean;
+  }
+) {
   const { target = '__blank', noopener = true, noreferrer = true } = opt || {};
   const feature: string[] = [];
 
@@ -72,15 +86,20 @@ export function getDynamicProps<T, U>(props: T): Partial<U> {
  * @updateBy:zyf
  */
 export function getValueType(props, field) {
-  let formSchema = unref(unref(props)?.schemas);
+  const formSchema = unref(unref(props)?.schemas);
   let valueType = 'string';
   if (formSchema) {
-    let schema = formSchema.filter((item) => item.field === field)[0];
-    valueType = schema.componentProps && schema.componentProps.valueType ? schema.componentProps.valueType : valueType;
+    const schema = formSchema.find((item) => item.field === field);
+    valueType =
+      schema.componentProps && schema.componentProps.valueType
+        ? schema.componentProps.valueType
+        : valueType;
   }
   return valueType;
 }
-export function getRawRoute(route: RouteLocationNormalized): RouteLocationNormalized {
+export function getRawRoute(
+  route: RouteLocationNormalized
+): RouteLocationNormalized {
   if (!route) return route;
   const { matched, ...opt } = route;
   return {
@@ -119,15 +138,15 @@ export const withInstall = <T>(component: T, alias?: string) => {
  * @param paraName
  */
 export function getUrlParam(paraName) {
-  let url = document.location.toString();
-  let arrObj = url.split('?');
+  const url = document.location.toString();
+  const arrObj = url.split('?');
 
   if (arrObj.length > 1) {
-    let arrPara = arrObj[1].split('&');
+    const arrPara = arrObj[1].split('&');
     let arr;
 
-    for (let i = 0; i < arrPara.length; i++) {
-      arr = arrPara[i].split('=');
+    for (const element of arrPara) {
+      arr = element.split('=');
 
       if (arr != null && arr[0] == paraName) {
         return arr[1];
@@ -162,7 +181,7 @@ export function sleep(ms: number, fn?: Fn) {
  * @returns {String} 替换后的字符串
  */
 export function replaceAll(text, checker, replacer) {
-  let lastText = text;
+  const lastText = text;
   text = text.replace(checker, replacer);
   if (lastText !== text) {
     return replaceAll(text, checker, replacer);
@@ -177,15 +196,18 @@ export function replaceAll(text, checker, replacer) {
 export function getQueryVariable(url) {
   if (!url) return;
 
-  var t,
+  let t,
     n,
     r,
     i = url.split('?')[1],
     s = {};
   (t = i.split('&')), (r = null), (n = null);
-  for (var o in t) {
-    var u = t[o].indexOf('=');
-    u !== -1 && ((r = t[o].substr(0, u)), (n = t[o].substr(u + 1)), (s[r] = n));
+  for (const o in t) {
+    const u = t[o].indexOf('=');
+    u !== -1 &&
+      ((r = t[o].slice(0, Math.max(0, u))),
+      (n = t[o].slice(u + 1)),
+      (s[r] = n));
   }
   return s;
 }
@@ -207,7 +229,7 @@ export function showDealBtn(bpmStatus) {
  */
 export function numToUpper(value) {
   if (value != '') {
-    let unit = new Array('仟', '佰', '拾', '', '仟', '佰', '拾', '', '角', '分');
+    const unit = ['仟', '佰', '拾', '', '仟', '佰', '拾', '', '角', '分'];
     const toDx = (n) => {
       switch (n) {
         case '0':
@@ -232,27 +254,34 @@ export function numToUpper(value) {
           return '玖';
       }
     };
-    let lth = value.toString().length;
+    const lth = value.toString().length;
     value *= 100;
     value += '';
-    let length = value.length;
+    const length = value.length;
     if (lth <= 8) {
       let result = '';
       for (let i = 0; i < length; i++) {
         if (i == 2) {
-          result = '元' + result;
+          result = `元${result}`;
         } else if (i == 6) {
-          result = '万' + result;
+          result = `万${result}`;
         }
         if (value.charAt(length - i - 1) == 0) {
           if (i != 0 && i != 1) {
-            if (result.charAt(0) != '零' && result.charAt(0) != '元' && result.charAt(0) != '万') {
-              result = '零' + result;
+            if (
+              result.charAt(0) != '零' &&
+              result.charAt(0) != '元' &&
+              result.charAt(0) != '万'
+            ) {
+              result = `零${result}`;
             }
           }
           continue;
         }
-        result = toDx(value.charAt(length - i - 1)) + unit[unit.length - i - 1] + result;
+        result =
+          toDx(value.charAt(length - i - 1)) +
+          unit[unit.length - i - 1] +
+          result;
       }
       result += result.charAt(result.length - 1) == '元' ? '整' : '';
       return result;
@@ -267,7 +296,7 @@ export function numToUpper(value) {
 const allModules = import.meta.glob('../views/**/*.vue');
 export function importViewsFile(path): Promise<any> {
   if (path.startsWith('/')) {
-    path = path.substring(1);
+    path = path.slice(1);
   }
   let page = '';
   if (path.endsWith('.vue')) {
@@ -287,12 +316,11 @@ export function importViewsFile(path): Promise<any> {
       }
     }
     if (flag) {
-      reject('该文件不存在:' + page);
+      reject(`该文件不存在:${page}`);
     }
   });
 }
 //update-end-author:taoyan date:2022-6-8 for:解决老的vue2动态导入文件语法 vite不支持的问题
-
 
 /**
  * 跳转至积木报表的 预览页面
@@ -302,13 +330,13 @@ export function importViewsFile(path): Promise<any> {
  */
 export function goJmReportViewPage(url, id, token) {
   // URL支持{{ window.xxx }}占位符变量
-  url = url.replace(/{{([^}]+)?}}/g, (_s1, s2) => eval(s2))
+  url = url.replace(/{{([^}]+)?}}/g, (_s1, s2) => eval(s2));
   if (url.includes('?')) {
-    url += '&'
+    url += '&';
   } else {
-    url += '?'
+    url += '?';
   }
-  url += `id=${id}`
-  url += `&token=${token}`
-  window.open(url)
+  url += `id=${id}`;
+  url += `&token=${token}`;
+  window.open(url);
 }

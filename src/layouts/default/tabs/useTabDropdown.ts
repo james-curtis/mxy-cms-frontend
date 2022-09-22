@@ -2,14 +2,18 @@ import type { TabContentProps } from './types';
 import type { DropMenu } from '/@/components/Dropdown';
 import type { ComputedRef } from 'vue';
 
-import { computed, unref, reactive } from 'vue';
+import { computed, reactive, unref } from 'vue';
 import { MenuEventEnum } from './types';
 import { useMultipleTabStore } from '/@/store/modules/multipleTab';
-import { RouteLocationNormalized, useRouter } from 'vue-router';
+import type { RouteLocationNormalized } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { useTabs } from '/@/hooks/web/useTabs';
 import { useI18n } from '/@/hooks/web/useI18n';
 
-export function useTabDropdown(tabContentProps: TabContentProps, getIsTabs: ComputedRef<boolean>) {
+export function useTabDropdown(
+  tabContentProps: TabContentProps,
+  getIsTabs: ComputedRef<boolean>
+) {
   const state = reactive({
     current: null as Nullable<RouteLocationNormalized>,
     currentIndex: 0,
@@ -18,7 +22,8 @@ export function useTabDropdown(tabContentProps: TabContentProps, getIsTabs: Comp
   const { t } = useI18n();
   const tabStore = useMultipleTabStore();
   const { currentRoute } = useRouter();
-  const { refreshPage, closeAll, close, closeLeft, closeOther, closeRight } = useTabs();
+  const { refreshPage, closeAll, close, closeLeft, closeOther, closeRight } =
+    useTabs();
 
   const getTargetTab = computed((): RouteLocationNormalized => {
     return unref(getIsTabs) ? tabContentProps.tabItem : unref(currentRoute);
@@ -46,7 +51,10 @@ export function useTabDropdown(tabContentProps: TabContentProps, getIsTabs: Comp
     const disabled = tabStore.getTabList.length === 1;
 
     // Close right
-    const closeRightDisabled = !isCurItem || (index === tabStore.getTabList.length - 1 && tabStore.getLastDragEndIndex >= 0);
+    const closeRightDisabled =
+      !isCurItem ||
+      (index === tabStore.getTabList.length - 1 &&
+        tabStore.getLastDragEndIndex >= 0);
     const dropMenuList: DropMenu[] = [
       {
         icon: 'ion:reload-sharp',
@@ -85,7 +93,7 @@ export function useTabDropdown(tabContentProps: TabContentProps, getIsTabs: Comp
         icon: 'clarity:minus-line',
         event: MenuEventEnum.CLOSE_ALL,
         text: t('layout.multipleTab.closeAll'),
-        disabled: disabled,
+        disabled,
       },
     ];
 
@@ -98,7 +106,9 @@ export function useTabDropdown(tabContentProps: TabContentProps, getIsTabs: Comp
         return;
       }
       e?.preventDefault();
-      const index = tabStore.getTabList.findIndex((tab) => tab.path === tabItem.path);
+      const index = tabStore.getTabList.findIndex(
+        (tab) => tab.path === tabItem.path
+      );
       state.current = tabItem;
       state.currentIndex = index;
     };

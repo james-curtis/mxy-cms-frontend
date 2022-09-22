@@ -36,9 +36,11 @@ export const readAllMsg = (params, handleSuccess) => {
     okText: '确认',
     cancelText: '取消',
     onOk: () => {
-      return defHttp.put({ url: Api.readAllMsg, data: params }, { joinParamsToUrl: true }).then(() => {
-        handleSuccess();
-      });
+      return defHttp
+        .put({ url: Api.readAllMsg, data: params }, { joinParamsToUrl: true })
+        .then(() => {
+          handleSuccess();
+        });
     },
   });
 };
@@ -56,6 +58,5 @@ export const syncNotic = (params) => {
  * @param sendId
  */
 export const getOne = (sendId) => {
-  return defHttp.get({ url: Api.getOne, params:{sendId} });
+  return defHttp.get({ url: Api.getOne, params: { sendId } });
 };
-

@@ -1,11 +1,26 @@
 <template>
   <div :style="{ position: 'relative', height: allHeight + 'px' }">
-    <a-list class="jeecg-comment-list" header="" item-layout="horizontal" :data-source="dataList" :style="{ height: commentHeight + 'px' }">
+    <a-list
+      class="jeecg-comment-list"
+      header=""
+      item-layout="horizontal"
+      :data-source="dataList"
+      :style="{ height: commentHeight + 'px' }"
+    >
       <template #renderItem="{ item }">
-        <a-list-item style="padding-left: 10px; flex-direction: column" @click="handleClickItem">
+        <a-list-item
+          style="padding-left: 10px; flex-direction: column"
+          @click="handleClickItem"
+        >
           <a-comment>
             <template #avatar>
-              <a-avatar class="tx" :src="getAvatar(item)" :alt="getAvatarText(item)">{{ getAvatarText(item) }}</a-avatar>
+              <a-avatar
+                class="tx"
+                :src="getAvatar(item)"
+                :alt="getAvatarText(item)"
+              >
+                {{ getAvatarText(item) }}
+              </a-avatar>
             </template>
 
             <template #author>
@@ -15,9 +30,12 @@
                 <template v-if="item.toUserId">
                   <span>回复</span>
                   <span>{{ item.toUserId_dictText }}</span>
-                  <Tooltip class="comment-last-content" @visibleChange="(v)=>visibleChange(v, item)">
+                  <Tooltip
+                    class="comment-last-content"
+                    @visibleChange="(v) => visibleChange(v, item)"
+                  >
                     <template #title>
-                      <div v-html="getHtml(item.commentId_dictText)"></div>
+                      <div v-html="getHtml(item.commentId_dictText)" />
                     </template>
                     <message-outlined />
                   </Tooltip>
@@ -42,29 +60,53 @@
             </template>
 
             <template #content>
-              <div v-html="getHtml(item.commentContent)" style="font-size: 15px">
-              </div>
+              <div
+                style="font-size: 15px"
+                v-html="getHtml(item.commentContent)"
+              />
 
               <div v-if="item.fileList && item.fileList.length > 0">
                 <!-- 历史文件 -->
-                <history-file-list :dataList="item.fileList" isComment></history-file-list>
+                <history-file-list :data-list="item.fileList" is-comment />
               </div>
             </template>
           </a-comment>
           <div v-if="item.commentStatus" class="inner-comment">
-            <my-comment inner @cancel="item.commentStatus = false" @comment="(content, fileList) => replyComment(item, content, fileList)" :inputFocus="focusStatus"></my-comment>
+            <my-comment
+              inner
+              :input-focus="focusStatus"
+              @cancel="item.commentStatus = false"
+              @comment="
+                (content, fileList) => replyComment(item, content, fileList)
+              "
+            />
           </div>
         </a-list-item>
       </template>
     </a-list>
 
-    <div style="position: absolute; bottom: 0; left: 0; width: 100%; background: #fff; border-top: 1px solid #eee">
+    <div
+      style="
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: #fff;
+        border-top: 1px solid #eee;
+      "
+    >
       <a-comment style="margin: 0 10px">
         <template #avatar>
-          <a-avatar class="tx" :src="getMyAvatar()" :alt="getMyname()">{{ getMyname() }}</a-avatar>
+          <a-avatar class="tx" :src="getMyAvatar()" :alt="getMyname()">
+            {{ getMyname() }}
+          </a-avatar>
         </template>
         <template #content>
-          <my-comment ref="bottomCommentRef" @comment="sendComment" :inputFocus="focusStatus"></my-comment>
+          <my-comment
+            ref="bottomCommentRef"
+            :input-focus="focusStatus"
+            @comment="sendComment"
+          />
         </template>
       </a-comment>
     </div>
@@ -72,257 +114,262 @@
 </template>
 
 <script>
-  /**
-   * 评论列表
-   */
-  import { defineComponent, ref, onMounted, watch, watchEffect } from 'vue';
-  import { propTypes } from '/@/utils/propTypes';
-  import dayjs from 'dayjs';
-  import 'dayjs/locale/zh.js';
-  import relativeTime from 'dayjs/plugin/relativeTime';
-  import customParseFormat from 'dayjs/plugin/customParseFormat';
-  dayjs.locale('zh');
-  dayjs.extend(relativeTime);
-  dayjs.extend(customParseFormat);
-  import { MessageOutlined } from '@ant-design/icons-vue';
-  import { Comment, Tooltip } from 'ant-design-vue';
-  import { useUserStore } from '/@/store/modules/user';
-  import MyComment from './MyComment.vue';
-  import { list, saveOne, deleteOne, useCommentWithFile, useEmojiHtml, queryById } from './useComment';
-  import { useMessage } from '/@/hooks/web/useMessage';
-  import HistoryFileList from './HistoryFileList.vue';
-  import { Popconfirm } from 'ant-design-vue';
-  import { getFileAccessHttpUrl } from '/@/utils/common/compUtils';
+/**
+ * 评论列表
+ */
+import { defineComponent, onMounted, ref, watch, watchEffect } from 'vue';
+import { propTypes } from '/@/utils/propTypes';
+import dayjs from 'dayjs';
+import 'dayjs/locale/zh.js';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import { MessageOutlined } from '@ant-design/icons-vue';
+import { Comment, Popconfirm, Tooltip } from 'ant-design-vue';
+import { useUserStore } from '/@/store/modules/user';
+import MyComment from './MyComment.vue';
+import {
+  deleteOne,
+  list,
+  queryById,
+  saveOne,
+  useCommentWithFile,
+  useEmojiHtml,
+} from './useComment';
+import { useMessage } from '/@/hooks/web/useMessage';
+import HistoryFileList from './HistoryFileList.vue';
+import { getFileAccessHttpUrl } from '/@/utils/common/compUtils';
+dayjs.locale('zh');
+dayjs.extend(relativeTime);
+dayjs.extend(customParseFormat);
 
-  export default defineComponent({
-    name: 'CommentList',
-    components: {
-      MessageOutlined,
-      AComment: Comment,
-      Tooltip,
-      MyComment,
-      Popconfirm,
-      HistoryFileList,
-    },
-    props: {
-      tableName: propTypes.string.def(''),
-      dataId: propTypes.string.def(''),
-      datetime:  propTypes.number.def(1)
-    },
-    setup(props) {
-      const { createMessage } = useMessage();
-      const dataList = ref([]);
-      const { userInfo } = useUserStore();
-      /**
-       * 获取当前用户名称
-       */
-      function getMyname() {
-        if (userInfo.realname) {
-          return userInfo.realname.substr(0, 2);
-        }
-        return '';
+export default defineComponent({
+  name: 'CommentList',
+  components: {
+    MessageOutlined,
+    AComment: Comment,
+    Tooltip,
+    MyComment,
+    Popconfirm,
+    HistoryFileList,
+  },
+  props: {
+    tableName: propTypes.string.def(''),
+    dataId: propTypes.string.def(''),
+    datetime: propTypes.number.def(1),
+  },
+  setup(props) {
+    const { createMessage } = useMessage();
+    const dataList = ref([]);
+    const { userInfo } = useUserStore();
+    /**
+     * 获取当前用户名称
+     */
+    function getMyname() {
+      if (userInfo.realname) {
+        return userInfo.realname.slice(0, 2);
       }
-      
-      function getMyAvatar(){
-        return userInfo.avatar;
+      return '';
+    }
+
+    function getMyAvatar() {
+      return userInfo.avatar;
+    }
+
+    // 获取头像
+    function getAvatar(item) {
+      if (item.fromUserAvatar) {
+        return getFileAccessHttpUrl(item.fromUserAvatar);
       }
-      
-      // 获取头像
-      function getAvatar(item) {
-        if (item.fromUserAvatar) {
-          return getFileAccessHttpUrl(item.fromUserAvatar)
-        }
-        return '';
+      return '';
+    }
+
+    // 头像没有获取 用户名前两位
+    function getAvatarText(item) {
+      if (item.fromUserId_dictText) {
+        return item.fromUserId_dictText.slice(0, 2);
       }
+      return '未知';
+    }
 
-      // 头像没有获取 用户名前两位
-      function getAvatarText(item){
-        if (item.fromUserId_dictText) {
-          return item.fromUserId_dictText.substr(0, 2);
-        }
-        return '未知';
+    function getAuthor(item) {
+      if (item.toUser) {
+        return `${item.fromUserId_dictText} 回复 ${item.fromUserId_dictText}`;
+      } else {
+        return item.fromUserId_dictText;
       }
+    }
 
-      function getAuthor(item) {
-        if (item.toUser) {
-          return item.fromUserId_dictText + ' 回复 ' + item.fromUserId_dictText;
-        } else {
-          return item.fromUserId_dictText;
-        }
+    function getDateDiff(item) {
+      if (item.createTime) {
+        const temp = dayjs(item.createTime, 'YYYY-MM-DD hh:mm:ss');
+        return temp.fromNow();
       }
+      return '';
+    }
+    const commentHeight = ref(300);
+    const allHeight = ref(300);
+    onMounted(() => {
+      commentHeight.value = window.innerHeight - 57 - 46 - 70 - 160;
+      allHeight.value = window.innerHeight - 57 - 46 - 53 - 20;
+    });
 
-      function getDateDiff(item) {
-        if (item.createTime) {
-          const temp = dayjs(item.createTime, 'YYYY-MM-DD hh:mm:ss');
-          return temp.fromNow();
-        }
-        return '';
-      }
-      const commentHeight = ref(300);
-      const allHeight = ref(300);
-      onMounted(() => {
-        commentHeight.value = window.innerHeight - 57 - 46 - 70 - 160;
-        allHeight.value = window.innerHeight - 57 - 46 - 53 -20;
-      });
-
-      /**
-       * 加载数据
-       * @returns {Promise<void>}
-       */
-      async function loadData() {
-        const params = {
-          tableName: props.tableName,
-          tableDataId: props.dataId,
-          column: 'createTime',
-          order: 'desc',
-        };
-        const data = await list(params);
-        if (!data || !data.records || data.records.length == 0) {
-          dataList.value = [];
-        } else {
-          let array = data.records;
-          console.log(123, array);
-          dataList.value = array;
-        }
-      }
-
-      const { saveCommentAndFiles } = useCommentWithFile(props);
-      // 回复
-      async function replyComment(item, content, fileList) {
-        console.log(content, item);
-        let obj = {
-          fromUserId: userInfo.id,
-          toUserId: item.fromUserId,
-          commentId: item.id,
-          commentContent: content
-        }
-        await saveCommentAndFiles(obj, fileList)
-        await loadData();
-      }
-      
-      //评论
-      async function sendComment(content, fileList) {
-        let obj = {
-          fromUserId: userInfo.id,
-          commentContent: content
-        }
-        await saveCommentAndFiles(obj, fileList)
-        await loadData();
-        focusStatus.value = false;
-        setTimeout(()=>{
-          focusStatus.value = true;
-        },100)
-      }
-
-      //删除
-      async function deleteComment(item) {
-        const params = { id: item.id };
-        await deleteOne(params);
-        await loadData();
-      }
-
-      /**
-       * 打开回复时触发
-       * @type {Ref<UnwrapRef<boolean>>}
-       */
-      const focusStatus = ref(false);
-      function showReply(item) {
-        let arr = dataList.value;
-        for (let temp of arr) {
-          temp.commentStatus = false;
-        }
-        item.commentStatus = true;
-        focusStatus.value = false;
-        focusStatus.value = true;
-      }
-
-      // 表单改变 -重新加载评论列表
-      watchEffect(() => {
-        if(props.datetime){
-          if (props.tableName && props.dataId) {
-            loadData();
-          }
-        }
-      });
-
-      const { getHtml } = useEmojiHtml();
-      const bottomCommentRef = ref()
-      function handleClickItem(){
-        bottomCommentRef.value.changeActive()
-      }
-
-
-      /**
-       * 根据id查询评论信息
-       */
-      async function visibleChange(v, item){
-        if(v==true){
-          if(!item.commentId_dictText){
-            const data = await queryById(item.commentId);
-            if(data.success == true){
-              item.commentId_dictText = data.result.commentContent
-            }else{
-              console.error(data.message)
-              item.commentId_dictText='该评论已被删除';
-            }
-          }
-        }
-      }
-
-      return {
-        dataList,
-        getAvatar,
-        getAvatarText,
-        getAuthor,
-        getDateDiff,
-        commentHeight,
-        allHeight,
-        replyComment,
-        sendComment,
-        getMyname,
-        getMyAvatar,
-
-        focusStatus,
-        showReply,
-        deleteComment,
-        getHtml,
-        handleClickItem,
-        bottomCommentRef,
-        visibleChange
+    /**
+     * 加载数据
+     * @returns {Promise<void>}
+     */
+    async function loadData() {
+      const params = {
+        tableName: props.tableName,
+        tableDataId: props.dataId,
+        column: 'createTime',
+        order: 'desc',
       };
-    },
-  });
+      const data = await list(params);
+      if (!data || !data.records || data.records.length == 0) {
+        dataList.value = [];
+      } else {
+        const array = data.records;
+        console.log(123, array);
+        dataList.value = array;
+      }
+    }
+
+    const { saveCommentAndFiles } = useCommentWithFile(props);
+    // 回复
+    async function replyComment(item, content, fileList) {
+      console.log(content, item);
+      const obj = {
+        fromUserId: userInfo.id,
+        toUserId: item.fromUserId,
+        commentId: item.id,
+        commentContent: content,
+      };
+      await saveCommentAndFiles(obj, fileList);
+      await loadData();
+    }
+
+    //评论
+    async function sendComment(content, fileList) {
+      const obj = {
+        fromUserId: userInfo.id,
+        commentContent: content,
+      };
+      await saveCommentAndFiles(obj, fileList);
+      await loadData();
+      focusStatus.value = false;
+      setTimeout(() => {
+        focusStatus.value = true;
+      }, 100);
+    }
+
+    //删除
+    async function deleteComment(item) {
+      const params = { id: item.id };
+      await deleteOne(params);
+      await loadData();
+    }
+
+    /**
+     * 打开回复时触发
+     * @type {Ref<UnwrapRef<boolean>>}
+     */
+    const focusStatus = ref(false);
+    function showReply(item) {
+      const arr = dataList.value;
+      for (const temp of arr) {
+        temp.commentStatus = false;
+      }
+      item.commentStatus = true;
+      focusStatus.value = false;
+      focusStatus.value = true;
+    }
+
+    // 表单改变 -重新加载评论列表
+    watchEffect(() => {
+      if (props.datetime) {
+        if (props.tableName && props.dataId) {
+          loadData();
+        }
+      }
+    });
+
+    const { getHtml } = useEmojiHtml();
+    const bottomCommentRef = ref();
+    function handleClickItem() {
+      bottomCommentRef.value.changeActive();
+    }
+
+    /**
+     * 根据id查询评论信息
+     */
+    async function visibleChange(v, item) {
+      if (v == true) {
+        if (!item.commentId_dictText) {
+          const data = await queryById(item.commentId);
+          if (data.success == true) {
+            item.commentId_dictText = data.result.commentContent;
+          } else {
+            console.error(data.message);
+            item.commentId_dictText = '该评论已被删除';
+          }
+        }
+      }
+    }
+
+    return {
+      dataList,
+      getAvatar,
+      getAvatarText,
+      getAuthor,
+      getDateDiff,
+      commentHeight,
+      allHeight,
+      replyComment,
+      sendComment,
+      getMyname,
+      getMyAvatar,
+
+      focusStatus,
+      showReply,
+      deleteComment,
+      getHtml,
+      handleClickItem,
+      bottomCommentRef,
+      visibleChange,
+    };
+  },
+});
 </script>
 
 <style lang="less" scoped>
-  .jeecg-comment-list {
-    overflow: auto;
-    /* border-bottom: 1px solid #eee;*/
-    .inner-comment {
-      width: 100%;
-      padding: 0 10px;
-    }
-    .ant-comment {
-      width: 100%;
+.jeecg-comment-list {
+  overflow: auto;
+  /* border-bottom: 1px solid #eee;*/
+  .inner-comment {
+    width: 100%;
+    padding: 0 10px;
+  }
+  .ant-comment {
+    width: 100%;
+  }
+}
+.comment-author {
+  span {
+    margin: 3px;
+  }
+  .comment-last-content {
+    margin-left: 5px;
+    &:hover {
+      color: #1890ff;
     }
   }
-  .comment-author {
-    span {
-      margin: 3px;
-    }
-    .comment-last-content {
-      margin-left: 5px;
-      &:hover{
-        color: #1890ff;
-      }
-    }
+}
+.ant-list-items {
+  .ant-list-item:last-child {
+    margin-bottom: 46px;
   }
-  .ant-list-items{
-    .ant-list-item:last-child{
-      margin-bottom: 46px;
-    }
-  }
-  .tx{
-    margin-top: 4px;
-  }
+}
+.tx {
+  margin-top: 4px;
+}
 </style>

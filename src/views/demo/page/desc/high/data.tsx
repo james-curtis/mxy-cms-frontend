@@ -1,6 +1,5 @@
-import { BasicColumn } from '/@/components/Table/src/types/table';
-
 import { Badge } from 'ant-design-vue';
+import type { BasicColumn } from '/@/components/Table/src/types/table';
 
 export const refundTimeTableSchema: BasicColumn[] = [
   {

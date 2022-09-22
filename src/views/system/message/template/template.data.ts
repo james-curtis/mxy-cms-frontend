@@ -1,4 +1,4 @@
-import { BasicColumn, FormSchema } from '/@/components/Table';
+import type { BasicColumn, FormSchema } from '/@/components/Table';
 import { rules } from '/@/utils/helper/validator';
 import { filterDictTextByCache } from '/@/utils/dict/JDictSelectUtil';
 
@@ -28,7 +28,7 @@ export const columns: BasicColumn[] = [
     title: '是否应用',
     dataIndex: 'useStatus',
     width: 90,
-    customRender: function ({ text }) {
+    customRender({ text }) {
       if (text == '1') {
         return '是';
       } else {
@@ -77,7 +77,16 @@ export const formSchemas: FormSchema[] = [
     field: 'templateCode',
     component: 'Input',
     dynamicRules: ({ model, schema }) => {
-      return [{ required: true, message: '请输入模板编码！' }, ...rules.duplicateCheckRule('sys_sms_template', 'template_code', model, schema, true)];
+      return [
+        { required: true, message: '请输入模板编码！' },
+        ...rules.duplicateCheckRule(
+          'sys_sms_template',
+          'template_code',
+          model,
+          schema,
+          true
+        ),
+      ];
     },
     // 编辑模式下不可修改编码
     dynamicDisabled: (params) => !!params.values.id,
@@ -169,8 +178,8 @@ export const sendTestFormSchemas: FormSchema[] = [
     field: 'msgType',
     component: 'JDictSelectTag',
     required: true,
-    defaultValue:'system',
-    componentProps: { dictCode: 'messageType',type:'radio' },
+    defaultValue: 'system',
+    componentProps: { dictCode: 'messageType', type: 'radio' },
   },
   {
     label: '消息接收方',

@@ -1,7 +1,3 @@
-import type { App } from 'vue';
-import { Icon } from './Icon';
-import AIcon from '/@/components/jeecg/AIcon.vue';
-import { Button, JUploadButton } from './Button';
 import {
   // Need
   Button as AntButton,
@@ -53,6 +49,10 @@ import {
   Cascader,
   Rate,
 } from 'ant-design-vue';
+import { Icon } from './Icon';
+import { Button, JUploadButton } from './Button';
+import type { App } from 'vue';
+import AIcon from '/@/components/jeecg/AIcon.vue';
 
 const compList = [AntButton.Group, Icon, AIcon, JUploadButton];
 

@@ -7,7 +7,7 @@ import type { ErrorLogInfo } from '/#/store';
 import { useErrorLogStoreWithOut } from '/@/store/modules/errorLog';
 
 import { ErrorTypeEnum } from '/@/enums/exceptionEnum';
-import { App } from 'vue';
+import type { App } from 'vue';
 import projectSetting from '/@/settings/projectSetting';
 
 /**
@@ -27,8 +27,8 @@ function processStackMsg(error: Error) {
     .join('~') // Manually add separators for later display
     .replace(/\?[^:]+/gi, ''); // Remove redundant parameters of js file links (?x=1 and the like)
   const msg = error.toString();
-  if (stack.indexOf(msg) < 0) {
-    stack = msg + '@' + stack;
+  if (!stack.includes(msg)) {
+    stack = `${msg}@${stack}`;
   }
   return stack;
 }
@@ -54,7 +54,7 @@ function formatComponentName(vm: any) {
   }
   const name = options.name || options._componentTag;
   return {
-    name: name,
+    name,
     path: options.__file,
   };
 }
@@ -80,7 +80,13 @@ function vueErrorHandler(err: Error, vm: any, info: string) {
 /**
  * Configure script error handling function
  */
-export function scriptErrorHandler(event: Event | string, source?: string, lineno?: number, colno?: number, error?: Error) {
+export function scriptErrorHandler(
+  event: Event | string,
+  source?: string,
+  lineno?: number,
+  colno?: number,
+  error?: Error
+) {
   if (event === 'Script error.' && !source) {
     return false;
   }
@@ -92,13 +98,13 @@ export function scriptErrorHandler(event: Event | string, source?: string, linen
   } else {
     errorInfo.stack = '';
   }
-  const name = source ? source.substr(source.lastIndexOf('/') + 1) : 'script';
+  const name = source ? source.slice(source.lastIndexOf('/') + 1) : 'script';
   const errorLogStore = useErrorLogStoreWithOut();
   errorLogStore.addErrorLogInfo({
     type: ErrorTypeEnum.SCRIPT,
-    name: name,
+    name,
     file: source as string,
-    detail: 'lineno' + lineno,
+    detail: `lineno${lineno}`,
     url: window.location.href,
     ...(errorInfo as Pick<ErrorLogInfo, 'message' | 'stack'>),
   });
@@ -111,7 +117,7 @@ export function scriptErrorHandler(event: Event | string, source?: string, linen
 function registerPromiseErrorHandler() {
   window.addEventListener(
     'unhandledrejection',
-    function (event) {
+    (event) => {
       const errorLogStore = useErrorLogStoreWithOut();
       errorLogStore.addErrorLogInfo({
         type: ErrorTypeEnum.PROMISE,
@@ -134,7 +140,7 @@ function registerResourceErrorHandler() {
   // Monitoring resource loading error(img,script,css,and jsonp)
   window.addEventListener(
     'error',
-    function (e: Event) {
+    (e: Event) => {
       const target = e.target ? e.target : (e.srcElement as any);
       const errorLogStore = useErrorLogStoreWithOut();
       errorLogStore.addErrorLogInfo({
@@ -148,7 +154,7 @@ function registerResourceErrorHandler() {
         }),
         url: window.location.href,
         stack: 'resource is not found',
-        message: (e.target || ({} as any)).localName + ' is load error',
+        message: `${(e.target || ({} as any)).localName} is load error`,
       });
     },
     true

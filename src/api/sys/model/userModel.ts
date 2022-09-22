@@ -53,5 +53,5 @@ export interface GetResultModel {
   code: number;
   message: string;
   result: object;
-  success: Boolean;
+  success: boolean;
 }

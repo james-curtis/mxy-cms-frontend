@@ -1,4 +1,4 @@
-import type { VNode, CSSProperties } from 'vue';
+import type { CSSProperties, VNode } from 'vue';
 import type { CollapseContainerOptions } from '/@/components/Container/index';
 import type { DescriptionsProps } from 'ant-design-vue/es/descriptions/index';
 
@@ -12,7 +12,10 @@ export interface DescItem {
   span?: number;
   show?: (...arg: any) => boolean;
   // render
-  render?: (val: any, data: Recordable) => VNode | undefined | JSX.Element | Element | string | number;
+  render?: (
+    val: any,
+    data: Recordable
+  ) => VNode | undefined | JSX.Element | Element | string | number;
 }
 
 export interface DescriptionProps extends DescriptionsProps {

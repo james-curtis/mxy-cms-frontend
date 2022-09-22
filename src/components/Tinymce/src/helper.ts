@@ -63,9 +63,13 @@ const validEvents = [
   'onVisualAid',
 ];
 
-const isValidKey = (key: string) => validEvents.indexOf(key) !== -1;
+const isValidKey = (key: string) => validEvents.includes(key);
 
-export const bindHandlers = (initEvent: Event, listeners: any, editor: any): void => {
+export const bindHandlers = (
+  initEvent: Event,
+  listeners: any,
+  editor: any
+): void => {
   Object.keys(listeners)
     .filter(isValidKey)
     .forEach((key: string) => {
@@ -74,7 +78,7 @@ export const bindHandlers = (initEvent: Event, listeners: any, editor: any): voi
         if (key === 'onInit') {
           handler(initEvent, editor);
         } else {
-          editor.on(key.substring(2), (e: any) => handler(e, editor));
+          editor.on(key.slice(2), (e: any) => handler(e, editor));
         }
       }
     });

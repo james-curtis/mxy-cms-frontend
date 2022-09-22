@@ -1,4 +1,4 @@
-import { ref, computed, unref } from 'vue';
+import { computed, ref, unref } from 'vue';
 import { createPageContext } from '/@/hooks/component/usePageContext';
 import { useWindowSizeFn } from '/@/hooks/event/useWindowSizeFn';
 
@@ -19,7 +19,10 @@ export function useContentViewHeight() {
   const contentHeight = ref(window.innerHeight);
   const pageHeight = ref(window.innerHeight);
   const getViewHeight = computed(() => {
-    return unref(contentHeight) - unref(headerHeightRef) - unref(footerHeightRef) || 0;
+    return (
+      unref(contentHeight) - unref(headerHeightRef) - unref(footerHeightRef) ||
+      0
+    );
   });
 
   useWindowSizeFn(

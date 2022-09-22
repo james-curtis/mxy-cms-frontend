@@ -1,11 +1,11 @@
-import { toRaw, ref, nextTick } from 'vue';
+import { nextTick, ref, toRaw } from 'vue';
+import { useRouter } from 'vue-router';
 import type { RouteLocationNormalized } from 'vue-router';
 import { useDesign } from '/@/hooks/web/useDesign';
 import { useSortable } from '/@/hooks/web/useSortable';
 import { useMultipleTabStore } from '/@/store/modules/multipleTab';
 import { isNullAndUnDef } from '/@/utils/is';
 import projectSetting from '/@/settings/projectSetting';
-import { useRouter } from 'vue-router';
 
 export function initAffixTabs(): string[] {
   const affixList = ref<RouteLocationNormalized[]>([]);
@@ -30,7 +30,9 @@ export function initAffixTabs(): string[] {
    * @description: Set fixed tabs
    */
   function addAffixTabs(): void {
-    const affixTabs = filterAffixTabs(router.getRoutes() as unknown as RouteLocationNormalized[]);
+    const affixTabs = filterAffixTabs(
+      router.getRoutes() as unknown as RouteLocationNormalized[]
+    );
     affixList.value = affixTabs;
     for (const tab of affixTabs) {
       tabStore.addTab({
@@ -47,7 +49,9 @@ export function initAffixTabs(): string[] {
     addAffixTabs();
     isAddAffix = true;
   }
-  return affixList.value.map((item) => item.meta?.title).filter(Boolean) as string[];
+  return affixList.value
+    .map((item) => item.meta?.title)
+    .filter(Boolean) as string[];
 }
 
 export function useTabsDrag(affixTextList: string[]) {
@@ -56,7 +60,9 @@ export function useTabsDrag(affixTextList: string[]) {
   const { prefixCls } = useDesign('multiple-tabs');
   nextTick(() => {
     if (!multiTabsSetting.canDrag) return;
-    const el = document.querySelectorAll(`.${prefixCls} .ant-tabs-nav > div`)?.[0] as HTMLElement;
+    const el = document.querySelectorAll(
+      `.${prefixCls} .ant-tabs-nav > div`
+    )?.[0] as HTMLElement;
     const { initSortable } = useSortable(el, {
       filter: (e: ChangeEvent) => {
         const text = e?.target?.innerText;
@@ -66,7 +72,11 @@ export function useTabsDrag(affixTextList: string[]) {
       onEnd: (evt) => {
         const { oldIndex, newIndex } = evt;
 
-        if (isNullAndUnDef(oldIndex) || isNullAndUnDef(newIndex) || oldIndex === newIndex) {
+        if (
+          isNullAndUnDef(oldIndex) ||
+          isNullAndUnDef(newIndex) ||
+          oldIndex === newIndex
+        ) {
           return;
         }
 

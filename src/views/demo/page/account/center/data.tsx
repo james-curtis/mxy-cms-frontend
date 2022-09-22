@@ -10,8 +10,20 @@ export interface TabItem {
   component: string;
 }
 
-export const tags: string[] = ['很有想法的', '专注设计', '川妹子', '大长腿', '海纳百川', '前端开发', 'vue3'];
-<span class="iconify" data-icon="jam:codepen-circle" data-inline="false"></span>;
+export const tags: string[] = [
+  '很有想法的',
+  '专注设计',
+  '川妹子',
+  '大长腿',
+  '海纳百川',
+  '前端开发',
+  'vue3',
+];
+<span
+  class="iconify"
+  data-icon="jam:codepen-circle"
+  data-inline="false"
+></span>;
 export const teams: ListItem[] = [
   {
     icon: 'ri:alipay-fill',
@@ -90,7 +102,8 @@ export const articleList = (() => {
     result.push({
       title: 'Jeecg Admin',
       description: ['Jeecg', '设计语言', 'Typescript'],
-      content: '基于Vue Next, TypeScript, Ant Design实现的一套完整的企业级后台管理系统。',
+      content:
+        '基于Vue Next, TypeScript, Ant Design实现的一套完整的企业级后台管理系统。',
       time: '2020-11-14 11:20',
     });
   }
@@ -117,7 +130,8 @@ export const projectList = (() => {
   for (let i = 0; i < 8; i++) {
     result.push({
       title: 'Jeecg Admin',
-      content: '基于Vue Next, TypeScript, Ant Design实现的一套完整的企业级后台管理系统。',
+      content:
+        '基于Vue Next, TypeScript, Ant Design实现的一套完整的企业级后台管理系统。',
     });
   }
   return result;

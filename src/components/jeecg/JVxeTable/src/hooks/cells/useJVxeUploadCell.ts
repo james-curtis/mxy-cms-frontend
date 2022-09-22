@@ -1,9 +1,9 @@
-import { ref, computed, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import { getToken } from '/@/utils/auth';
 import { getFileAccessHttpUrl } from '/@/utils/common/compUtils';
-import { JVxeComponent } from '../../types/JVxeComponent';
 import { useJVxeComponent } from '../useJVxeComponent';
+import type { JVxeComponent } from '../../types/JVxeComponent';
 
 /**
  * use 公共上传组件
@@ -18,7 +18,7 @@ export function useJVxeUploadCell(props: JVxeComponent.Props, options?) {
 
   /** upload headers */
   const uploadHeaders = computed(() => {
-    let headers = {};
+    const headers = {};
     if ((originColumn.value.token ?? options?.token ?? false) === true) {
       headers['X-Access-Token'] = getToken();
     }
@@ -34,7 +34,9 @@ export function useJVxeUploadCell(props: JVxeComponent.Props, options?) {
     }
   });
   const hasFile = computed(() => innerFile.value != null);
-  const responseName = computed(() => originColumn.value.responseName ?? 'message');
+  const responseName = computed(
+    () => originColumn.value.responseName ?? 'message'
+  );
 
   watch(
     innerValue,
@@ -49,8 +51,8 @@ export function useJVxeUploadCell(props: JVxeComponent.Props, options?) {
   );
 
   function handleChangeUpload(info) {
-    let { file } = info;
-    let value = {
+    const { file } = info;
+    const value = {
       name: file.name,
       type: file.type,
       size: file.size,
@@ -125,10 +127,10 @@ export function fileGetValue(value) {
 
 export function fileSetValue(value) {
   if (value) {
-    let first = value.split(',')[0];
-    let name = first.substring(first.lastIndexOf('/') + 1);
+    const first = value.split(',')[0];
+    const name = first.slice(Math.max(0, first.lastIndexOf('/') + 1));
     return {
-      name: name,
+      name,
       path: value,
       status: 'done',
     };

@@ -1,14 +1,24 @@
-import type { BasicColumn, BasicTableProps, CellFormat, GetColumnsParams } from '../types/table';
-import type { PaginationProps } from '../types/pagination';
-import type { ComputedRef } from 'vue';
-import { computed, Ref, ref, toRaw, unref, watch, reactive } from 'vue';
+import { computed, reactive, ref, toRaw, unref, watch } from 'vue';
+import { cloneDeep, isEqual } from 'lodash-es';
 import { renderEditCell } from '../components/editable';
+import {
+  ACTION_COLUMN_FLAG,
+  DEFAULT_ALIGN,
+  INDEX_COLUMN_FLAG,
+  PAGE_SIZE,
+} from '../const';
+import type {
+  BasicColumn,
+  BasicTableProps,
+  CellFormat,
+  GetColumnsParams,
+} from '../types/table';
+import type { PaginationProps } from '../types/pagination';
+import type { ComputedRef, Ref } from 'vue';
 import { usePermission } from '/@/hooks/web/usePermission';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { isArray, isBoolean, isFunction, isMap, isString } from '/@/utils/is';
-import { cloneDeep, isEqual } from 'lodash-es';
 import { formatToDate } from '/@/utils/dateUtil';
-import { ACTION_COLUMN_FLAG, DEFAULT_ALIGN, INDEX_COLUMN_FLAG, PAGE_SIZE } from '../const';
 
 function handleItem(item: BasicColumn, ellipsis: boolean) {
   const { key, dataIndex, children } = item;
@@ -28,7 +38,10 @@ function handleItem(item: BasicColumn, ellipsis: boolean) {
   }
 }
 
-function handleChildren(children: BasicColumn[] | undefined, ellipsis: boolean) {
+function handleChildren(
+  children: BasicColumn[] | undefined,
+  ellipsis: boolean
+) {
   if (!children) return;
   children.forEach((item) => {
     const { children } = item;
@@ -37,7 +50,11 @@ function handleChildren(children: BasicColumn[] | undefined, ellipsis: boolean) 
   });
 }
 
-function handleIndexColumn(propsRef: ComputedRef<BasicTableProps>, getPaginationRef: ComputedRef<boolean | PaginationProps>, columns: BasicColumn[]) {
+function handleIndexColumn(
+  propsRef: ComputedRef<BasicTableProps>,
+  getPaginationRef: ComputedRef<boolean | PaginationProps>,
+  columns: BasicColumn[]
+) {
   const { t } = useI18n();
 
   const { showIndexColumn, indexColumnProps, isTreeTable } = unref(propsRef);
@@ -47,7 +64,9 @@ function handleIndexColumn(propsRef: ComputedRef<BasicTableProps>, getPagination
     return;
   }
   columns.forEach(() => {
-    const indIndex = columns.findIndex((column) => column.flag === INDEX_COLUMN_FLAG);
+    const indIndex = columns.findIndex(
+      (column) => column.flag === INDEX_COLUMN_FLAG
+    );
     if (showIndexColumn) {
       pushIndexColumns = indIndex === -1;
     } else if (!showIndexColumn && indIndex !== -1) {
@@ -81,11 +100,16 @@ function handleIndexColumn(propsRef: ComputedRef<BasicTableProps>, getPagination
   });
 }
 
-function handleActionColumn(propsRef: ComputedRef<BasicTableProps>, columns: BasicColumn[]) {
+function handleActionColumn(
+  propsRef: ComputedRef<BasicTableProps>,
+  columns: BasicColumn[]
+) {
   const { actionColumn, showActionColumn } = unref(propsRef);
   if (!actionColumn || !showActionColumn) return;
 
-  const hasIndex = columns.findIndex((column) => column.flag === ACTION_COLUMN_FLAG);
+  const hasIndex = columns.findIndex(
+    (column) => column.flag === ACTION_COLUMN_FLAG
+  );
   if (hasIndex === -1) {
     columns.push({
       ...columns[hasIndex],
@@ -95,8 +119,13 @@ function handleActionColumn(propsRef: ComputedRef<BasicTableProps>, columns: Bas
   }
 }
 
-export function useColumns(propsRef: ComputedRef<BasicTableProps>, getPaginationRef: ComputedRef<boolean | PaginationProps>) {
-  const columnsRef = ref(unref(propsRef).columns) as unknown as Ref<BasicColumn[]>;
+export function useColumns(
+  propsRef: ComputedRef<BasicTableProps>,
+  getPaginationRef: ComputedRef<boolean | PaginationProps>
+) {
+  const columnsRef = ref(unref(propsRef).columns) as unknown as Ref<
+    BasicColumn[]
+  >;
   let cacheColumns = unref(propsRef).columns;
 
   const getColumnsRef = computed(() => {
@@ -112,7 +141,12 @@ export function useColumns(propsRef: ComputedRef<BasicTableProps>, getPagination
     columns.forEach((item) => {
       const { customRender, slots } = item;
 
-      handleItem(item, Reflect.has(item, 'ellipsis') ? !!item.ellipsis : !!ellipsis && !customRender && !slots);
+      handleItem(
+        item,
+        Reflect.has(item, 'ellipsis')
+          ? !!item.ellipsis
+          : !!ellipsis && !customRender && !slots
+      );
     });
     return columns;
   });
@@ -141,7 +175,15 @@ export function useColumns(propsRef: ComputedRef<BasicTableProps>, getPagination
         return hasPermission(column.auth) && isIfShow(column);
       })
       .map((column) => {
-        const { slots, customRender, format, edit, editRow, flag, title: metaTitle } = column;
+        const {
+          slots,
+          customRender,
+          format,
+          edit,
+          editRow,
+          flag,
+          title: metaTitle,
+        } = column;
 
         if (!slots || !slots?.title) {
           // column.slots = { title: `header-${dataIndex}`, ...(slots || {}) };
@@ -154,7 +196,10 @@ export function useColumns(propsRef: ComputedRef<BasicTableProps>, getPagination
         }
         //update-end-author:taoyan date:20211203 for:【online报表】分组标题显示错误，都显示成了联系信息 LOWCOD-2343
 
-        const isDefaultAction = [INDEX_COLUMN_FLAG, ACTION_COLUMN_FLAG].includes(flag!);
+        const isDefaultAction = [
+          INDEX_COLUMN_FLAG,
+          ACTION_COLUMN_FLAG,
+        ].includes(flag!);
         if (!customRender && format && !edit && !isDefaultAction) {
           column.customRender = ({ text, record, index }) => {
             return formatCell(text, format, record, index);
@@ -177,7 +222,10 @@ export function useColumns(propsRef: ComputedRef<BasicTableProps>, getPagination
     }
   );
 
-  function setCacheColumnsByField(dataIndex: string | undefined, value: Partial<BasicColumn>) {
+  function setCacheColumnsByField(
+    dataIndex: string | undefined,
+    value: Partial<BasicColumn>
+  ) {
     if (!dataIndex || !value) {
       return;
     }
@@ -194,7 +242,9 @@ export function useColumns(propsRef: ComputedRef<BasicTableProps>, getPagination
    * set columns
    * @param columnList key｜column
    */
-  function setColumns(columnList: Partial<BasicColumn>[] | (string | string[])[]) {
+  function setColumns(
+    columnList: Partial<BasicColumn>[] | (string | string[])[]
+  ) {
     const columns = cloneDeep(columnList);
     if (!isArray(columns)) return;
 
@@ -210,18 +260,25 @@ export function useColumns(propsRef: ComputedRef<BasicTableProps>, getPagination
     if (!isString(firstColumn) && !isArray(firstColumn)) {
       columnsRef.value = columns as BasicColumn[];
     } else {
-      const columnKeys = (columns as (string | string[])[]).map((m) => m.toString());
+      const columnKeys = (columns as (string | string[])[]).map((m) =>
+        m.toString()
+      );
       const newColumns: BasicColumn[] = [];
       cacheColumns.forEach((item) => {
         newColumns.push({
           ...item,
-          defaultHidden: !columnKeys.includes(item.dataIndex?.toString() || (item.key as string)),
+          defaultHidden: !columnKeys.includes(
+            item.dataIndex?.toString() || (item.key as string)
+          ),
         });
       });
       // Sort according to another array
       if (!isEqual(cacheKeys, columns)) {
         newColumns.sort((prev, next) => {
-          return columnKeys.indexOf(prev.dataIndex?.toString() as string) - columnKeys.indexOf(next.dataIndex?.toString() as string);
+          return (
+            columnKeys.indexOf(prev.dataIndex?.toString() as string) -
+            columnKeys.indexOf(next.dataIndex?.toString() as string)
+          );
         });
       }
       columnsRef.value = newColumns;
@@ -274,11 +331,18 @@ function sortFixedColumn(columns: BasicColumn[]) {
     }
     defColumns.push(column);
   }
-  return [...fixedLeftColumns, ...defColumns, ...fixedRightColumns].filter((item) => !item.defaultHidden);
+  return [...fixedLeftColumns, ...defColumns, ...fixedRightColumns].filter(
+    (item) => !item.defaultHidden
+  );
 }
 
 // format cell
-export function formatCell(text: string, format: CellFormat, record: Recordable, index: number) {
+export function formatCell(
+  text: string,
+  format: CellFormat,
+  record: Recordable,
+  index: number
+) {
   if (!format) {
     return text;
   }
@@ -304,7 +368,7 @@ export function formatCell(text: string, format: CellFormat, record: Recordable,
     if (isMap(format)) {
       return format.get(text);
     }
-  } catch (error) {
+  } catch {
     return text;
   }
 }

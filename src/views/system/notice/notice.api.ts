@@ -33,8 +33,8 @@ export const getList = (params) => {
  * @param params
  */
 export const saveOrUpdate = (params, isUpdate) => {
-  let url = isUpdate ? Api.edit : Api.save;
-  return defHttp.post({ url: url, params });
+  const url = isUpdate ? Api.edit : Api.save;
+  return defHttp.post({ url, params });
 };
 
 /**
@@ -42,24 +42,32 @@ export const saveOrUpdate = (params, isUpdate) => {
  * @param params
  */
 export const deleteNotice = (params, handleSuccess) => {
-  return defHttp.delete({ url: Api.delete, data: params }, { joinParamsToUrl: true }).then(() => {
-    handleSuccess();
-  });
+  return defHttp
+    .delete({ url: Api.delete, data: params }, { joinParamsToUrl: true })
+    .then(() => {
+      handleSuccess();
+    });
 };
 
 /**
  * 批量消息公告
  * @param params
  */
-export const batchDeleteNotice = (params) => defHttp.delete({ url: Api.deleteBatch, data: params }, { joinParamsToUrl: true });
+export const batchDeleteNotice = (params) =>
+  defHttp.delete(
+    { url: Api.deleteBatch, data: params },
+    { joinParamsToUrl: true }
+  );
 
 /**
  * 发布
  * @param id
  */
-export const doReleaseData = (params) => defHttp.get({ url: Api.releaseData, params });
+export const doReleaseData = (params) =>
+  defHttp.get({ url: Api.releaseData, params });
 /**
  * 撤销
  * @param id
  */
-export const doReovkeData = (params) => defHttp.get({ url: Api.reovkeData, params });
+export const doReovkeData = (params) =>
+  defHttp.get({ url: Api.reovkeData, params });
